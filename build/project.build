@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<project name="Device Certification Pipeline" default="all" xmlns="http://nant.sf.net/release/0.86-beta1/nant.xsd">
+
+  <target name="all">
+	<echo message="build"/>
+  </target>
+
+</project>

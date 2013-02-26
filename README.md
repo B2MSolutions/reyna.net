@@ -1,4 +1,4 @@
 reyna.net
-=========
+========
 
-Reyna for >NET
+Reyna for .NET
