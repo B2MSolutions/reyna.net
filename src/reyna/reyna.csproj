@@ -52,15 +52,21 @@
   <ItemGroup>
     <Reference Include="mscorlib" />
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Data.SQLite">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\SQLite\$(SQLiteVersion)\PocketPC\System.Data.SQLite.dll</HintPath>
     </Reference>
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Interfaces\IMessage.cs" />
+    <Compile Include="Interfaces\IRepository.cs" />
+    <Compile Include="Interfaces\IStore.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SQLiteRepository.cs" />
+    <Compile Include="Store.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\lib\SQLite\$(SQLiteVersion)\PocketPC\SQLite.Interop.084.dll">
