@@ -15,7 +15,7 @@
 
         public void Put(IMessage message)
         {
-            if (!this.Repository.DoesExist(Store.DatabaseName))
+            if (this.Repository.DoesNotExist(Store.DatabaseName))
             {
                 this.Repository.Create(Store.DatabaseName);
             }

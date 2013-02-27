@@ -26,14 +26,14 @@
         [Fact]
         public void WhenCallingPutAndRepositoryDoesNotExistShouldCreateItBeforeInserting()
         {
-            this.Repository.Setup(r => r.DoesExist(It.IsAny<string>())).Returns(false);
+            this.Repository.Setup(r => r.DoesNotExist(It.IsAny<string>())).Returns(true);
             this.Repository.Setup(r => r.Create(It.IsAny<string>()));
             this.Repository.Setup(r => r.Insert(It.IsAny<IMessage>()));
 
-            var message = new Message();
+            var message = new Message(null, null);
             this.Store.Put(message);
 
-            this.Repository.Verify(r => r.DoesExist("reyna.db"), Times.Once());
+            this.Repository.Verify(r => r.DoesNotExist("reyna.db"), Times.Once());
             this.Repository.Verify(r => r.Create("reyna.db"), Times.Once());
             this.Repository.Verify(r => r.Insert(message), Times.Once());
         }
@@ -41,13 +41,13 @@
         [Fact]
         public void WhenCallingPutShouldInsertRecord()
         {
-            this.Repository.Setup(r => r.DoesExist(It.IsAny<string>())).Returns(true);
+            this.Repository.Setup(r => r.DoesNotExist(It.IsAny<string>())).Returns(false);
             this.Repository.Setup(r => r.Insert(It.IsAny<IMessage>()));
 
-            var message = new Message();
+            var message = new Message(null, null);
             this.Store.Put(message);
 
-            this.Repository.Verify(r => r.DoesExist("reyna.db"), Times.Once());
+            this.Repository.Verify(r => r.DoesNotExist("reyna.db"), Times.Once());
             this.Repository.Verify(r => r.Insert(message), Times.Once());
         }
     }

@@ -3,12 +3,14 @@
     using System;
     using System.Net;
 
-    public interface IMessage
+    public interface IMessage : ICloneable
     {
-        string Body { get; set; }
+        int Id { get; }
 
-        Uri Url { get; set; }
+        string Body { get; }
 
-        WebHeaderCollection Headers { get; set; }
+        Uri Url { get; }
+
+        WebHeaderCollection Headers { get; }
     }
 }

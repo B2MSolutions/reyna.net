@@ -1,20 +1,39 @@
 ﻿namespace reyna
 {
     using System;
+    using System.Collections.Generic;
     using System.Net;
     using reyna.Interfaces;
 
     public class Message : IMessage
     {
-        public Message()
+        public Message(Uri url, string body)
         {
+            this.Url = url;
+            this.Body = body;
             this.Headers = new WebHeaderCollection();
         }
 
-        public string Body { get; set; }
+        public int Id { get; internal set; }
 
-        public Uri Url { get; set; }
+        public string Body { get; private set; }
 
-        public WebHeaderCollection Headers { get; set; }
+        public Uri Url { get; private set; }
+
+        public WebHeaderCollection Headers { get; private set; }
+
+        public object Clone()
+        {
+            var clone = new Message(this.Url, this.Body)
+            {
+                Id = this.Id
+            };
+            foreach(string key in this.Headers)
+            {
+                clone.Headers.Add(key, this.Headers[key]);
+            }
+
+            return clone;
+        }
     }
 }

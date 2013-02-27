@@ -2,10 +2,10 @@
 {
     public interface IRepository
     {
-        bool DoesExist(string name);
+        bool DoesNotExist(string name);
 
         void Create(string name);
 
-        void Insert(IMessage message);
+        IMessage Insert(IMessage message);
     }
 }
