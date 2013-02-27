@@ -1,11 +1,11 @@
 ﻿namespace reyna
 {
-    using reyna.Interfaces;
     using System;
-    using System.Collections.Generic;
     using System.Data.SQLite;
     using System.IO;
+    using System.Net;
     using System.Text;
+    using reyna.Interfaces;
 
     public class SQLiteRepository : IRepository
     {
@@ -25,40 +25,19 @@
 
         public IMessage Enqueue(IMessage message)
         {
-            var messageInsertSql = "INSERT INTO Message(url, body) VALUES('{0}', '{1}'); SELECT last_insert_rowid();";
-            var headerInsertSql = "INSERT INTO Header(messageid, key, value) VALUES({0}, '{1}', '{2}');";
-
-            using (var connection = new SQLiteConnection("Data Source=reyna.db"))
-            {
-                connection.Open();
-                using (var transaction = connection.BeginTransaction())
+            return this.ActOnDatabase((t) =>
                 {
-                    var messageId = 0;
+                    var sql = this.CreateInsertSql(message);
+                    var messageId = Convert.ToInt32(this.ExecuteScalar(sql, t));
 
-                    using (var command = new SQLiteCommand(string.Format(messageInsertSql, message.Url, message.Body), connection, transaction))
-                    {
-                        messageId = Convert.ToInt32(command.ExecuteScalar());
-                    }
+                    sql = this.CreateInsertSql(messageId, message.Headers);
+                    this.ExecuteScalar(sql, t);
 
-                    var builder = new StringBuilder();
-                    foreach (string key in message.Headers)
-                    {
-                        builder.Append(string.Format(headerInsertSql, messageId, key, message.Headers[key]));
-                    }
+                    var clone = this.AssignIdTo(message, messageId);
 
-                    using (var command = new SQLiteCommand(builder.ToString(), connection, transaction))
-                    {
-                        command.ExecuteNonQuery();
-                    }
-
-                    var result = message.Clone() as Message;
-                    result.Id = messageId;
-
-                    transaction.Commit();
-                    return result;
-                }
-            }
-
+                    t.Commit();
+                    return clone;
+                });
         }
 
         public IMessage Peek()
@@ -115,6 +94,31 @@
             return message;
         }
 
+        private string CreateInsertSql(IMessage message)
+        {
+            return string.Format("INSERT INTO Message(url, body) VALUES('{0}', '{1}'); SELECT last_insert_rowid();", message.Url, message.Body);
+        }
+
+        private string CreateInsertSql(int messageId, WebHeaderCollection headers)
+        {
+            var builder = new StringBuilder();
+
+            foreach (string key in headers)
+            {
+                builder.Append(string.Format("INSERT INTO Header(messageid, key, value) VALUES({0}, '{1}', '{2}');", messageId, key, headers[key]));
+            }
+
+            return builder.ToString();
+        }
+
+        private IMessage AssignIdTo(IMessage message, int id)
+        {
+            var clone = message.Clone() as Message;
+            clone.Id = id;
+
+            return clone;
+        }
+
         private int ExecuteNonQuery(string sql)
         {
             using (var connection = new SQLiteConnection("Data Source=reyna.db"))
@@ -123,6 +127,26 @@
                 using (var command = new SQLiteCommand(sql, connection))
                 {
                     return command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        private object ExecuteScalar(string sql, SQLiteTransaction transaction)
+        {
+            using (var command = new SQLiteCommand(sql, transaction.Connection, transaction))
+            {
+                return command.ExecuteScalar();
+            }
+        }
+
+        private IMessage ActOnDatabase(Func<SQLiteTransaction, IMessage> func)
+        {
+            using (var connection = new SQLiteConnection("Data Source=reyna.db"))
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    return func(transaction);
                 }
             }
         }
