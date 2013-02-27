@@ -23,7 +23,7 @@
             this.ExecuteNonQuery(SQLiteRepository.TableCreationSql);
         }
 
-        public IMessage Insert(IMessage message)
+        public IMessage Enqueue(IMessage message)
         {
             var messageInsertSql = "INSERT INTO Message(url, body) VALUES('{0}', '{1}'); SELECT last_insert_rowid();";
             var headerInsertSql = "INSERT INTO Header(messageid, key, value) VALUES({0}, '{1}', '{2}');";
@@ -61,6 +61,60 @@
 
         }
 
+        public IMessage Peek()
+        {
+            IMessage message = null;
+
+            using (var connection = new SQLiteConnection("Data Source=reyna.db"))
+            {
+                connection.Open();
+                using (var command = new SQLiteCommand("SELECT * FROM Message ORDER BY id ASC LIMIT 1", connection))
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var id = Convert.ToInt32(reader["id"]);
+                        var url = new Uri(reader["url"] as string);
+                        var body = reader["body"] as string;
+                        message = new Message(url, body) { Id = id };
+                    }
+                }
+
+                if (message == null)
+                {
+                    return null;
+                }
+
+                using (var command = new SQLiteCommand(string.Format("SELECT * FROM Header WHERE messageid = {0}", message.Id), connection))
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var key = reader["key"] as string;
+                        var value = reader["value"] as string;
+                        message.Headers.Add(key, value);
+                    }
+                }
+            }
+
+            return message;
+        }
+
+        public IMessage Dequeue()
+        {
+            // TODO: encapsulate these 2 calls in a transaction?
+            var message = this.Peek();
+            if (message == null)
+            {
+                return null;
+            }
+
+            var sql = string.Format("DELETE FROM Header WHERE messageid = {0};DELETE FROM Message WHERE id = {0}", message.Id);
+            this.ExecuteNonQuery(sql);
+            
+            return message;
+        }
+
         private int ExecuteNonQuery(string sql)
         {
             using (var connection = new SQLiteConnection("Data Source=reyna.db"))
@@ -69,18 +123,6 @@
                 using (var command = new SQLiteCommand(sql, connection))
                 {
                     return command.ExecuteNonQuery();
-                }
-            }
-        }
-
-        private object ExecuteScalar(string sql)
-        {
-            using (var connection = new SQLiteConnection("Data Source=reyna.db"))
-            {
-                connection.Open();
-                using (var command = new SQLiteCommand(sql, connection))
-                {
-                    return command.ExecuteScalar();
                 }
             }
         }

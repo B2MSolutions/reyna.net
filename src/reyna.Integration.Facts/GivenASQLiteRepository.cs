@@ -61,12 +61,12 @@ using System.Collections.Generic;
         }
 
         [Fact]
-        public void WhenCallingInsertShouldRetunExected()
+        public void WhenCallingEnqueueShouldRetunInsertMessage()
         {
-            var message = this.GetMessage();
+            var message = this.GetMessage("http://HOST.com:9080/home", "{\"body\": body}");
 
             this.Repository.Create("reyna.db");
-            this.Repository.Insert(message);
+            this.Repository.Enqueue(message);
 
             int mesageRowsCount = ExecuteScalar("SELECT COUNT(1) FROM Message");
             int headerRowsCount = ExecuteScalar("SELECT COUNT(1) FROM Header");
@@ -81,9 +81,64 @@ using System.Collections.Generic;
             Assert.Equal("application/josn", storedMessage.Headers["Content_Type"]);
         }
 
-        private IMessage GetMessage()
+        [Fact]
+        public void WhenCallingPeekShouldRetunExectedMessage()
         {
-            var message = new Message(new Uri("http://HOST.com:9080/home"), "{\"body\": body}");
+            var message1 = this.GetMessage("http://HOST.com:9080/home1", "{\"body\": body}");
+            var message2 = this.GetMessage("http://HOST.com:9080/home2", "body");
+            var message3 = this.GetMessage("http://HOST.com:9080/home3", "");
+
+            this.Repository.Create("reyna.db");
+            this.Repository.Enqueue(message1);
+            this.Repository.Enqueue(message2);
+            this.Repository.Enqueue(message3);
+
+            var message = this.Repository.Peek();
+
+            Assert.Equal(new Uri("http://HOST.com:9080/home1"), message.Url);
+            Assert.Equal("{\"body\": body}", message.Body);
+            Assert.Equal("Token", message.Headers["Token"]);
+            Assert.Equal("application/josn", message.Headers["Content_Type"]);
+        }
+
+        [Fact]
+        public void WhenCallingDeQueueShouldRetunExectedMessage()
+        {
+            var message1 = this.GetMessage("http://HOST.com:9080/home1", "{\"body\": body}");
+            var message2 = this.GetMessage("http://HOST.com:9080/home2", "body");
+            var message3 = this.GetMessage("http://HOST.com:9080/home3", "");
+
+            this.Repository.Create("reyna.db");
+            this.Repository.Enqueue(message1);
+            this.Repository.Enqueue(message2);
+            this.Repository.Enqueue(message3);
+
+            var actualMessage1 = this.Repository.Dequeue();
+            var actualMessage2 = this.Repository.Dequeue();
+            var actualMessage3 = this.Repository.Dequeue();
+            var actualMessage4 = this.Repository.Dequeue();
+
+            Assert.Equal(new Uri("http://HOST.com:9080/home1"), actualMessage1.Url);
+            Assert.Equal("{\"body\": body}", actualMessage1.Body);
+            Assert.Equal("Token", actualMessage1.Headers["Token"]);
+            Assert.Equal("application/josn", actualMessage1.Headers["Content_Type"]);
+
+            Assert.Equal(new Uri("http://HOST.com:9080/home2"), actualMessage2.Url);
+            Assert.Equal("body", actualMessage2.Body);
+            Assert.Equal("Token", actualMessage2.Headers["Token"]);
+            Assert.Equal("application/josn", actualMessage2.Headers["Content_Type"]);
+
+            Assert.Equal(new Uri("http://HOST.com:9080/home3"), actualMessage3.Url);
+            Assert.Equal("", actualMessage3.Body);
+            Assert.Equal("Token", actualMessage3.Headers["Token"]);
+            Assert.Equal("application/josn", actualMessage3.Headers["Content_Type"]);
+
+            Assert.Null(actualMessage4);
+        }
+
+        private IMessage GetMessage(string url, string body)
+        {
+            var message = new Message(new Uri(url), body);
             message.Headers.Add("Content_Type", "application/josn");
             message.Headers.Add("Token", "Token");
             

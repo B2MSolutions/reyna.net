@@ -20,7 +20,7 @@
                 this.Repository.Create(Store.DatabaseName);
             }
 
-            this.Repository.Insert(message);
+            this.Repository.Enqueue(message);
         }
     }
 }

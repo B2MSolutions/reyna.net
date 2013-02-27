@@ -6,6 +6,10 @@
 
         void Create(string name);
 
-        IMessage Insert(IMessage message);
+        IMessage Enqueue(IMessage message);
+
+        IMessage Peek();
+
+        IMessage Dequeue();
     }
 }
