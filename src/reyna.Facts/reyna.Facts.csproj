@@ -39,13 +39,23 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\tools\Moq\$(MoqVersion)\NET35\Moq.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
     <Reference Include="xunit">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\tools\xUnit\$(XunitVersion)\xunit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GivenAMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\reyna.Win32\reyna.Win32.csproj">
+      <Project>{EB1D70A1-9BA8-4FAF-AC54-B3E6EBEADE7F}</Project>
+      <Name>reyna.Win32</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

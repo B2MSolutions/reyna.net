@@ -36,12 +36,19 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="System" />
     <Reference Include="System.Data.SQLite">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\SQLite\$(SQLiteVersion)\Win32\System.Data.SQLite.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\reyna\Interfaces\IMessage.cs">
+      <Link>Interfaces\IMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Message.cs">
+      <Link>Message.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
