@@ -7,8 +7,13 @@
 @SET EXITCODE=%ERRORLEVEL%
 @IF %ERRORLEVEL% NEQ 0 GOTO error
 
-@ECHO Running tests
+@ECHO Running unit tests
 "%~dp0..\tools\xUnit\%XUNIT_VERSION%\xunit.console.exe" "%~dp0..\src\reyna.Facts\bin\%CONFIGURATION%\reyna.Facts.dll"
+@SET EXITCODE=%ERRORLEVEL%
+@IF %ERRORLEVEL% NEQ 0 GOTO error
+
+@ECHO Running integration tests
+"%~dp0..\tools\xUnit\%XUNIT_VERSION%\xunit.console.exe" "%~dp0..\src\reyna.Integration.Facts\bin\%CONFIGURATION%\reyna.Integration.Facts.dll"
 @SET EXITCODE=%ERRORLEVEL%
 @IF %ERRORLEVEL% NEQ 0 GOTO error
 
