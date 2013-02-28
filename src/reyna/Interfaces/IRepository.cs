@@ -1,6 +1,6 @@
 ﻿namespace reyna.Interfaces
 {
-    public interface IRepository
+    internal interface IRepository
     {
         bool DoesNotExist { get; }
 

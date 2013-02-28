@@ -9,7 +9,7 @@
     using System.Text;
     using reyna.Interfaces;
 
-    public class SQLiteRepository : IRepository
+    internal class SQLiteRepository : IRepository
     {
         public bool DoesNotExist
         {

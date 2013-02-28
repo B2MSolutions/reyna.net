@@ -49,6 +49,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\reyna\Forward.cs">
+      <Link>Forward.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\HttpClient.cs">
+      <Link>HttpClient.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Interfaces\IForward.cs">
+      <Link>Interfaces\IForward.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Interfaces\IHttpClient.cs">
+      <Link>Interfaces\IHttpClient.cs</Link>
+    </Compile>
     <Compile Include="..\reyna\Interfaces\IMessage.cs">
       <Link>Interfaces\IMessage.cs</Link>
     </Compile>
@@ -57,6 +69,9 @@
     </Compile>
     <Compile Include="..\reyna\Interfaces\IStore.cs">
       <Link>Interfaces\IStore.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Interfaces\Result.cs">
+      <Link>Interfaces\Result.cs</Link>
     </Compile>
     <Compile Include="..\reyna\Message.cs">
       <Link>Message.cs</Link>

@@ -9,11 +9,16 @@
         public GivenAStore()
         {
             this.Repository = new Mock<IRepository>();
+            this.Forward = new Mock<IForward>();
+            
             this.Store = new Store();
             this.Store.Repository = this.Repository.Object;
+            this.Store.Forward = this.Forward.Object;
         }
 
         private Mock<IRepository> Repository { get; set; }
+
+        private Mock<IForward> Forward { get; set; }
 
         private Store Store { get; set; }
 
@@ -49,6 +54,17 @@
 
             this.Repository.VerifyGet(r => r.DoesNotExist, Times.Once());
             this.Repository.Verify(r => r.Enqueue(message), Times.Once());
+        }
+
+        [Fact]
+        public void WhenCallingPutShouldForwardMessages()
+        {
+            this.Forward.Setup(f => f.Send());
+
+            var message = new Message(null, null);
+            this.Store.Put(message);
+
+            this.Forward.Verify(f => f.Send(), Times.Once());
         }
     }
 }

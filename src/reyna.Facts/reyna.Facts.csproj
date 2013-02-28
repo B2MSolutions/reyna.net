@@ -53,6 +53,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GivenAForward.cs" />
     <Compile Include="GivenAMessage.cs" />
     <Compile Include="GivenAStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

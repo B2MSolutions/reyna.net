@@ -7,9 +7,12 @@
         public Store()
         {
             this.Repository = new SQLiteRepository();
+            this.Forward = new Forward(this.Repository, new HttpClient());
         }
 
         internal IRepository Repository { get; set; }
+
+        internal IForward Forward { get; set; }
 
         public void Put(IMessage message)
         {
@@ -19,6 +22,8 @@
             }
 
             this.Repository.Enqueue(message);
+            
+            this.Forward.Send();
         }
     }
 }
