@@ -5,9 +5,9 @@
     using System.Data.SQLite;
     using System.IO;
     using System.Net;
+    using System.Reflection;
     using System.Text;
     using reyna.Interfaces;
-using System.Reflection;
 
     public class SQLiteRepository : IRepository
     {
@@ -23,16 +23,15 @@ using System.Reflection;
         {
             SQLiteConnection.CreateFile(this.DatabasePath);
 
-            this.DatabaseAction((t) =>
+            this.ExecuteInTransaction((t) =>
                 {
                     this.ExecuteNonQuery("CREATE TABLE Message (id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT, body TEXT);CREATE TABLE Header (id INTEGER PRIMARY KEY AUTOINCREMENT, messageid INTEGER, key TEXT, value TEXT, FOREIGN KEY(messageid) REFERENCES message(id));", t);
-                    t.Commit();
                 });
         }
 
         public IMessage Enqueue(IMessage message)
         {
-            return this.DatabaseFunc((t) =>
+            return this.ExecuteInTransaction((t) =>
                 {
                     var sql = this.CreateInsertSql(message);
                     var messageId = Convert.ToInt32(this.ExecuteScalar(this.CreateInsertSql(message), t));
@@ -40,106 +39,32 @@ using System.Reflection;
                     sql = this.CreateInsertSql(messageId, message.Headers);
                     this.ExecuteScalar(sql, t);
 
-                    var clone = this.AssignIdTo(message, messageId);
-
-                    t.Commit();
-                    return clone;
+                    return this.AssignIdTo(message, messageId);
                 });
         }
 
         public IMessage Peek()
         {
-            // TODO
-            // complete refactoring.
-
-            //return this.DatabaseFunc((t) =>
-            //    {
-            //        var sql = this.CreateSelectTop1Sql();
-            //        using (var reader = this.ExecuteReader(sql, t))
-            //        {
-            //        }
-
-            //        t.Commit();
-
-            //        return Message;
-            //    });
-
-            IMessage message = null;
-
-            var connectionString = string.Format("Data Source={0}", this.DatabasePath);
-            using (var connection = new SQLiteConnection(connectionString))
-            {
-                connection.Open();
-                using (var command = new SQLiteCommand("SELECT * FROM Message ORDER BY id ASC LIMIT 1", connection))
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        var id = Convert.ToInt32(reader["id"]);
-                        var url = new Uri(reader["url"] as string);
-                        var body = reader["body"] as string;
-                        message = new Message(url, body) { Id = id };
-                    }
-                }
-
-                if (message == null)
-                {
-                    return null;
-                }
-
-                using (var command = new SQLiteCommand(string.Format("SELECT * FROM Header WHERE messageid = {0}", message.Id), connection))
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        var key = reader["key"] as string;
-                        var value = reader["value"] as string;
-                        message.Headers.Add(key, value);
-                    }
-                }
-            }
-
-            return message;
+            return this.GetFirstInQueue();
         }
 
         public IMessage Dequeue()
         {
-            //return this.ActOnDatabase((t) =>
-            //{
-                //var sql = this.CreateInsertSql(message);
-                //var messageId = Convert.ToInt32(this.ExecuteScalar(sql, t));
-
-                //sql = this.CreateInsertSql(messageId, message.Headers);
-                //this.ExecuteScalar(sql, t);
-
-                //var clone = this.AssignIdTo(message, messageId);
-
-                //t.Commit();
-                //return clone;
-            //});
-
-
-            // TODO: encapsulate these 2 calls in a transaction?
-            var message = this.Peek();
-            if (message == null)
-            {
-                return null;
-            }
-
-            return this.DatabaseFunc((t) =>
+            return this.GetFirstInQueue((message, t) =>
                 {
-                    // TODO: roll the above code into this transaction
-
                     var sql = this.CreateDeleteSql(message);
                     this.ExecuteNonQuery(sql, t);
-                    t.Commit();
-                    return message;
                 });
         }
 
         private string CreateSelectTop1Sql()
         {
-            return "SELECT * FROM Message ORDER BY id ASC LIMIT 1";
+            return "SELECT id, url, body FROM Message ORDER BY id ASC LIMIT 1";
+        }
+
+        private string CreateSelectHeaderSql(IMessage message)
+        {
+            return string.Format("SELECT key, value FROM Header WHERE messageid = {0}", message.Id);
         }
 
         private string CreateInsertSql(IMessage message)
@@ -228,22 +153,87 @@ using System.Reflection;
             }
         }
 
-        private IMessage DatabaseFunc(Func<DbTransaction, IMessage> func)
+        private IMessage ExecuteInTransaction(Func<DbTransaction, IMessage> func)
         {
             using (var connection = this.CreateConnection())
             using (var transaction = connection.BeginTransaction())
             {
-                return func(transaction);
+                var message = func(transaction);
+                transaction.Commit();
+                return message;
             }
         }
 
-        private void DatabaseAction(Action<DbTransaction> action)
+        private void ExecuteInTransaction(Action<DbTransaction> action)
         {
             using (var connection = this.CreateConnection())
             using (var transaction = connection.BeginTransaction())
             {
                 action(transaction);
+                transaction.Commit();
             }
+        }
+
+        private IMessage GetFirstInQueue(params Action<IMessage, DbTransaction>[] postActions)
+        {
+            return this.ExecuteInTransaction((t) =>
+            {
+                IMessage message = null;
+
+                var sql = this.CreateSelectTop1Sql();
+                using (var reader = this.ExecuteReader(sql, t))
+                {
+                    reader.Read();
+                    message = this.CreateFromDataReader(reader);
+                }
+
+                if (message == null)
+                {
+                    return null;
+                }
+
+                sql = this.CreateSelectHeaderSql(message);
+                using (var reader = this.ExecuteReader(sql, t))
+                {
+                    while (reader.Read())
+                    {
+                        this.AddHeader(message, reader);
+                    }
+                }
+
+                foreach (var postAction in postActions)
+                {
+                    postAction(message, t);
+                }
+
+                return message;
+            });
+        }
+
+        private IMessage CreateFromDataReader(DbDataReader reader)
+        {
+            if (!reader.HasRows)
+            {
+                return null;
+            }
+            
+            var id = Convert.ToInt32(reader["id"]);
+            var url = new Uri(reader["url"] as string);
+            var body = reader["body"] as string;
+
+            var message = new Message(url, body)
+            {
+                Id = id
+            };
+
+            return message;
+        }
+
+        private void AddHeader(IMessage message, DbDataReader reader)
+        {
+            var key = reader["key"] as string;
+            var value = reader["value"] as string;
+            message.Headers.Add(key, value);
         }
     }
 }
