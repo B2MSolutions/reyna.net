@@ -61,6 +61,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\HttpStatusCodeExtensions.cs" />
     <Compile Include="Forward.cs" />
     <Compile Include="HttpClient.cs" />
     <Compile Include="Interfaces\IForward.cs" />

@@ -49,6 +49,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\reyna\Extensions\HttpStatusCodeExtensions.cs">
+      <Link>Extensions\HttpStatusCodeExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\reyna\Forward.cs">
       <Link>Forward.cs</Link>
     </Compile>

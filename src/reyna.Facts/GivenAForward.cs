@@ -38,13 +38,13 @@
                 .Callback(() => messageCounter++)
                 .Returns(() => messageCounter < 2 ? message : (IMessage)null);
 
-            this.HttpClient.Setup(hc => hc.Put(It.IsAny<IMessage>())).Returns(Result.Ok);
+            this.HttpClient.Setup(hc => hc.Post(It.IsAny<IMessage>())).Returns(Result.Ok);
             this.Repository.Setup(r => r.Dequeue()).Returns(message);
 
             this.Forward.Send();
 
             this.Repository.Verify(r => r.Peek(), Times.Exactly(2));
-            this.HttpClient.Verify(hc => hc.Put(message), Times.Once());
+            this.HttpClient.Verify(hc => hc.Post(message), Times.Once());
             this.Repository.Verify(r => r.Dequeue(), Times.Once());
         }
 
@@ -56,7 +56,7 @@
             this.Forward.Send();
 
             this.Repository.Verify(r => r.Peek(), Times.Once());
-            this.HttpClient.Verify(hc => hc.Put(It.IsAny<IMessage>()), Times.Never());
+            this.HttpClient.Verify(hc => hc.Post(It.IsAny<IMessage>()), Times.Never());
             this.Repository.Verify(r => r.Dequeue(), Times.Never());
         }
 
@@ -66,12 +66,12 @@
             var message = new Message(null, null);
 
             this.Repository.Setup(r => r.Peek()).Returns(message);
-            this.HttpClient.Setup(hc => hc.Put(It.IsAny<IMessage>())).Returns(Result.TemporaryError);
+            this.HttpClient.Setup(hc => hc.Post(It.IsAny<IMessage>())).Returns(Result.TemporaryError);
 
             this.Forward.Send();
 
             this.Repository.Verify(r => r.Peek(), Times.Once());
-            this.HttpClient.Verify(hc => hc.Put(message), Times.Once());
+            this.HttpClient.Verify(hc => hc.Post(message), Times.Once());
             this.Repository.Verify(r => r.Dequeue(), Times.Never());
         }
 
@@ -85,12 +85,12 @@
             this.Repository.Setup(r => r.Peek())
                 .Callback(() => messageCounter++)
                 .Returns(() => messageCounter < 2 ? message : (IMessage)null);
-            this.HttpClient.Setup(hc => hc.Put(It.IsAny<IMessage>())).Returns(Result.PermanentError);
+            this.HttpClient.Setup(hc => hc.Post(It.IsAny<IMessage>())).Returns(Result.PermanentError);
 
             this.Forward.Send();
 
             this.Repository.Verify(r => r.Peek(), Times.Exactly(2));
-            this.HttpClient.Verify(hc => hc.Put(message), Times.Once());
+            this.HttpClient.Verify(hc => hc.Post(message), Times.Once());
             this.Repository.Verify(r => r.Dequeue(), Times.Once());
         }
 
@@ -104,13 +104,13 @@
             this.Repository.Setup(r => r.Peek())
                 .Callback(() => messageCounter++)
                 .Returns(() => messageCounter < 5 ? message : (IMessage)null);
-            this.HttpClient.Setup(hc => hc.Put(It.IsAny<IMessage>())).Returns(Result.Ok);
+            this.HttpClient.Setup(hc => hc.Post(It.IsAny<IMessage>())).Returns(Result.Ok);
             this.Repository.Setup(r => r.Dequeue()).Returns(message);
 
             this.Forward.Send();
 
             this.Repository.Verify(r => r.Peek(), Times.Exactly(5));
-            this.HttpClient.Verify(hc => hc.Put(message), Times.Exactly(4));
+            this.HttpClient.Verify(hc => hc.Post(message), Times.Exactly(4));
             this.Repository.Verify(r => r.Dequeue(), Times.Exactly(4));
         }
     }

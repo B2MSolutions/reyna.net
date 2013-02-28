@@ -23,6 +23,8 @@
 
             this.Repository.Enqueue(message);
             
+            // TODO
+            // need to run in a separate thread
             this.Forward.Send();
         }
     }

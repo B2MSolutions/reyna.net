@@ -11,6 +11,13 @@
 
     internal class SQLiteRepository : IRepository
     {
+        private const string CreateTableSql = "CREATE TABLE Message (id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT, body TEXT);CREATE TABLE Header (id INTEGER PRIMARY KEY AUTOINCREMENT, messageid INTEGER, key TEXT, value TEXT, FOREIGN KEY(messageid) REFERENCES message(id));";
+        private const string InsertMessageSql = "INSERT INTO Message(url, body) VALUES(@url, @body); SELECT last_insert_rowid();";
+        private const string InsertHeaderSql = "INSERT INTO Header(messageid, key, value) VALUES(@messageId, @key, @value);";
+        private const string DeleteMessageSql = "DELETE FROM Header WHERE messageid = @messageId;DELETE FROM Message WHERE id = @messageId";
+        private const string SelectTop1MessageSql = "SELECT id, url, body FROM Message ORDER BY id ASC LIMIT 1";
+        private const string SelectHeaderSql = "SELECT key, value FROM Header WHERE messageid = @messageId";
+
         public bool DoesNotExist
         {
             get
@@ -25,7 +32,8 @@
 
             this.ExecuteInTransaction((t) =>
                 {
-                    this.ExecuteNonQuery("CREATE TABLE Message (id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT, body TEXT);CREATE TABLE Header (id INTEGER PRIMARY KEY AUTOINCREMENT, messageid INTEGER, key TEXT, value TEXT, FOREIGN KEY(messageid) REFERENCES message(id));", t);
+                    var sql = SQLiteRepository.CreateTableSql;
+                    this.ExecuteNonQuery(sql, t);
                 });
         }
 
@@ -33,13 +41,21 @@
         {
             return this.ExecuteInTransaction((t) =>
                 {
-                    var sql = this.CreateInsertSql(message);
-                    var messageId = Convert.ToInt32(this.ExecuteScalar(this.CreateInsertSql(message), t));
+                    var sql = SQLiteRepository.InsertMessageSql;
+                    var url = this.CreateParameter("@url", message.Url);
+                    var body = this.CreateParameter("@body", message.Body);
+                    var id = Convert.ToInt32(this.ExecuteScalar(sql, t, url, body));
 
-                    sql = this.CreateInsertSql(messageId, message.Headers);
-                    this.ExecuteScalar(sql, t);
+                    sql = SQLiteRepository.InsertHeaderSql;
+                    var messageId = this.CreateParameter("@messageId", id);
+                    foreach (string headerKey in message.Headers.Keys)
+                    {
+                        var key = this.CreateParameter("@key", headerKey);
+                        var value = this.CreateParameter("@value", message.Headers[headerKey]);
+                        this.ExecuteScalar(sql, t, messageId, key, value);
+                    }
 
-                    return this.AssignIdTo(message, messageId);
+                    return this.AssignIdTo(message, id);
                 });
         }
 
@@ -52,41 +68,10 @@
         {
             return this.GetFirstInQueue((message, t) =>
                 {
-                    var sql = this.CreateDeleteSql(message);
-                    this.ExecuteNonQuery(sql, t);
+                    var sql = SQLiteRepository.DeleteMessageSql;
+                    var messageId = this.CreateParameter("@messageId", message.Id);
+                    this.ExecuteNonQuery(sql, t, messageId);
                 });
-        }
-
-        private string CreateSelectTop1Sql()
-        {
-            return "SELECT id, url, body FROM Message ORDER BY id ASC LIMIT 1";
-        }
-
-        private string CreateSelectHeaderSql(IMessage message)
-        {
-            return string.Format("SELECT key, value FROM Header WHERE messageid = {0}", message.Id);
-        }
-
-        private string CreateInsertSql(IMessage message)
-        {
-            return string.Format("INSERT INTO Message(url, body) VALUES('{0}', '{1}'); SELECT last_insert_rowid();", message.Url, message.Body);
-        }
-
-        private string CreateInsertSql(int messageId, WebHeaderCollection headers)
-        {
-            var builder = new StringBuilder();
-
-            foreach (string key in headers)
-            {
-                builder.Append(string.Format("INSERT INTO Header(messageid, key, value) VALUES({0}, '{1}', '{2}');", messageId, key, headers[key]));
-            }
-
-            return builder.ToString();
-        }
-
-        private string CreateDeleteSql(IMessage message)
-        {
-            return string.Format("DELETE FROM Header WHERE messageid = {0};DELETE FROM Message WHERE id = {0}", message.Id);
         }
 
         private IMessage AssignIdTo(IMessage message, int id)
@@ -120,34 +105,45 @@
             return connection;
         }
 
-        private DbCommand CreateCommand(string sql, DbTransaction transaction)
+        private DbParameter CreateParameter(string parameterName, object value)
+        {
+            return new SQLiteParameter(parameterName, value);
+        }
+
+        private DbCommand CreateCommand(string sql, DbTransaction transaction, params DbParameter[] parameters)
         {
             var command = transaction.Connection.CreateCommand();
             command.CommandText = sql;
             command.Transaction = transaction;
             command.Connection = transaction.Connection;
+
+            foreach(var parameter in parameters)
+            {
+                command.Parameters.Add(parameter);
+            }
+
             return command;
         }
 
-        private int ExecuteNonQuery(string sql, DbTransaction transaction)
+        private int ExecuteNonQuery(string sql, DbTransaction transaction, params DbParameter[] parameters)
         {
-            using (var command = this.CreateCommand(sql, transaction))
+            using (var command = this.CreateCommand(sql, transaction, parameters))
             {
                 return command.ExecuteNonQuery();
             }
         }
 
-        private object ExecuteScalar(string sql, DbTransaction transaction)
+        private object ExecuteScalar(string sql, DbTransaction transaction, params DbParameter[] parameters)
         {
-            using (var command = this.CreateCommand(sql, transaction))
+            using (var command = this.CreateCommand(sql, transaction, parameters))
             {
                 return command.ExecuteScalar();
             }
         }
 
-        private DbDataReader ExecuteReader(string sql, DbTransaction transaction)
+        private DbDataReader ExecuteReader(string sql, DbTransaction transaction, params DbParameter[] parameters)
         {
-            using (var command = this.CreateCommand(sql, transaction))
+            using (var command = this.CreateCommand(sql, transaction, parameters))
             {
                 return command.ExecuteReader();
             }
@@ -180,7 +176,7 @@
             {
                 IMessage message = null;
 
-                var sql = this.CreateSelectTop1Sql();
+                var sql = SQLiteRepository.SelectTop1MessageSql;
                 using (var reader = this.ExecuteReader(sql, t))
                 {
                     reader.Read();
@@ -192,8 +188,9 @@
                     return null;
                 }
 
-                sql = this.CreateSelectHeaderSql(message);
-                using (var reader = this.ExecuteReader(sql, t))
+                sql = SQLiteRepository.SelectHeaderSql;
+                var messageId = this.CreateParameter("@messageId", message.Id);
+                using (var reader = this.ExecuteReader(sql, t, messageId))
                 {
                     while (reader.Read())
                     {

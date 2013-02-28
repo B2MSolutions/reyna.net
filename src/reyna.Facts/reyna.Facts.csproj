@@ -51,10 +51,15 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\tools\xUnit\$(XunitVersion)\xunit.dll</HintPath>
     </Reference>
+    <Reference Include="xunit.extensions, Version=1.9.1.1600, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\tools\xUnit\1.9.1\xunit.extensions.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GivenAForward.cs" />
     <Compile Include="GivenAMessage.cs" />
+    <Compile Include="GivenAnHttpStatusCode.cs" />
     <Compile Include="GivenAStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -20,7 +20,7 @@
             IMessage message = null;
             while((message = this.Repository.Peek()) != null)
             {
-                if (this.HttpClient.Put(message) == Result.TemporaryError)
+                if (this.HttpClient.Post(message) == Result.TemporaryError)
                 {
                     return;
                 }

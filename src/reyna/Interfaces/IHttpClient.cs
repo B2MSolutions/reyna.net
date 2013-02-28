@@ -4,6 +4,6 @@
 
     internal interface IHttpClient
     {
-        Result Put(IMessage message);
+        Result Post(IMessage message);
     }
 }
