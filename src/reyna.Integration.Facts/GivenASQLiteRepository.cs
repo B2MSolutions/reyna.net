@@ -6,16 +6,26 @@
     using reyna.Interfaces;
     using Xunit;
 using System.Collections.Generic;
+    using System.Reflection;
 
     public class GivenASQLiteRepository
     {
         public GivenASQLiteRepository()
         {
-            File.Delete("reyna.db");
+            File.Delete(this.DatabasePath);
             this.Repository = new SQLiteRepository();
         }
 
         private SQLiteRepository Repository { get; set; }
+
+        private string DatabasePath 
+        {
+            get 
+            {
+                var assemblyFile = new FileInfo(Assembly.GetExecutingAssembly().Location);
+                return Path.Combine(assemblyFile.DirectoryName, "reyna.db");
+            }
+        }
 
         [Fact]
         public void WhenConstructingShouldNotThrow()
@@ -26,35 +36,57 @@ using System.Collections.Generic;
         [Fact]
         public void WhenCallingDoesNotExistAndDatabaseDoesNotExistShouldReturnTrue()
         {
-            Assert.True(this.Repository.DoesNotExist("reyna.db"));
+            Assert.True(this.Repository.DoesNotExist);
         }
 
         [Fact]
         public void WhenCallingDoesNotExistAndDatabaseExistsShouldReturnFalse()
         {
-            File.WriteAllBytes("reyna.db", new byte[] { });
+            File.WriteAllBytes(this.DatabasePath, new byte[] { });
             
-            Assert.False(this.Repository.DoesNotExist("reyna.db"));
+            Assert.False(this.Repository.DoesNotExist);
         }
 
         [Fact]
         public void WhenCallingCreateShouldCreateDatabaseFile()
         {
-            this.Repository.Create("reyna.db");
+            this.Repository.Create();
 
-            Assert.True(File.Exists("reyna.db"));
+            Assert.True(File.Exists(this.DatabasePath));
+        }
+
+        [Fact]
+        public void WhenCurrentDirectoryIsNotApplicationDirectoryThenCallingCreateShouldCreateDatabaseFileInApplicationDirectory()
+        {
+            var cd = Environment.CurrentDirectory;
+            var tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+
+            try
+            {
+                Directory.CreateDirectory(tempPath);
+                Environment.CurrentDirectory = tempPath;
+                this.Repository.Create();
+
+                Assert.False(File.Exists(Path.Combine(tempPath, "reyna.db")));
+                Assert.True(File.Exists(this.DatabasePath));
+            }
+            finally
+            {
+                Environment.CurrentDirectory = cd;
+                Directory.Delete(tempPath, true);
+            }
         }
 
         [Fact]
         public void WhenCallingCreateShouldCreateDatabaseFileAndTables()
         {
-            this.Repository.Create("reyna.db");
+            this.Repository.Create();
             
             int nonSystemtTablesCount = ExecuteScalar("SELECT count(1) FROM sqlite_master WHERE type='table' AND name not like 'sqlite?_%' escape '?'");
             int mesageTableCount = ExecuteScalar("SELECT count(1) FROM sqlite_master WHERE type='table' AND name = 'Message'");
             int headerTableCount = ExecuteScalar("SELECT count(1) FROM sqlite_master WHERE type='table' AND name = 'Header'");
 
-            Assert.True(File.Exists("reyna.db"));
+            Assert.True(File.Exists(this.DatabasePath));
             Assert.Equal(2, nonSystemtTablesCount);
             Assert.Equal(1, mesageTableCount);
             Assert.Equal(1, headerTableCount);
@@ -65,7 +97,7 @@ using System.Collections.Generic;
         {
             var message = this.GetMessage("http://HOST.com:9080/home", "{\"body\": body}");
 
-            this.Repository.Create("reyna.db");
+            this.Repository.Create();
             this.Repository.Enqueue(message);
 
             int mesageRowsCount = ExecuteScalar("SELECT COUNT(1) FROM Message");
@@ -88,7 +120,7 @@ using System.Collections.Generic;
             var message2 = this.GetMessage("http://HOST.com:9080/home2", "body");
             var message3 = this.GetMessage("http://HOST.com:9080/home3", "");
 
-            this.Repository.Create("reyna.db");
+            this.Repository.Create();
             this.Repository.Enqueue(message1);
             this.Repository.Enqueue(message2);
             this.Repository.Enqueue(message3);
@@ -108,7 +140,7 @@ using System.Collections.Generic;
             var message2 = this.GetMessage("http://HOST.com:9080/home2", "body");
             var message3 = this.GetMessage("http://HOST.com:9080/home3", "");
 
-            this.Repository.Create("reyna.db");
+            this.Repository.Create();
             this.Repository.Enqueue(message1);
             this.Repository.Enqueue(message2);
             this.Repository.Enqueue(message3);
@@ -147,7 +179,8 @@ using System.Collections.Generic;
         
         private int ExecuteScalar(string sql)
         {
-            using (var connection = new SQLiteConnection("Data Source=reyna.db"))
+            var connectionString = string.Format("Data Source={0}", this.DatabasePath);
+            using (var connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
                 using (var command = new SQLiteCommand(sql, connection))
@@ -161,7 +194,8 @@ using System.Collections.Generic;
         {
             var messages = new List<IMessage>();
 
-            using (var connection = new SQLiteConnection("Data Source=reyna.db"))
+            var connectionString = string.Format("Data Source={0}", this.DatabasePath);
+            using (var connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
                 using (var command = new SQLiteCommand("SELECT * FROM Message", connection))

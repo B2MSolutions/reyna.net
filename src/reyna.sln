@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "reyna.Facts", "reyna.Facts\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "reyna.Integration.Facts", "reyna.Integration.Facts\reyna.Integration.Facts.csproj", "{B7E0C6A1-9CAC-41DF-820D-AE4D8D1A6379}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "reyna.Integration.app", "reyna.Integration.app\reyna.Integration.app.csproj", "{A49D4A74-ABB1-469F-838D-D2062D363F28}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +36,12 @@ Global
 		{B7E0C6A1-9CAC-41DF-820D-AE4D8D1A6379}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7E0C6A1-9CAC-41DF-820D-AE4D8D1A6379}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7E0C6A1-9CAC-41DF-820D-AE4D8D1A6379}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A49D4A74-ABB1-469F-838D-D2062D363F28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A49D4A74-ABB1-469F-838D-D2062D363F28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A49D4A74-ABB1-469F-838D-D2062D363F28}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{A49D4A74-ABB1-469F-838D-D2062D363F28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A49D4A74-ABB1-469F-838D-D2062D363F28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A49D4A74-ABB1-469F-838D-D2062D363F28}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

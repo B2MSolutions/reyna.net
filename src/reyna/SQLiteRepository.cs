@@ -7,17 +7,21 @@
     using System.Net;
     using System.Text;
     using reyna.Interfaces;
+using System.Reflection;
 
     public class SQLiteRepository : IRepository
     {
-        public bool DoesNotExist(string name)
+        public bool DoesNotExist
         {
-            return !File.Exists(name);
+            get
+            {
+                return !File.Exists(this.DatabasePath);
+            }
         }
 
-        public void Create(string name)
+        public void Create()
         {
-            SQLiteConnection.CreateFile(name);
+            SQLiteConnection.CreateFile(this.DatabasePath);
 
             this.DatabaseAction((t) =>
                 {
@@ -62,7 +66,8 @@
 
             IMessage message = null;
 
-            using (var connection = new SQLiteConnection("Data Source=reyna.db"))
+            var connectionString = string.Format("Data Source={0}", this.DatabasePath);
+            using (var connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
                 using (var command = new SQLiteCommand("SELECT * FROM Message ORDER BY id ASC LIMIT 1", connection))
@@ -161,16 +166,31 @@
 
         private IMessage AssignIdTo(IMessage message, int id)
         {
-            // TODO - remove Cloneable interface from Message. this is the only place where we need it.
-            var clone = message.Clone() as Message;
-            clone.Id = id;
+            var clone = new Message(message.Url, message.Body)
+            {
+                Id = id
+            };
+            foreach (string key in message.Headers)
+            {
+                clone.Headers.Add(key, message.Headers[key]);
+            }
 
             return clone;
         }
 
+        private string DatabasePath
+        {
+            get
+            {
+                var assemblyFile = new FileInfo(Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
+                return Path.Combine(assemblyFile.DirectoryName, "reyna.db");
+            }
+        }
+
         private DbConnection CreateConnection()
         {
-            var connection = new SQLiteConnection("Data Source=reyna.db");
+            var connectionString = string.Format("Data Source={0}", this.DatabasePath);
+            var connection = new SQLiteConnection(connectionString);
             connection.Open();
             return connection;
         }

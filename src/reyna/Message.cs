@@ -21,19 +21,5 @@
         public Uri Url { get; private set; }
 
         public WebHeaderCollection Headers { get; private set; }
-
-        public object Clone()
-        {
-            var clone = new Message(this.Url, this.Body)
-            {
-                Id = this.Id
-            };
-            foreach(string key in this.Headers)
-            {
-                clone.Headers.Add(key, this.Headers[key]);
-            }
-
-            return clone;
-        }
     }
 }

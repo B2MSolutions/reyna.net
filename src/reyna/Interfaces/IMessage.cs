@@ -3,7 +3,7 @@
     using System;
     using System.Net;
 
-    public interface IMessage : ICloneable
+    public interface IMessage
     {
         int Id { get; }
 

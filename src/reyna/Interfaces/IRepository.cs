@@ -2,9 +2,9 @@
 {
     public interface IRepository
     {
-        bool DoesNotExist(string name);
+        bool DoesNotExist { get; }
 
-        void Create(string name);
+        void Create();
 
         IMessage Enqueue(IMessage message);
 

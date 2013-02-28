@@ -4,8 +4,6 @@
 
     public class Store : IStore
     {
-        private const string DatabaseName = "reyna.db";
-
         public Store()
         {
             this.Repository = new SQLiteRepository();
@@ -15,9 +13,9 @@
 
         public void Put(IMessage message)
         {
-            if (this.Repository.DoesNotExist(Store.DatabaseName))
+            if (this.Repository.DoesNotExist)
             {
-                this.Repository.Create(Store.DatabaseName);
+                this.Repository.Create();
             }
 
             this.Repository.Enqueue(message);
