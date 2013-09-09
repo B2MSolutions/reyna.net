@@ -1,14 +1,12 @@
 ﻿namespace Reyna.Facts
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
-    using System.Text;
-    using Xunit.Extensions;
-    using Reyna.Interfaces;
     using Reyna.Extensions;
+    using Reyna.Interfaces;
     using Xunit;
+    using Xunit.Extensions;
 
     public class GivenAnHttpStatusCode
     {

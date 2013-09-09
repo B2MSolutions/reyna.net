@@ -1,8 +1,7 @@
 ﻿namespace Reyna.Facts
 {
-    using System.Net;
-    using Reyna.Interfaces;
     using Moq;
+    using Reyna.Interfaces;
     using Xunit;
 
     public class GivenAForward
