@@ -1,7 +1,7 @@
-﻿namespace reyna.Facts
+﻿namespace Reyna.Facts
 {
     using System.Net;
-    using reyna.Interfaces;
+    using Reyna.Interfaces;
     using Moq;
     using Xunit;
 

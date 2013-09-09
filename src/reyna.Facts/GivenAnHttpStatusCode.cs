@@ -1,4 +1,4 @@
-﻿namespace reyna.Facts
+﻿namespace Reyna.Facts
 {
     using System;
     using System.Collections.Generic;
@@ -6,8 +6,8 @@
     using System.Net;
     using System.Text;
     using Xunit.Extensions;
-    using reyna.Interfaces;
-    using reyna.Extensions;
+    using Reyna.Interfaces;
+    using Reyna.Extensions;
     using Xunit;
 
     public class GivenAnHttpStatusCode

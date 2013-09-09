@@ -12,7 +12,7 @@
     <ProjectGuid>{B7E0C6A1-9CAC-41DF-820D-AE4D8D1A6379}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>reyna.Integration.Facts</RootNamespace>
+    <RootNamespace>Reyna.Integration.Facts</RootNamespace>
     <AssemblyName>reyna.Integration.Facts</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

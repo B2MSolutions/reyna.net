@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CoverageSession xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Summary numSequencePoints="3" visitedSequencePoints="3" numBranchPoints="3" visitedBranchPoints="3" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="2" minCyclomaticComplexity="1" />
+  <Modules>
+    <Module skippedDueTo="Filter" hash="92-90-1B-0B-38-11-BB-A9-C7-77-7F-15-41-B2-D6-3E-F9-3D-57-AD">
+      <FullName>C:\Windows\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll</FullName>
+      <ModuleName>mscorlib</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="Filter" hash="F9-04-A8-31-CD-FB-23-72-95-63-5D-14-9A-A0-66-8E-7F-44-93-7A">
+      <FullName>C:\Windows\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089\sorttbls.nlp</FullName>
+      <ModuleName>mscorlib</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="Filter" hash="5B-93-0F-01-95-7C-B7-42-FC-A7-4E-A1-1F-B1-B3-89-0D-FA-4C-2A">
+      <FullName>C:\elemez-ce\tools\ThirdParty\xunit\1.9.1\xunit.console.x86.exe</FullName>
+      <ModuleName>xunit.console.x86</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="Filter" hash="6E-30-2E-50-36-FB-60-2C-8E-50-C0-83-54-8B-CC-EA-A8-91-B6-CC">
+      <FullName>C:\Windows\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089\sortkey.nlp</FullName>
+      <ModuleName>mscorlib</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="Filter" hash="F9-CD-14-96-3D-82-AF-12-BA-75-C1-9C-BC-84-5A-77-F3-7E-88-AB">
+      <FullName>C:\elemez-ce\tools\ThirdParty\xUnit\1.9.1\xunit.runner.utility.dll</FullName>
+      <ModuleName>xunit.runner.utility</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="Filter" hash="8D-C0-59-AA-D2-96-CC-93-F7-D8-84-E3-47-5F-FC-AF-A7-69-A9-8A">
+      <FullName>C:\Windows\assembly\GAC_MSIL\System\2.0.0.0__b77a5c561934e089\System.dll</FullName>
+      <ModuleName>System</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="Filter" hash="74-BB-68-C8-21-0A-F6-37-3C-46-B6-62-97-92-D2-23-92-D4-35-A2">
+      <FullName>C:\Windows\assembly\GAC_MSIL\System.Xml\2.0.0.0__b77a5c561934e089\System.Xml.dll</FullName>
+      <ModuleName>System.Xml</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="Filter" hash="B7-77-4C-7D-06-2B-5D-F7-0F-F3-73-C5-A7-4F-5C-55-A4-CE-B1-40">
+      <FullName>C:\Windows\assembly\GAC_32\System.Web\2.0.0.0__b03f5f7f11d50a3a\System.Web.dll</FullName>
+      <ModuleName>System.Web</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="Filter" hash="">
+      <FullName />
+      <ModuleName>xunit.runner.utility.{Dynamic}</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="Filter" hash="">
+      <FullName />
+      <ModuleName>xunit.runner.utility.{Dynamic}</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="Filter" hash="C9-9E-CD-25-91-A0-3C-D4-9D-F6-64-42-5E-C8-14-E7-98-5A-8D-03">
+      <FullName>C:\Users\Developer\AppData\Local\Temp\cdfd6e3a-6203-405b-bf26-fa9021dcd117\cdfd6e3a-6203-405b-bf26-fa9021dcd117\assembly\dl3\d6ad71e5\1cdcc781_b76dce01\xunit.DLL</FullName>
+      <ModuleName>xunit</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="Filter" hash="69-75-90-B1-4F-E6-85-E4-02-05-4A-7F-57-75-D3-03-2E-28-45-F1">
+      <FullName>C:\Users\Developer\AppData\Local\Temp\cdfd6e3a-6203-405b-bf26-fa9021dcd117\cdfd6e3a-6203-405b-bf26-fa9021dcd117\assembly\dl3\6f4b3e38\6a64d734_696ece01\ElemezTest.DLL</FullName>
+      <ModuleName>ElemezTest</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="Filter" hash="74-BB-68-C8-21-0A-F6-37-3C-46-B6-62-97-92-D2-23-92-D4-35-A2">
+      <FullName>C:\Windows\assembly\GAC_MSIL\System.Xml\2.0.0.0__b77a5c561934e089\System.Xml.dll</FullName>
+      <ModuleName>System.Xml</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="Filter" hash="B7-77-4C-7D-06-2B-5D-F7-0F-F3-73-C5-A7-4F-5C-55-A4-CE-B1-40">
+      <FullName>C:\Windows\assembly\GAC_32\System.Web\2.0.0.0__b03f5f7f11d50a3a\System.Web.dll</FullName>
+      <ModuleName>System.Web</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="Filter" hash="8D-C0-59-AA-D2-96-CC-93-F7-D8-84-E3-47-5F-FC-AF-A7-69-A9-8A">
+      <FullName>C:\Windows\assembly\GAC_MSIL\System\2.0.0.0__b77a5c561934e089\System.dll</FullName>
+      <ModuleName>System</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="Filter" hash="7F-B2-74-31-A3-46-DA-75-01-33-1E-67-E3-D9-BB-2A-EB-77-CB-3F">
+      <FullName>C:\Windows\assembly\GAC_MSIL\System.Configuration\2.0.0.0__b03f5f7f11d50a3a\System.Configuration.dll</FullName>
+      <ModuleName>System.Configuration</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="Filter" hash="7F-B2-74-31-A3-46-DA-75-01-33-1E-67-E3-D9-BB-2A-EB-77-CB-3F">
+      <FullName>C:\Windows\assembly\GAC_MSIL\System.Configuration\2.0.0.0__b03f5f7f11d50a3a\System.Configuration.dll</FullName>
+      <ModuleName>System.Configuration</ModuleName>
+      <Classes />
+    </Module>
+    <Module hash="F4-4A-A9-1B-E7-7F-88-AC-15-53-EE-51-EA-BB-6C-F1-8A-0D-99-CB">
+      <Summary numSequencePoints="3" visitedSequencePoints="3" numBranchPoints="3" visitedBranchPoints="3" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="2" minCyclomaticComplexity="1" />
+      <FullName>C:\Users\Developer\AppData\Local\Temp\cdfd6e3a-6203-405b-bf26-fa9021dcd117\cdfd6e3a-6203-405b-bf26-fa9021dcd117\assembly\dl3\efb4de50\f0b755e2_656ece01\ElemezServices.win32.DLL</FullName>
+      <ModuleName>ElemezServices.win32</ModuleName>
+      <Files>
+        <File uid="1" fullPath="C:\elemez-ce\src\ElemezServices\Citizen.cs" />
+      </Files>
+      <Classes>
+        <Class>
+          <Summary numSequencePoints="0" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+          <FullName>&lt;Module&gt;</FullName>
+          <Methods />
+        </Class>
+        <Class>
+          <Summary numSequencePoints="3" visitedSequencePoints="3" numBranchPoints="3" visitedBranchPoints="3" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="2" minCyclomaticComplexity="1" />
+          <FullName>ElemezServices.Citizen</FullName>
+          <Methods>
+            <Method visited="true" cyclomaticComplexity="1" sequenceCoverage="0" branchCoverage="0" isConstructor="false" isStatic="false" isGetter="true" isSetter="false">
+              <Summary numSequencePoints="0" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" />
+              <MetadataToken>100663297</MetadataToken>
+              <Name>System.String ElemezServices.Citizen::get_Token()</Name>
+              <SequencePoints />
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="1" ordinal="0" offset="0" />
+            </Method>
+            <Method visited="true" cyclomaticComplexity="1" sequenceCoverage="0" branchCoverage="0" isConstructor="false" isStatic="false" isGetter="false" isSetter="true">
+              <Summary numSequencePoints="0" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" />
+              <MetadataToken>100663298</MetadataToken>
+              <Name>System.Void ElemezServices.Citizen::set_Token(System.String)</Name>
+              <SequencePoints />
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="2" ordinal="0" offset="0" />
+            </Method>
+            <Method visited="true" cyclomaticComplexity="2" sequenceCoverage="100" branchCoverage="100" isConstructor="false" isStatic="false" isGetter="false" isSetter="false">
+              <Summary numSequencePoints="3" visitedSequencePoints="3" numBranchPoints="3" visitedBranchPoints="3" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" />
+              <MetadataToken>100663299</MetadataToken>
+              <Name>System.Int32 ElemezServices.Citizen::UnTested(System.Int32,System.Int32)</Name>
+              <FileRef uid="1" />
+              <SequencePoints>
+                <SequencePoint vc="2" uspid="3" ordinal="0" offset="0" sl="9" sc="13" el="9" ec="24" />
+                <SequencePoint vc="1" uspid="4" ordinal="1" offset="4" sl="11" sc="17" el="11" ec="30" />
+                <SequencePoint vc="1" uspid="5" ordinal="2" offset="8" sl="14" sc="13" el="14" ec="22" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="1" uspid="6" ordinal="0" offset="2" path="0" />
+                <BranchPoint vc="1" uspid="7" ordinal="1" offset="2" path="1" />
+              </BranchPoints>
+              <MethodPoint xsi:type="SequencePoint" vc="2" uspid="3" ordinal="0" offset="0" sl="9" sc="13" el="9" ec="24" />
+            </Method>
+            <Method visited="true" cyclomaticComplexity="1" sequenceCoverage="0" branchCoverage="0" isConstructor="true" isStatic="false" isGetter="false" isSetter="false">
+              <Summary numSequencePoints="0" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" />
+              <MetadataToken>100663300</MetadataToken>
+              <Name>System.Void ElemezServices.Citizen::.ctor()</Name>
+              <SequencePoints />
+              <BranchPoints />
+              <MethodPoint vc="4" uspid="8" ordinal="0" offset="0" />
+            </Method>
+          </Methods>
+        </Class>
+      </Classes>
+    </Module>
+  </Modules>
+</CoverageSession>

@@ -1,6 +1,6 @@
-﻿namespace reyna
+﻿namespace Reyna
 {
-    using reyna.Interfaces;
+    using Reyna.Interfaces;
 
     public class Store : IStore
     {

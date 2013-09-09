@@ -1,8 +1,8 @@
-﻿namespace reyna.Integration.Facts
+﻿namespace Reyna.Integration.Facts
 {
     using System;
     using Xunit;
-    using reyna.Interfaces;
+    using Reyna.Interfaces;
 
     public class GivenAHttpClient
     {
@@ -10,7 +10,7 @@
         public void WhenCallingPost()
         {
             var httpClient = new HttpClient();
-            var message = new Message(new Uri("https://api.mprodigy.com/api/1/geo"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
+            var message = new Message(new Uri("http://httpbin.org/post"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
             message.Headers.Add("content-type", "application/json");
             message.Headers.Add("token", "6dec1821543f4a82a845f81109a47aee");
             message.Headers.Add("id", "0123456789");
@@ -24,7 +24,7 @@
         public void WhenCallingPost3()
         {
             var httpClient = new HttpClient();
-            var message = new Message(new Uri("https://api.mprodigy.com/api/3/geo"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
+            var message = new Message(new Uri("http://httpbin.org/post2"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
             message.Headers.Add("content-type", "application/json");
             message.Headers.Add("token", "6dec1821543f4a82a845f81109a47aee");
             message.Headers.Add("id", "0123456789");

@@ -12,7 +12,7 @@
     <ProjectGuid>{EB1D70A1-9BA8-4FAF-AC54-B3E6EBEADE7F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>reyna.Win32</RootNamespace>
+    <RootNamespace>Reyna.Win32</RootNamespace>
     <AssemblyName>reyna.Win32</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -49,6 +49,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\reyna\AcceptAllCertificatePolicy.cs">
+      <Link>AcceptAllCertificatePolicy.cs</Link>
+    </Compile>
     <Compile Include="..\reyna\Extensions\HttpStatusCodeExtensions.cs">
       <Link>Extensions\HttpStatusCodeExtensions.cs</Link>
     </Compile>

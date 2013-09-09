@@ -1,9 +1,9 @@
-﻿namespace reyna
+﻿namespace Reyna
 {
     using System;
     using System.Collections.Generic;
     using System.Net;
-    using reyna.Interfaces;
+    using Reyna.Interfaces;
 
     public class Message : IMessage
     {

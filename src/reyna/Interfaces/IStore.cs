@@ -1,4 +1,4 @@
-﻿namespace reyna.Interfaces
+﻿namespace Reyna.Interfaces
 {
     public interface IStore
     {

@@ -1,4 +1,4 @@
-﻿namespace reyna
+﻿namespace Reyna
 {
     using System;
     using System.Data.Common;
@@ -7,7 +7,7 @@
     using System.Net;
     using System.Reflection;
     using System.Text;
-    using reyna.Interfaces;
+    using Reyna.Interfaces;
 
     internal class SQLiteRepository : IRepository
     {
@@ -23,6 +23,15 @@
             get
             {
                 return !File.Exists(this.DatabasePath);
+            }
+        }
+
+        private string DatabasePath
+        {
+            get
+            {
+                var assemblyFile = new FileInfo(Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
+                return Path.Combine(assemblyFile.DirectoryName, "reyna.db");
             }
         }
 
@@ -88,15 +97,6 @@
             return clone;
         }
 
-        private string DatabasePath
-        {
-            get
-            {
-                var assemblyFile = new FileInfo(Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
-                return Path.Combine(assemblyFile.DirectoryName, "reyna.db");
-            }
-        }
-
         private DbConnection CreateConnection()
         {
             var connectionString = string.Format("Data Source={0}", this.DatabasePath);
@@ -117,7 +117,7 @@
             command.Transaction = transaction;
             command.Connection = transaction.Connection;
 
-            foreach(var parameter in parameters)
+            foreach (var parameter in parameters)
             {
                 command.Parameters.Add(parameter);
             }

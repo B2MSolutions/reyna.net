@@ -7,7 +7,7 @@
     <ProjectGuid>{A49D4A74-ABB1-469F-838D-D2062D363F28}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>reyna.Integration.app</RootNamespace>
+    <RootNamespace>Reyna.Integration.app</RootNamespace>
     <AssemblyName>reyna.Integration.app</AssemblyName>
     <ProjectTypeGuids>{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PlatformFamilyName>WindowsCE</PlatformFamilyName>
@@ -58,9 +58,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\reyna\reyna.csproj">
+    <ProjectReference Include="..\reyna\Reyna.csproj">
       <Project>{8BD347B8-E0A2-4BE0-96F2-EAC42CB5DC27}</Project>
-      <Name>reyna</Name>
+      <Name>Reyna</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

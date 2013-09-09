@@ -1,29 +1,11 @@
-﻿namespace reyna
+﻿namespace Reyna
 {
-    using System.Net;
-    using System.Text;
-    using reyna.Interfaces;
-    using Extensions;
-    using System.Security.Cryptography.X509Certificates;
-    using System.IO;
     using System;
-
-    // TODO
-    // split into separate class (make internal)
-
-    // TODO
-    // unit testing by wrapup httpWebRequest and HttpWebResponse instead of integration facts
-    public class AcceptAllCertificatePolicy : ICertificatePolicy
-    {
-        public bool CheckValidationResult(
-            ServicePoint srvPoint,
-            X509Certificate certificate,
-            WebRequest request,
-            int certificateProblem)
-        {
-            return true;
-        }
-    }
+    using System.Net;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Text;
+    using Extensions;
+    using Reyna.Interfaces;
 
     internal class HttpClient : IHttpClient
     {

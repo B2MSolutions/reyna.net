@@ -3,3 +3,4 @@
 *.sln.cache
 src/**/bin/*
 src/**/obj/*
+StyleCop.Cache

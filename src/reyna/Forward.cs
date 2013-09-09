@@ -1,6 +1,6 @@
-﻿namespace reyna
+﻿namespace Reyna
 {
-    using reyna.Interfaces;
+    using Reyna.Interfaces;
 
     internal class Forward : IForward
     {
@@ -18,7 +18,7 @@
         public void Send()
         {
             IMessage message = null;
-            while((message = this.Repository.Peek()) != null)
+            while ((message = this.Repository.Peek()) != null)
             {
                 if (this.HttpClient.Post(message) == Result.TemporaryError)
                 {
@@ -27,24 +27,6 @@
 
                 this.Repository.Dequeue();
             }
-
-            //IMessage message = null;
-            //do
-            //{
-            //    message = this.Repository.Peek();
-            //    if (message == null)
-            //    {
-            //        return;
-            //    }
-
-            //    if (this.HttpClient.Put(message) == Result.TemporaryError)
-            //    {
-            //        return;
-            //    }
-
-            //    this.Repository.Dequeue();
-
-            //} while (message != null);
         }
     }
 }

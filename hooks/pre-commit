@@ -1,0 +1,5 @@
+#!/bin/bash
+echo running pre commit hook
+
+cmd "/c /reyna.net\build\build.bat"
+

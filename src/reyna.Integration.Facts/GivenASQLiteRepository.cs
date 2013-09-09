@@ -1,9 +1,9 @@
-﻿namespace reyna.Integration.Facts
+﻿namespace Reyna.Integration.Facts
 {
     using System;
     using System.Data.SQLite;
     using System.IO;
-    using reyna.Interfaces;
+    using Reyna.Interfaces;
     using Xunit;
 using System.Collections.Generic;
     using System.Reflection;

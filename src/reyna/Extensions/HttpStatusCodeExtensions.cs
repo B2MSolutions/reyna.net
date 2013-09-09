@@ -1,7 +1,7 @@
-﻿namespace reyna.Extensions
+﻿namespace Reyna.Extensions
 {
     using System.Net;
-    using reyna.Interfaces;
+    using Reyna.Interfaces;
 
     public static class HttpStatusCodeExtensions
     {
@@ -13,16 +13,18 @@
             {
                 return Result.Ok;
             }
+
             if (statusCode >= 300 && statusCode < 500)
             {
                 return Result.PermanentError;
             }
+
             if (statusCode >= 500 && statusCode < 600)
             {
                 return Result.TemporaryError;
             }
 
-		    return Result.PermanentError;
+            return Result.PermanentError;
         }
     }
 }

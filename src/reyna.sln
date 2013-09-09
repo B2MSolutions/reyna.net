@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "reyna", "reyna\reyna.csproj", "{8BD347B8-E0A2-4BE0-96F2-EAC42CB5DC27}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reyna", "reyna\Reyna.csproj", "{8BD347B8-E0A2-4BE0-96F2-EAC42CB5DC27}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "reyna.Win32", "reyna.Win32\reyna.Win32.csproj", "{EB1D70A1-9BA8-4FAF-AC54-B3E6EBEADE7F}"
 EndProject

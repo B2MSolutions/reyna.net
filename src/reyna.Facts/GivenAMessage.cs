@@ -1,4 +1,4 @@
-﻿namespace reyna.Facts
+﻿namespace Reyna.Facts
 {
     using System;
     using Xunit;

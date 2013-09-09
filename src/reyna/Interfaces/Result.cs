@@ -1,8 +1,8 @@
-﻿namespace reyna.Interfaces
+﻿namespace Reyna.Interfaces
 {
     public enum Result
     {
-		Ok,
+        Ok,
         PermanentError,
         TemporaryError
     }

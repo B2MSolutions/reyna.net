@@ -11,8 +11,8 @@
     <ProjectGuid>{8BD347B8-E0A2-4BE0-96F2-EAC42CB5DC27}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>reyna</RootNamespace>
-    <AssemblyName>reyna</AssemblyName>
+    <RootNamespace>Reyna</RootNamespace>
+    <AssemblyName>Reyna</AssemblyName>
     <ProjectTypeGuids>{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PlatformFamilyName>PocketPC</PlatformFamilyName>
     <PlatformID>4118C335-430C-497f-BE48-11C3316B135E</PlatformID>
@@ -20,6 +20,8 @@
     <DeployDirSuffix>reyna</DeployDirSuffix>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <NativePlatformName>Windows Mobile 5.0 Pocket PC SDK</NativePlatformName>
+    <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
+    <StyleCopOverrideSettingsFile>..\..\tools\StyleCop\Settings.StyleCop</StyleCopOverrideSettingsFile>
     <FormFactorID>
     </FormFactorID>
   </PropertyGroup>
@@ -61,6 +63,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AcceptAllCertificatePolicy.cs" />
     <Compile Include="Extensions\HttpStatusCodeExtensions.cs" />
     <Compile Include="Forward.cs" />
     <Compile Include="HttpClient.cs" />
@@ -82,6 +85,7 @@
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <Import Project="..\..\tools\StyleCop\Microsoft.StyleCop.targets" />
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">

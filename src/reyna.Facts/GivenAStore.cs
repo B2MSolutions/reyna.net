@@ -1,7 +1,7 @@
-﻿namespace reyna.Facts
+﻿namespace Reyna.Facts
 {
     using Moq;
-    using reyna.Interfaces;
+    using Reyna.Interfaces;
     using Xunit;
 
     public class GivenAStore

@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CoverageSession xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Summary numSequencePoints="20" visitedSequencePoints="17" numBranchPoints="18" visitedBranchPoints="14" sequenceCoverage="85" branchCoverage="77.78" maxCyclomaticComplexity="5" minCyclomaticComplexity="1" />
+  <Modules>
+    <Module skippedDueTo="Filter" hash="F2-B7-6C-91-B2-2A-27-1D-84-DA-D8-01-19-1B-74-D3-A8-5B-ED-15">
+      <FullName>C:\Windows\Microsoft.Net\assembly\GAC_32\mscorlib\v4.0_4.0.0.0__b77a5c561934e089\mscorlib.dll</FullName>
+      <ModuleName>mscorlib</ModuleName>
+      <Classes />
+    </Module>
+    <Module hash="8D-12-08-0D-1C-B4-CF-39-8C-5D-12-63-E9-70-23-A3-D5-4E-72-61">
+      <Summary numSequencePoints="20" visitedSequencePoints="17" numBranchPoints="18" visitedBranchPoints="14" sequenceCoverage="85" branchCoverage="77.78" maxCyclomaticComplexity="5" minCyclomaticComplexity="1" />
+      <FullName>C:\elemez-ce\tools\ThirdParty\opencover.4.5.1604\Samples\x86\OpenCover.Simple.Target.exe</FullName>
+      <ModuleName>OpenCover.Simple.Target</ModuleName>
+      <Files>
+        <File uid="1" fullPath="c:\Projects\opencover.git\working\main\OpenCover.Simple.Target\Other.cs" />
+        <File uid="2" fullPath="c:\Projects\opencover.git\working\main\OpenCover.Simple.Target\Program.cs" />
+      </Files>
+      <Classes>
+        <Class>
+          <Summary numSequencePoints="0" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+          <FullName>&lt;Module&gt;</FullName>
+          <Methods />
+        </Class>
+        <Class>
+          <Summary numSequencePoints="3" visitedSequencePoints="0" numBranchPoints="2" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" />
+          <FullName>Namespace.Other</FullName>
+          <Methods>
+            <Method visited="false" cyclomaticComplexity="1" sequenceCoverage="0" branchCoverage="0" isConstructor="false" isStatic="false" isGetter="true" isSetter="false">
+              <Summary numSequencePoints="0" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" />
+              <MetadataToken>100663298</MetadataToken>
+              <Name>System.Int32 Namespace.Other::get_Data()</Name>
+              <SequencePoints />
+              <BranchPoints />
+              <MethodPoint vc="0" uspid="1" ordinal="0" offset="0" />
+            </Method>
+            <Method visited="false" cyclomaticComplexity="1" sequenceCoverage="0" branchCoverage="0" isConstructor="false" isStatic="false" isGetter="false" isSetter="true">
+              <Summary numSequencePoints="0" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" />
+              <MetadataToken>100663299</MetadataToken>
+              <Name>System.Void Namespace.Other::set_Data(System.Int32)</Name>
+              <SequencePoints />
+              <BranchPoints />
+              <MethodPoint vc="0" uspid="2" ordinal="0" offset="0" />
+            </Method>
+            <Method visited="false" cyclomaticComplexity="1" sequenceCoverage="0" branchCoverage="0" isConstructor="false" isStatic="false" isGetter="true" isSetter="false">
+              <Summary numSequencePoints="1" visitedSequencePoints="0" numBranchPoints="1" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" />
+              <MetadataToken>100663300</MetadataToken>
+              <Name>System.Int32 Namespace.Other::get_X()</Name>
+              <FileRef uid="1" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="3" ordinal="0" offset="0" sl="18" sc="30" el="18" ec="40" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint xsi:type="SequencePoint" vc="0" uspid="3" ordinal="0" offset="0" sl="18" sc="30" el="18" ec="40" />
+            </Method>
+            <Method visited="false" cyclomaticComplexity="1" sequenceCoverage="0" branchCoverage="0" isConstructor="true" isStatic="false" isGetter="false" isSetter="false">
+              <Summary numSequencePoints="2" visitedSequencePoints="0" numBranchPoints="1" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" />
+              <MetadataToken>100663297</MetadataToken>
+              <Name>System.Void Namespace.Other::.ctor()</Name>
+              <FileRef uid="1" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="4" ordinal="0" offset="0" sl="10" sc="9" el="10" ec="23" />
+                <SequencePoint vc="0" uspid="5" ordinal="1" offset="6" sl="12" sc="9" el="12" ec="10" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint xsi:type="SequencePoint" vc="0" uspid="4" ordinal="0" offset="0" sl="10" sc="9" el="10" ec="23" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="14" visitedSequencePoints="14" numBranchPoints="11" visitedBranchPoints="9" sequenceCoverage="100" branchCoverage="81.82" maxCyclomaticComplexity="5" minCyclomaticComplexity="1" />
+          <FullName>OpenCover.Simple.Target.Program</FullName>
+          <Methods>
+            <Method visited="true" cyclomaticComplexity="5" sequenceCoverage="100" branchCoverage="77.78" isConstructor="false" isStatic="true" isGetter="false" isSetter="false">
+              <Summary numSequencePoints="12" visitedSequencePoints="12" numBranchPoints="9" visitedBranchPoints="7" sequenceCoverage="100" branchCoverage="77.78" maxCyclomaticComplexity="5" minCyclomaticComplexity="5" />
+              <MetadataToken>100663301</MetadataToken>
+              <Name>System.Void OpenCover.Simple.Target.Program::Main(System.String[])</Name>
+              <FileRef uid="2" />
+              <SequencePoints>
+                <SequencePoint vc="1" uspid="6" ordinal="0" offset="0" sl="19" sc="13" el="19" ec="121" />
+                <SequencePoint vc="1" uspid="7" ordinal="1" offset="30" sl="22" sc="13" el="22" ec="28" />
+                <SequencePoint vc="1" uspid="8" ordinal="2" offset="38" sl="25" sc="13" el="25" ec="94" />
+                <SequencePoint vc="1" uspid="9" ordinal="3" offset="68" sl="28" sc="13" el="28" ec="36" />
+                <SequencePoint vc="1" uspid="10" ordinal="4" offset="76" sl="30" sc="18" el="30" ec="28" />
+                <SequencePoint vc="1000" uspid="11" ordinal="5" offset="81" sl="32" sc="22" el="32" ec="32" />
+                <SequencePoint vc="12000" uspid="12" ordinal="6" offset="86" sl="34" sc="21" el="34" ec="53" />
+                <SequencePoint vc="12000" uspid="13" ordinal="7" offset="99" sl="32" sc="41" el="32" ec="44" />
+                <SequencePoint vc="13000" uspid="14" ordinal="8" offset="105" sl="32" sc="33" el="32" ec="39" />
+                <SequencePoint vc="1000" uspid="15" ordinal="9" offset="111" sl="30" sc="39" el="30" ec="42" />
+                <SequencePoint vc="1001" uspid="16" ordinal="10" offset="117" sl="30" sc="29" el="30" ec="37" />
+                <SequencePoint vc="1" uspid="17" ordinal="11" offset="126" sl="38" sc="9" el="38" ec="10" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="1" uspid="18" ordinal="0" offset="5" path="0" />
+                <BranchPoint vc="0" uspid="19" ordinal="1" offset="5" path="1" />
+                <BranchPoint vc="1" uspid="20" ordinal="2" offset="43" path="0" />
+                <BranchPoint vc="0" uspid="21" ordinal="3" offset="43" path="1" />
+                <BranchPoint vc="1000" uspid="22" ordinal="4" offset="109" path="0" />
+                <BranchPoint vc="12000" uspid="23" ordinal="5" offset="109" path="1" />
+                <BranchPoint vc="1" uspid="24" ordinal="6" offset="124" path="0" />
+                <BranchPoint vc="1000" uspid="25" ordinal="7" offset="124" path="1" />
+              </BranchPoints>
+              <MethodPoint xsi:type="SequencePoint" vc="1" uspid="6" ordinal="0" offset="0" sl="19" sc="13" el="19" ec="121" />
+            </Method>
+            <Method visited="false" cyclomaticComplexity="1" sequenceCoverage="0" branchCoverage="0" isConstructor="true" isStatic="false" isGetter="false" isSetter="false">
+              <Summary numSequencePoints="0" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" />
+              <MetadataToken>100663302</MetadataToken>
+              <Name>System.Void OpenCover.Simple.Target.Program::.ctor()</Name>
+              <SequencePoints />
+              <BranchPoints />
+              <MethodPoint vc="0" uspid="26" ordinal="0" offset="0" />
+            </Method>
+            <Method visited="true" cyclomaticComplexity="1" sequenceCoverage="100" branchCoverage="100" isConstructor="false" isStatic="true" isGetter="false" isSetter="false">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="1" visitedBranchPoints="1" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" />
+              <MetadataToken>100663303</MetadataToken>
+              <Name>System.Func`2&lt;System.Func`2&lt;System.Func`2&lt;System.Int32,System.Int32&gt;,System.Func`2&lt;System.Int32,System.Int32&gt;&gt;,System.Func`2&lt;System.Int32,System.Int32&gt;&gt; OpenCover.Simple.Target.Program::&lt;Main&gt;b__0(OpenCover.Simple.Target.Program/SelfApplicable`1&lt;System.Func`2&lt;System.Func`2&lt;System.Func`2&lt;System.Int32,System.Int32&gt;,System.Func`2&lt;System.Int32,System.Int32&gt;&gt;,System.Func`2&lt;System.Int32,System.Int32&gt;&gt;&gt;)</Name>
+              <FileRef uid="2" />
+              <SequencePoints>
+                <SequencePoint vc="78001" uspid="27" ordinal="0" offset="13" sl="19" sc="97" el="19" ec="120" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="78001" uspid="28" ordinal="0" offset="0" />
+            </Method>
+            <Method visited="true" cyclomaticComplexity="1" sequenceCoverage="100" branchCoverage="100" isConstructor="false" isStatic="true" isGetter="false" isSetter="false">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="1" visitedBranchPoints="1" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" />
+              <MetadataToken>100663304</MetadataToken>
+              <Name>System.Func`2&lt;System.Int32,System.Int32&gt; OpenCover.Simple.Target.Program::&lt;Main&gt;b__3(System.Func`2&lt;System.Int32,System.Int32&gt;)</Name>
+              <FileRef uid="2" />
+              <SequencePoints>
+                <SequencePoint vc="78000" uspid="29" ordinal="0" offset="13" sl="25" sc="61" el="25" ec="93" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="78000" uspid="30" ordinal="0" offset="0" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="0" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+          <FullName>OpenCover.Simple.Target.Program/SelfApplicable`1</FullName>
+          <Methods>
+            <Method visited="false" cyclomaticComplexity="0" sequenceCoverage="0" branchCoverage="0" isConstructor="true" isStatic="false" isGetter="false" isSetter="false">
+              <Summary numSequencePoints="0" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" />
+              <MetadataToken>100663305</MetadataToken>
+              <Name>System.Void OpenCover.Simple.Target.Program/SelfApplicable`1::.ctor(System.Object,System.IntPtr)</Name>
+              <SequencePoints />
+              <BranchPoints />
+              <MethodPoint vc="0" uspid="31" ordinal="0" offset="0" />
+            </Method>
+            <Method visited="false" cyclomaticComplexity="0" sequenceCoverage="0" branchCoverage="0" isConstructor="false" isStatic="false" isGetter="false" isSetter="false">
+              <Summary numSequencePoints="0" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" />
+              <MetadataToken>100663306</MetadataToken>
+              <Name>T OpenCover.Simple.Target.Program/SelfApplicable`1::Invoke(OpenCover.Simple.Target.Program/SelfApplicable`1&lt;T&gt;)</Name>
+              <SequencePoints />
+              <BranchPoints />
+              <MethodPoint vc="0" uspid="32" ordinal="0" offset="0" />
+            </Method>
+            <Method visited="false" cyclomaticComplexity="0" sequenceCoverage="0" branchCoverage="0" isConstructor="false" isStatic="false" isGetter="false" isSetter="false">
+              <Summary numSequencePoints="0" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" />
+              <MetadataToken>100663307</MetadataToken>
+              <Name>System.IAsyncResult OpenCover.Simple.Target.Program/SelfApplicable`1::BeginInvoke(OpenCover.Simple.Target.Program/SelfApplicable`1&lt;T&gt;,System.AsyncCallback,System.Object)</Name>
+              <SequencePoints />
+              <BranchPoints />
+              <MethodPoint vc="0" uspid="33" ordinal="0" offset="0" />
+            </Method>
+            <Method visited="false" cyclomaticComplexity="0" sequenceCoverage="0" branchCoverage="0" isConstructor="false" isStatic="false" isGetter="false" isSetter="false">
+              <Summary numSequencePoints="0" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" />
+              <MetadataToken>100663308</MetadataToken>
+              <Name>T OpenCover.Simple.Target.Program/SelfApplicable`1::EndInvoke(System.IAsyncResult)</Name>
+              <SequencePoints />
+              <BranchPoints />
+              <MethodPoint vc="0" uspid="34" ordinal="0" offset="0" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="1" visitedBranchPoints="1" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" />
+          <FullName>OpenCover.Simple.Target.Program/&lt;&gt;c__DisplayClass7</FullName>
+          <Methods>
+            <Method visited="true" cyclomaticComplexity="1" sequenceCoverage="0" branchCoverage="0" isConstructor="true" isStatic="false" isGetter="false" isSetter="false">
+              <Summary numSequencePoints="0" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" />
+              <MetadataToken>100663309</MetadataToken>
+              <Name>System.Void OpenCover.Simple.Target.Program/&lt;&gt;c__DisplayClass7::.ctor()</Name>
+              <SequencePoints />
+              <BranchPoints />
+              <MethodPoint vc="78001" uspid="35" ordinal="0" offset="0" />
+            </Method>
+            <Method visited="true" cyclomaticComplexity="1" sequenceCoverage="100" branchCoverage="100" isConstructor="false" isStatic="false" isGetter="false" isSetter="false">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="1" visitedBranchPoints="1" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" />
+              <MetadataToken>100663310</MetadataToken>
+              <Name>System.Func`2&lt;System.Int32,System.Int32&gt; OpenCover.Simple.Target.Program/&lt;&gt;c__DisplayClass7::&lt;Main&gt;b__1(System.Func`2&lt;System.Func`2&lt;System.Int32,System.Int32&gt;,System.Func`2&lt;System.Int32,System.Int32&gt;&gt;)</Name>
+              <FileRef uid="2" />
+              <SequencePoints>
+                <SequencePoint vc="78001" uspid="36" ordinal="0" offset="20" sl="19" sc="102" el="19" ec="120" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="78001" uspid="37" ordinal="0" offset="0" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="1" visitedBranchPoints="1" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" />
+          <FullName>OpenCover.Simple.Target.Program/&lt;&gt;c__DisplayClass7/&lt;&gt;c__DisplayClass9</FullName>
+          <Methods>
+            <Method visited="true" cyclomaticComplexity="1" sequenceCoverage="0" branchCoverage="0" isConstructor="true" isStatic="false" isGetter="false" isSetter="false">
+              <Summary numSequencePoints="0" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" />
+              <MetadataToken>100663311</MetadataToken>
+              <Name>System.Void OpenCover.Simple.Target.Program/&lt;&gt;c__DisplayClass7/&lt;&gt;c__DisplayClass9::.ctor()</Name>
+              <SequencePoints />
+              <BranchPoints />
+              <MethodPoint vc="78001" uspid="38" ordinal="0" offset="0" />
+            </Method>
+            <Method visited="true" cyclomaticComplexity="1" sequenceCoverage="100" branchCoverage="100" isConstructor="false" isStatic="false" isGetter="false" isSetter="false">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="1" visitedBranchPoints="1" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" />
+              <MetadataToken>100663312</MetadataToken>
+              <Name>System.Int32 OpenCover.Simple.Target.Program/&lt;&gt;c__DisplayClass7/&lt;&gt;c__DisplayClass9::&lt;Main&gt;b__2(System.Int32)</Name>
+              <FileRef uid="2" />
+              <SequencePoints>
+                <SequencePoint vc="78000" uspid="39" ordinal="0" offset="0" sl="19" sc="107" el="19" ec="120" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint xsi:type="SequencePoint" vc="78000" uspid="39" ordinal="0" offset="0" sl="19" sc="107" el="19" ec="120" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="3" visitedBranchPoints="3" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="2" minCyclomaticComplexity="1" />
+          <FullName>OpenCover.Simple.Target.Program/&lt;&gt;c__DisplayClassb</FullName>
+          <Methods>
+            <Method visited="true" cyclomaticComplexity="1" sequenceCoverage="0" branchCoverage="0" isConstructor="true" isStatic="false" isGetter="false" isSetter="false">
+              <Summary numSequencePoints="0" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" />
+              <MetadataToken>100663313</MetadataToken>
+              <Name>System.Void OpenCover.Simple.Target.Program/&lt;&gt;c__DisplayClassb::.ctor()</Name>
+              <SequencePoints />
+              <BranchPoints />
+              <MethodPoint vc="78000" uspid="40" ordinal="0" offset="0" />
+            </Method>
+            <Method visited="true" cyclomaticComplexity="2" sequenceCoverage="100" branchCoverage="100" isConstructor="false" isStatic="false" isGetter="false" isSetter="false">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="3" visitedBranchPoints="3" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" />
+              <MetadataToken>100663314</MetadataToken>
+              <Name>System.Int32 OpenCover.Simple.Target.Program/&lt;&gt;c__DisplayClassb::&lt;Main&gt;b__4(System.Int32)</Name>
+              <FileRef uid="2" />
+              <SequencePoints>
+                <SequencePoint vc="78000" uspid="41" ordinal="0" offset="0" sl="25" sc="66" el="25" ec="93" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="66000" uspid="42" ordinal="0" offset="1" path="0" />
+                <BranchPoint vc="12000" uspid="43" ordinal="1" offset="1" path="1" />
+              </BranchPoints>
+              <MethodPoint xsi:type="SequencePoint" vc="78000" uspid="41" ordinal="0" offset="0" sl="25" sc="66" el="25" ec="93" />
+            </Method>
+          </Methods>
+        </Class>
+      </Classes>
+    </Module>
+  </Modules>
+</CoverageSession>

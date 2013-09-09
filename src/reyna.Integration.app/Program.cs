@@ -1,4 +1,4 @@
-﻿namespace reyna.Integration.app
+﻿namespace Reyna.Integration.app
 {
     using System;
 
