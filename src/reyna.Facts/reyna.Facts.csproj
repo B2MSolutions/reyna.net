@@ -66,9 +66,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\reyna.Win32\reyna.Win32.csproj">
+    <ProjectReference Include="..\reyna.Win32\Reyna.Win32.csproj">
       <Project>{EB1D70A1-9BA8-4FAF-AC54-B3E6EBEADE7F}</Project>
-      <Name>reyna.Win32</Name>
+      <Name>Reyna.Win32</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
