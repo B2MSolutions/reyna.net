@@ -12,7 +12,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reyna.Facts", "reyna.Facts\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "reyna.Integration.Facts", "reyna.Integration.Facts\reyna.Integration.Facts.csproj", "{B7E0C6A1-9CAC-41DF-820D-AE4D8D1A6379}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "reyna.Integration.app", "reyna.Integration.app\reyna.Integration.app.csproj", "{A49D4A74-ABB1-469F-838D-D2062D363F28}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reyna.Integration.app", "reyna.Integration.app\Reyna.Integration.app.csproj", "{A49D4A74-ABB1-469F-838D-D2062D363F28}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

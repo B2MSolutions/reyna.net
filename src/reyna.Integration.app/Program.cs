@@ -2,9 +2,9 @@
 {
     using System;
 
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             var store = new Store();
             var message = new Message(new Uri("https://api.mprodigy.com/api/1/geo"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
