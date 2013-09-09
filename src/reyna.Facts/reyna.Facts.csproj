@@ -61,6 +61,7 @@
   <ItemGroup>
     <Compile Include="GivenAForward.cs" />
     <Compile Include="GivenAMessage.cs" />
+    <Compile Include="GivenAnAcceptAllCertificatePolicy.cs" />
     <Compile Include="GivenAnHttpStatusCode.cs" />
     <Compile Include="GivenAStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -37,10 +37,19 @@
             }
         }
 
+        public static IEnumerable<object[]> Http100PropertyData
+        {
+            get
+            {
+                yield return new object[] { (HttpStatusCode)100, Result.PermanentError };
+            }
+        }
+
         [Theory]
         [PropertyData("OkResultPropertyData")]
         [PropertyData("PermanentErrorResultPropertyData")]
         [PropertyData("TemporaryErrorResultPropertyData")]
+        [PropertyData("Http100PropertyData")]
         public void WhenCallingToResultShouldReturnExpected(HttpStatusCode httpStatusCode, Result expected)
         {
             Assert.Equal(expected, httpStatusCode.ToResult());

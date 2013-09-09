@@ -48,6 +48,16 @@
             }
         }
 
+        internal static HttpStatusCode GetStatusCode(HttpWebResponse response)
+        {
+            if (response == null)
+            {
+                return HttpStatusCode.ServiceUnavailable;
+            }
+
+            return response.StatusCode;
+        }
+
         private Result RequestAndRespond(HttpWebRequest request, string content)
         {
             HttpStatusCode statusCode = HttpStatusCode.NotFound;
@@ -63,29 +73,16 @@
 
                 using (var response = request.GetResponse() as HttpWebResponse)
                 {
-                    statusCode = this.GetStatusCode(response);
+                    statusCode = HttpClient.GetStatusCode(response);
                 }
             }
             catch (WebException webException)
             {
                 var response = webException.Response as HttpWebResponse;
-                statusCode = this.GetStatusCode(response);
-            }
-            catch
-            {
+                statusCode = HttpClient.GetStatusCode(response);
             }
 
             return statusCode.ToResult();
-        }
-
-        private HttpStatusCode GetStatusCode(HttpWebResponse response)
-        {
-            if (response == null)
-            {
-                return HttpStatusCode.ServiceUnavailable;
-            }
-
-            return response.StatusCode;
         }
     }
 }

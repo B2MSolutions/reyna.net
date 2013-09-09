@@ -28,11 +28,26 @@ mkdir %COVERAGE_DIRECTORY%
 @SET EXITCODE=%ERRORLEVEL%
 @IF %ERRORLEVEL% NEQ 0 GOTO error
 
-@GOTO exit
+@ECHO Coverage report
+type "%COVERAGE_DIRECTORY%\summary.xml"
+
+findstr.exe /L "<Coverage>100%%</Coverage>" "%COVERAGE_DIRECTORY%\summary.xml"
+@SET FindStrResult=%ERRORLEVEL%
+@IF %FindStrResult% EQU 0 (
+  @GOTO exit
+) ELSE (
+  @GOTO coverageNotMet
+)
 
 :error
 @ECHO build script return code: %EXITCODE%
 @EXIT /B %EXITCODE%
 
 :exit
+@ECHO Coverage requirements met      
 @ECHO build succeeded
+@EXIT /B 0
+
+:coverageNotMet
+@ECHO Coverage requirements not met, to view coverage result click on %COVERAGE_DIRECTORY%\index.htm
+@EXIT /B %EXITCODE%
