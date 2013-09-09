@@ -1,12 +1,12 @@
 ﻿namespace Reyna.Integration.Facts
 {
     using System;
+    using System.Collections.Generic;
     using System.Data.SQLite;
     using System.IO;
+    using System.Reflection;
     using Reyna.Interfaces;
     using Xunit;
-using System.Collections.Generic;
-    using System.Reflection;
 
     public class GivenASQLiteRepository
     {
@@ -82,9 +82,9 @@ using System.Collections.Generic;
         {
             this.Repository.Create();
             
-            int nonSystemtTablesCount = ExecuteScalar("SELECT count(1) FROM sqlite_master WHERE type='table' AND name not like 'sqlite?_%' escape '?'");
-            int mesageTableCount = ExecuteScalar("SELECT count(1) FROM sqlite_master WHERE type='table' AND name = 'Message'");
-            int headerTableCount = ExecuteScalar("SELECT count(1) FROM sqlite_master WHERE type='table' AND name = 'Header'");
+            int nonSystemtTablesCount = this.ExecuteScalar("SELECT count(1) FROM sqlite_master WHERE type='table' AND name not like 'sqlite?_%' escape '?'");
+            int mesageTableCount = this.ExecuteScalar("SELECT count(1) FROM sqlite_master WHERE type='table' AND name = 'Message'");
+            int headerTableCount = this.ExecuteScalar("SELECT count(1) FROM sqlite_master WHERE type='table' AND name = 'Header'");
 
             Assert.True(File.Exists(this.DatabasePath));
             Assert.Equal(2, nonSystemtTablesCount);
@@ -100,8 +100,8 @@ using System.Collections.Generic;
             this.Repository.Create();
             this.Repository.Enqueue(message);
 
-            int mesageRowsCount = ExecuteScalar("SELECT COUNT(1) FROM Message");
-            int headerRowsCount = ExecuteScalar("SELECT COUNT(1) FROM Header");
+            int mesageRowsCount = this.ExecuteScalar("SELECT COUNT(1) FROM Message");
+            int headerRowsCount = this.ExecuteScalar("SELECT COUNT(1) FROM Header");
             Assert.Equal(1, mesageRowsCount);
             Assert.Equal(2, headerRowsCount);
 
@@ -118,7 +118,7 @@ using System.Collections.Generic;
         {
             var message1 = this.GetMessage("http://HOST.com:9080/home1", "{\"body\": body}");
             var message2 = this.GetMessage("http://HOST.com:9080/home2", "body");
-            var message3 = this.GetMessage("http://HOST.com:9080/home3", "");
+            var message3 = this.GetMessage("http://HOST.com:9080/home3", string.Empty);
 
             this.Repository.Create();
             this.Repository.Enqueue(message1);
@@ -138,7 +138,7 @@ using System.Collections.Generic;
         {
             var message1 = this.GetMessage("http://HOST.com:9080/home1", "{\"body\": body}");
             var message2 = this.GetMessage("http://HOST.com:9080/home2", "body");
-            var message3 = this.GetMessage("http://HOST.com:9080/home3", "");
+            var message3 = this.GetMessage("http://HOST.com:9080/home3", string.Empty);
 
             this.Repository.Create();
             this.Repository.Enqueue(message1);
@@ -161,7 +161,7 @@ using System.Collections.Generic;
             Assert.Equal("application/josn", actualMessage2.Headers["Content_Type"]);
 
             Assert.Equal(new Uri("http://HOST.com:9080/home3"), actualMessage3.Url);
-            Assert.Equal("", actualMessage3.Body);
+            Assert.Equal(string.Empty, actualMessage3.Body);
             Assert.Equal("Token", actualMessage3.Headers["Token"]);
             Assert.Equal("application/josn", actualMessage3.Headers["Content_Type"]);
 

@@ -1,8 +1,8 @@
 ﻿namespace Reyna.Integration.Facts
 {
     using System;
-    using Xunit;
     using Reyna.Interfaces;
+    using Xunit;
 
     public class GivenAHttpClient
     {

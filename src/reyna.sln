@@ -10,7 +10,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reyna.Facts", "reyna.Facts\
 		{EB1D70A1-9BA8-4FAF-AC54-B3E6EBEADE7F} = {EB1D70A1-9BA8-4FAF-AC54-B3E6EBEADE7F}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "reyna.Integration.Facts", "reyna.Integration.Facts\reyna.Integration.Facts.csproj", "{B7E0C6A1-9CAC-41DF-820D-AE4D8D1A6379}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reyna.Integration.Facts", "reyna.Integration.Facts\Reyna.Integration.Facts.csproj", "{B7E0C6A1-9CAC-41DF-820D-AE4D8D1A6379}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reyna.Integration.app", "reyna.Integration.app\Reyna.Integration.app.csproj", "{A49D4A74-ABB1-469F-838D-D2062D363F28}"
 EndProject
