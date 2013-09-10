@@ -52,7 +52,7 @@
         [PropertyData("Http100PropertyData")]
         public void WhenCallingToResultShouldReturnExpected(HttpStatusCode httpStatusCode, Result expected)
         {
-            Assert.Equal(expected, httpStatusCode.ToResult());
+            Assert.Equal(expected, HttpStatusCodeExtensions.ToResult(httpStatusCode));
         }
     }
 }

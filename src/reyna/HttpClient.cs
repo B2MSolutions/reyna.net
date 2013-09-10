@@ -82,7 +82,7 @@
                 statusCode = HttpClient.GetStatusCode(response);
             }
 
-            return statusCode.ToResult();
+            return HttpStatusCodeExtensions.ToResult(statusCode);
         }
     }
 }

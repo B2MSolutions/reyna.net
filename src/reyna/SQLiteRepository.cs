@@ -18,6 +18,10 @@
         private const string SelectTop1MessageSql = "SELECT id, url, body FROM Message ORDER BY id ASC LIMIT 1";
         private const string SelectHeaderSql = "SELECT key, value FROM Header WHERE messageid = @messageId";
 
+        public delegate IMessage ExecuteFunctionInTransaction(DbTransaction transaction);
+
+        public delegate void ExecuteActionInTransaction(IMessage message, DbTransaction transaction);
+
         public bool DoesNotExist
         {
             get
@@ -149,7 +153,7 @@
             }
         }
 
-        private IMessage ExecuteInTransaction(Func<DbTransaction, IMessage> func)
+        private IMessage ExecuteInTransaction(ExecuteFunctionInTransaction func)
         {
             using (var connection = this.CreateConnection())
             using (var transaction = connection.BeginTransaction())
@@ -170,7 +174,7 @@
             }
         }
 
-        private IMessage GetFirstInQueue(params Action<IMessage, DbTransaction>[] postActions)
+        private IMessage GetFirstInQueue(params ExecuteActionInTransaction[] postActions)
         {
             return this.ExecuteInTransaction((t) =>
             {

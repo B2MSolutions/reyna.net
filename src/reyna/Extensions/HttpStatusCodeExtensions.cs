@@ -5,7 +5,7 @@
 
     public static class HttpStatusCodeExtensions
     {
-        public static Result ToResult(this HttpStatusCode httpStatusCode)
+        public static Result ToResult(HttpStatusCode httpStatusCode)
         {
             var statusCode = (int)httpStatusCode;
 
