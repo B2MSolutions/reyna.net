@@ -60,21 +60,6 @@
         }
 
         [Fact]
-        public void WhenCallingSendAndHasTemporaryErrorShouldNotRemoveMessageFromQueue()
-        {
-            var message = new Message(null, null);
-
-            this.Repository.Setup(r => r.Peek()).Returns(message);
-            this.HttpClient.Setup(hc => hc.Post(It.IsAny<IMessage>())).Returns(Result.TemporaryError);
-
-            this.Forward.Send();
-
-            this.Repository.Verify(r => r.Peek(), Times.Once());
-            this.HttpClient.Verify(hc => hc.Post(message), Times.Once());
-            this.Repository.Verify(r => r.Dequeue(), Times.Never());
-        }
-
-        [Fact]
         public void WhenCallingSendAndHasPermanentErrorShouldRemoveMessageFromQueue()
         {
             var messageCounter = 0;
@@ -111,6 +96,29 @@
             this.Repository.Verify(r => r.Peek(), Times.Exactly(5));
             this.HttpClient.Verify(hc => hc.Post(message), Times.Exactly(4));
             this.Repository.Verify(r => r.Dequeue(), Times.Exactly(4));
+        }
+
+        [Fact]
+        public void WhenCallingSendWithMultipleMessagesInQueueAndFirstFailsWithTemporaryErrorShouldStillSendSecond()
+        {
+            var message = new Message(null, null);
+
+            var peekCount = 0;
+            var postCount = 0;
+
+            this.Repository.Setup(r => r.Peek())
+                .Callback(() => peekCount++)
+                .Returns(() => peekCount < 3 ? message : null);
+
+            this.HttpClient.Setup(hc => hc.Post(It.IsAny<IMessage>()))
+                .Callback(() => postCount++)
+                .Returns(() => postCount == 1 ? Result.TemporaryError : Result.Ok);
+
+            this.Forward.Send();
+
+            this.Repository.Verify(r => r.Peek(), Times.Exactly(3));
+            this.HttpClient.Verify(hc => hc.Post(message), Times.Exactly(2));
+            this.Repository.Verify(r => r.Dequeue(), Times.Once());
         }
     }
 }

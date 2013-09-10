@@ -22,7 +22,7 @@
             {
                 if (this.HttpClient.Post(message) == Result.TemporaryError)
                 {
-                    return;
+                    continue;
                 }
 
                 this.Repository.Dequeue();
