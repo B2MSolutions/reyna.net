@@ -18,19 +18,9 @@
         private const string SelectTop1MessageSql = "SELECT id, url, body FROM Message ORDER BY id ASC LIMIT 1";
         private const string SelectHeaderSql = "SELECT key, value FROM Header WHERE messageid = @messageId";
 
-        public SQLiteRepository()
-        {
-            if (this.MessageEnqueued != null)
-            {
-                this.MessageEnqueued.Invoke(this, new EventArgs());
-            }
-        }
-
         private delegate IMessage ExecuteFunctionInTransaction(DbTransaction transaction);
 
         private delegate void ExecuteActionInTransaction(IMessage message, DbTransaction transaction);
-
-        public event EventHandler<EventArgs> MessageEnqueued;
 
         public bool DoesNotExist
         {

@@ -4,8 +4,6 @@
 
     internal interface IRepository
     {
-        event EventHandler<EventArgs> MessageEnqueued;
-
         bool DoesNotExist { get; }
 
         void Create();
