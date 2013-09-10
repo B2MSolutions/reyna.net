@@ -109,7 +109,7 @@
             Assert.Equal(new Uri("http://HOST.com:9080/home"), storedMessage.Url);
             Assert.Equal("{\"body\": body}", storedMessage.Body);
             Assert.Equal(2, storedMessage.Headers.Count);
-            Assert.Equal("Token", storedMessage.Headers["Token"]);
+            Assert.Equal("VALUE", storedMessage.Headers["PARAM"]);
             Assert.Equal("application/josn", storedMessage.Headers["Content_Type"]);
         }
 
@@ -129,7 +129,7 @@
 
             Assert.Equal(new Uri("http://HOST.com:9080/home1"), message.Url);
             Assert.Equal("{\"body\": body}", message.Body);
-            Assert.Equal("Token", message.Headers["Token"]);
+            Assert.Equal("VALUE", message.Headers["PARAM"]);
             Assert.Equal("application/josn", message.Headers["Content_Type"]);
         }
 
@@ -152,17 +152,17 @@
 
             Assert.Equal(new Uri("http://HOST.com:9080/home1"), actualMessage1.Url);
             Assert.Equal("{\"body\": body}", actualMessage1.Body);
-            Assert.Equal("Token", actualMessage1.Headers["Token"]);
+            Assert.Equal("VALUE", actualMessage1.Headers["PARAM"]);
             Assert.Equal("application/josn", actualMessage1.Headers["Content_Type"]);
 
             Assert.Equal(new Uri("http://HOST.com:9080/home2"), actualMessage2.Url);
             Assert.Equal("body", actualMessage2.Body);
-            Assert.Equal("Token", actualMessage2.Headers["Token"]);
+            Assert.Equal("VALUE", actualMessage2.Headers["PARAM"]);
             Assert.Equal("application/josn", actualMessage2.Headers["Content_Type"]);
 
             Assert.Equal(new Uri("http://HOST.com:9080/home3"), actualMessage3.Url);
             Assert.Equal(string.Empty, actualMessage3.Body);
-            Assert.Equal("Token", actualMessage3.Headers["Token"]);
+            Assert.Equal("VALUE", actualMessage3.Headers["PARAM"]);
             Assert.Equal("application/josn", actualMessage3.Headers["Content_Type"]);
 
             Assert.Null(actualMessage4);
@@ -172,7 +172,7 @@
         {
             var message = new Message(new Uri(url), body);
             message.Headers.Add("Content_Type", "application/josn");
-            message.Headers.Add("Token", "Token");
+            message.Headers.Add("PARAM", "VALUE");
             
             return message;
         }

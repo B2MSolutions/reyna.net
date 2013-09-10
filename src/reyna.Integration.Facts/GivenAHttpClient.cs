@@ -13,9 +13,9 @@
             var httpClient = new HttpClient();
             var message = new Message(new Uri("http://httpbin.org/post"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
             message.Headers.Add("content-type", "application/json");
-            message.Headers.Add("token", "6dec1821543f4a82a845f81109a47aee");
-            message.Headers.Add("id", "0123456789");
-            message.Headers.Add("scheme", "IMEI");
+            message.Headers.Add("param1", "Value1");
+            message.Headers.Add("param2", "Value2");
+            message.Headers.Add("param3", "Value3");
             var result = httpClient.Post(message);
             
             Assert.Equal(Result.Ok, result);
@@ -27,9 +27,9 @@
             var httpClient = new HttpClient();
             var message = new Message(new Uri("http://httpbin.org/post2"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
             message.Headers.Add("content-type", "application/json");
-            message.Headers.Add("token", "6dec1821543f4a82a845f81109a47aee");
-            message.Headers.Add("id", "0123456789");
-            message.Headers.Add("scheme", "IMEI");
+            message.Headers.Add("param1", "Value1");
+            message.Headers.Add("param2", "Value2");
+            message.Headers.Add("param3", "Value3");
             var result = httpClient.Post(message);
 
             Assert.Equal(Result.PermanentError, result);
@@ -41,9 +41,9 @@
             var httpClient = new HttpClient();
             var message = new Message(new Uri("test://httpbin.org/post"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
             message.Headers.Add("content-type", "application/json");
-            message.Headers.Add("token", "6dec1821543f4a82a845f81109a47aee");
-            message.Headers.Add("id", "0123456789");
-            message.Headers.Add("scheme", "IMEI");
+            message.Headers.Add("param1", "Value1");
+            message.Headers.Add("param2", "Value2");
+            message.Headers.Add("param3", "Value3");
             var result = httpClient.Post(message);
 
             Assert.Equal(Result.PermanentError, result);
