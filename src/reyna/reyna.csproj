@@ -59,15 +59,18 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\SQLite\1.0.66.0\CF20\System.Data.SQLite.dll</HintPath>
     </Reference>
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AcceptAllCertificatePolicy.cs" />
     <Compile Include="Extensions\HttpStatusCodeExtensions.cs" />
     <Compile Include="Forward.cs" />
     <Compile Include="HttpClient.cs" />
+    <Compile Include="InMemoryQueue.cs" />
     <Compile Include="Interfaces\IForward.cs" />
     <Compile Include="Interfaces\IHttpClient.cs" />
     <Compile Include="Interfaces\IMessage.cs" />
+    <Compile Include="Interfaces\IMessageStore.cs" />
     <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Interfaces\IStore.cs" />
     <Compile Include="Interfaces\Result.cs" />

@@ -63,6 +63,9 @@
     <Compile Include="..\reyna\HttpClient.cs">
       <Link>HttpClient.cs</Link>
     </Compile>
+    <Compile Include="..\reyna\InMemoryQueue.cs">
+      <Link>InMemoryQueue.cs</Link>
+    </Compile>
     <Compile Include="..\reyna\Interfaces\IForward.cs">
       <Link>Interfaces\IForward.cs</Link>
     </Compile>
@@ -71,6 +74,9 @@
     </Compile>
     <Compile Include="..\reyna\Interfaces\IMessage.cs">
       <Link>Interfaces\IMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Interfaces\IMessageStore.cs">
+      <Link>Interfaces\IMessageStore.cs</Link>
     </Compile>
     <Compile Include="..\reyna\Interfaces\IRepository.cs">
       <Link>Interfaces\IRepository.cs</Link>
