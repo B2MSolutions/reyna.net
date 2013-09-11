@@ -75,7 +75,29 @@
             Thread.Sleep(200);
 
             Assert.NotNull(this.PersistentStore.Get());
-            this.HttpClient.Verify(c => c.Post(It.IsAny<IMessage>()), Times.Once());
+            this.HttpClient.Verify(c => c.Post(It.IsAny<IMessage>()), Times.AtMostOnce());
+        }
+
+        [Fact]
+        public void WhenCallingStartThenStopThenStartShouldPostAllMessages()
+        {
+            var message = this.CreateMessage();
+
+            this.ForwardService.Start();
+            Thread.Sleep(50);
+
+            this.PersistentStore.Add(message);
+            this.ForwardService.Stop();
+            Thread.Sleep(200);
+
+            this.PersistentStore.Add(this.CreateMessage());
+            this.PersistentStore.Add(this.CreateMessage());
+            
+            this.ForwardService.Start();
+            Thread.Sleep(200);
+
+            Assert.Null(this.PersistentStore.Get());
+            this.HttpClient.Verify(c => c.Post(It.IsAny<IMessage>()), Times.Exactly(3));
         }
 
         [Fact]
@@ -106,6 +128,24 @@
 
             Assert.Null(this.PersistentStore.Get());
             this.HttpClient.Verify(c => c.Post(It.IsAny<IMessage>()), Times.Exactly(10));
+        }
+
+        [Fact]
+        public void WhenCallingStopShouldExitImmediately()
+        {
+            for (int j = 0; j < 20; j++)
+            {
+                this.PersistentStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
+            }
+
+            this.ForwardService.Start();
+            Thread.Sleep(50);
+
+            this.ForwardService.Stop();
+            
+            Thread.Sleep(1000);
+
+            Assert.NotNull(this.PersistentStore.Get());
         }
 
         [Fact]

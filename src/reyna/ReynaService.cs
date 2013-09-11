@@ -32,8 +32,8 @@
 
         public void Stop()
         {
-            this.StoreService.Stop();
             this.ForwardService.Stop();
+            this.StoreService.Stop();
         }
 
         public void Put(IMessage message)
@@ -43,14 +43,14 @@
 
         public void Dispose()
         {
-            if (this.StoreService != null)
-            {
-                this.StoreService.Dispose();
-            }
-
             if (this.ForwardService != null)
             {
                 this.ForwardService.Dispose();
+            }
+
+            if (this.StoreService != null)
+            {
+                this.StoreService.Dispose();
             }
         }
     }

@@ -6,6 +6,8 @@
 
     internal abstract class ServiceBase : IService
     {
+        private volatile bool terminate;
+
         public ServiceBase(IRepository sourceStore)
         {
             if (sourceStore == null)
@@ -16,33 +18,42 @@
             this.SourceStore = sourceStore;
             this.SourceStore.Initialise();
 
-            this.NewMessageAdded = new AutoResetEvent(false);
+            this.DoWorkEvent = new AutoResetEvent(false);
 
             this.SourceStore.MessageAdded += this.OnMessageAdded;
         }
 
         protected IRepository SourceStore { get; set; }
 
-        protected bool Terminate { get; set; }
+        protected bool Terminate
+        {
+            get
+            {
+                return this.terminate;
+            }
 
-        protected AutoResetEvent NewMessageAdded { get; set; }
+            set
+            {
+                this.terminate = value;
+            }
+        }
+
+        protected AutoResetEvent DoWorkEvent { get; set; }
 
         private Thread WorkingThread { get; set; }
 
         public void Start()
         {
-            this.WaitForWorkingThreadToFinish();
-
-            this.Terminate = false;
-            this.WorkingThread = new Thread(this.ThreadStart);
-            this.WorkingThread.Start();
+            this.SetWorkerThreadStartState();
+            this.CreateWorkerThread();
+            this.SignalWorkToDo();
         }
 
         public void Stop()
         {
-            this.Terminate = true;
-            this.NewMessageAdded.Set();
-            this.WaitForWorkingThreadToFinish();
+            this.SetWorkerThreadStopState();
+            this.SignalWorkToDo();
+            this.WaitForWorkerThreadToStop();
         }
 
         public void Dispose()
@@ -55,7 +66,7 @@
             }
         }
 
-        protected void WaitForWorkingThreadToFinish()
+        protected void WaitForWorkerThreadToStop()
         {
             if (this.WorkingThread != null)
             {
@@ -70,9 +81,30 @@
                 return;
             }
 
-            this.NewMessageAdded.Set();
+            this.SignalWorkToDo();
         }
 
         protected abstract void ThreadStart();
+
+        private void CreateWorkerThread()
+        {
+            this.WorkingThread = new Thread(this.ThreadStart);
+            this.WorkingThread.Start();
+        }
+
+        private void SignalWorkToDo()
+        {
+            this.DoWorkEvent.Set();
+        }
+
+        private void SetWorkerThreadStartState()
+        {
+            this.Terminate = false;
+        }
+
+        private void SetWorkerThreadStopState()
+        {
+            this.Terminate = true;
+        }
     }
 }

@@ -21,10 +21,10 @@
         {
             while (!this.Terminate)
             {
-                this.NewMessageAdded.WaitOne();
+                this.DoWorkEvent.WaitOne();
                 IMessage message = null;
 
-                while ((message = this.SourceStore.Get()) != null)
+                while (!this.Terminate && (message = this.SourceStore.Get()) != null)
                 {
                     var result = this.HttpClient.Post(message);
                     if (result == Result.TemporaryError)
@@ -35,7 +35,7 @@
                     this.SourceStore.Remove();
                 }
 
-                this.NewMessageAdded.Reset();
+                this.DoWorkEvent.Reset();
             }
         }
     }

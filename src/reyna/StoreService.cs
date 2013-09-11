@@ -23,7 +23,7 @@
         {
             while (!this.Terminate)
             {
-                this.NewMessageAdded.WaitOne();
+                this.DoWorkEvent.WaitOne();
                 IMessage message = null;
 
                 while ((message = this.SourceStore.Get()) != null)
@@ -33,7 +33,7 @@
                     this.SourceStore.Remove();
                 }
 
-                this.NewMessageAdded.Reset();
+                this.DoWorkEvent.Reset();
             }
         }
     }
