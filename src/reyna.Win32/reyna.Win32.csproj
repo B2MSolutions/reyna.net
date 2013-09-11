@@ -90,6 +90,9 @@
     <Compile Include="..\reyna\ReynaService.cs">
       <Link>ReynaService.cs</Link>
     </Compile>
+    <Compile Include="..\reyna\ServiceBase.cs">
+      <Link>ServiceBase.cs</Link>
+    </Compile>
     <Compile Include="..\reyna\SQLiteRepository.cs">
       <Link>SQLiteRepository.cs</Link>
     </Compile>

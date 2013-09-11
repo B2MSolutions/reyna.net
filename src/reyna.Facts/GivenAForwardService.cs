@@ -1,6 +1,9 @@
 ﻿namespace Reyna.Facts
 {
     using System;
+    using System.IO;
+    using System.Reflection;
+    using System.Threading;
     using Moq;
     using Reyna.Interfaces;
     using Xunit;
@@ -9,18 +12,33 @@
     {
         public GivenAForwardService()
         {
-            this.PersistentStore = new Mock<IRepository>();
+            this.PersistentStore = new SQLiteRepository();
             
             this.HttpClient = new Mock<IHttpClient>();
 
-            this.ForwardService = new ForwardService(this.PersistentStore.Object, this.HttpClient.Object);
+            File.Delete(this.DatabasePath);
+            this.HttpClient.Setup(c => c.Post(It.IsAny<IMessage>()))
+                .Returns(Result.Ok);
+
+            this.PersistentStore.Initialise();
+
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object);
         }
 
-        internal Mock<IRepository> PersistentStore { get; set; }
+        internal IRepository PersistentStore { get; set; }
 
         internal Mock<IHttpClient> HttpClient { get; set; }
 
         internal IService ForwardService { get; set; }
+
+        private string DatabasePath
+        {
+            get
+            {
+                var assemblyFile = new FileInfo(Assembly.GetExecutingAssembly().Location);
+                return Path.Combine(assemblyFile.DirectoryName, "reyna.db");
+            }
+        }
 
         [Fact]
         public void WhenConstructingShouldNotThrow()
@@ -29,115 +47,145 @@
         }
 
         [Fact]
-        public void WhenCallingStartShouldThrow()
+        public void WhenCallingStartAndMessageAddedShouldCallPostOnHttpClient()
         {
-            Assert.Throws<NotImplementedException>(() => this.ForwardService.Start());
+            var message = this.CreateMessage();
+            this.ForwardService.Start();
+
+            this.PersistentStore.Add(message);
+            Thread.Sleep(200);
+
+            Assert.Null(this.PersistentStore.Get());
+            this.HttpClient.Verify(c => c.Post(It.IsAny<IMessage>()), Times.Once());
         }
 
         [Fact]
-        public void WhenCallingStopShouldThrow()
+        public void WhenCallingStartAndMessageAddedThenImmediatelyStopShouldNotCallPostOnHttpClient()
         {
-            Assert.Throws<NotImplementedException>(() => this.ForwardService.Stop());
+            var message = this.CreateMessage();
+
+            this.ForwardService.Start();
+            Thread.Sleep(50);
+
+            this.PersistentStore.Add(message);
+            this.ForwardService.Stop();
+            Thread.Sleep(200);
+
+            this.PersistentStore.Add(this.CreateMessage());
+            Thread.Sleep(200);
+
+            Assert.NotNull(this.PersistentStore.Get());
+            this.HttpClient.Verify(c => c.Post(It.IsAny<IMessage>()), Times.Once());
         }
 
         [Fact]
-        public void WhenCallingDisposehouldNotThrow()
+        public void WhenCallingStartAndStopRapidlyWhilstAddingMessagesShouldPostAllMessages()
+        {
+            var messageAddingThread = new Thread(new ThreadStart(() =>
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    this.PersistentStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
+                    Thread.Sleep(100);
+                }
+            }));
+
+            messageAddingThread.Start();
+            Thread.Sleep(50);
+
+            for (int k = 0; k < 10; k++)
+            {
+                this.ForwardService.Start();
+                Thread.Sleep(50);
+
+                this.ForwardService.Stop();
+                Thread.Sleep(200);
+            }
+
+            Thread.Sleep(1000);
+
+            Assert.Null(this.PersistentStore.Get());
+            this.HttpClient.Verify(c => c.Post(It.IsAny<IMessage>()), Times.Exactly(10));
+        }
+
+        [Fact]
+        public void WhenCallingStopOnForwareServiceThatHasntStartedShouldNotThrow()
+        {
+            this.ForwardService.Stop();
+        }
+
+        [Fact]
+        public void WhenCallingDisposeShouldNotThrow()
         {
             this.ForwardService.Dispose();
         }
 
-        /*        [Fact]
-                public void WhenCallingSendAndSucceedsShouldRemoveMessageFromQueue()
-                {
-                    var messageCounter = 0;
-                    var message = new Message(null, null);
+        [Fact]
+        public void WhenConstructingWithBothNullParametersShouldThrow()
+        {
+            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(null, null));
+            Assert.Equal("persistentStore", exception.ParamName);
+        }
 
-                    this.Repository.Setup(r => r.Get())
-                        .Callback(() => messageCounter++)
-                        .Returns(() => messageCounter < 2 ? message : (IMessage)null);
+        [Fact]
+        public void WhenConstructingWithNullMessageStoreParameterShouldThrow()
+        {
+            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(null, new Mock<IHttpClient>().Object));
+            Assert.Equal("persistentStore", exception.ParamName);
+        }
 
-                    this.HttpClient.Setup(hc => hc.Post(It.IsAny<IMessage>())).Returns(Result.Ok);
-                    this.Repository.Setup(r => r.Remove()).Returns(message);
+        [Fact]
+        public void WhenConstructingWithNullRepositoryParameterShouldThrow()
+        {
+            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(new Mock<IRepository>().Object, null));
+            Assert.Equal("httpClient", exception.ParamName);
+        }
 
-                    this.Forward.Send();
+        [Fact]
+        public void WhenCallingStartStopDisposeShouldNotThrow()
+        {
+            this.ForwardService.Start();
+            Thread.Sleep(50);
 
-                    this.Repository.Verify(r => r.Get(), Times.Exactly(2));
-                    this.HttpClient.Verify(hc => hc.Post(message), Times.Once());
-                    this.Repository.Verify(r => r.Remove(), Times.Once());
-                }
+            this.ForwardService.Stop();
+            Thread.Sleep(50);
 
-                [Fact]
-                public void WhenCallingSendAndNoMessageShouldDoNothing()
-                {
-                    this.Repository.Setup(r => r.Get()).Returns((IMessage)null);
+            this.ForwardService.Dispose();
+        }
 
-                    this.Forward.Send();
+        [Fact]
+        public void WhenPostingMessagesAndPermanentErrorShouldRemoveMessageFromQueue()
+        {
+            this.HttpClient.Setup(hc => hc.Post(It.IsAny<IMessage>())).Returns(Result.PermanentError);
 
-                    this.Repository.Verify(r => r.Get(), Times.Once());
-                    this.HttpClient.Verify(hc => hc.Post(It.IsAny<IMessage>()), Times.Never());
-                    this.Repository.Verify(r => r.Remove(), Times.Never());
-                }
+            var message = this.CreateMessage();
+            this.ForwardService.Start();
 
-                [Fact]
-                public void WhenCallingSendAndHasPermanentErrorShouldRemoveMessageFromQueue()
-                {
-                    var messageCounter = 0;
+            this.PersistentStore.Add(message);
+            Thread.Sleep(200);
 
-                    var message = new Message(null, null);
+            Assert.Null(this.PersistentStore.Get());
+            this.HttpClient.Verify(c => c.Post(It.IsAny<IMessage>()), Times.Once());
+        }
 
-                    this.Repository.Setup(r => r.Get())
-                        .Callback(() => messageCounter++)
-                        .Returns(() => messageCounter < 2 ? message : (IMessage)null);
-                    this.HttpClient.Setup(hc => hc.Post(It.IsAny<IMessage>())).Returns(Result.PermanentError);
+        [Fact]
+        public void WhenPostingMessagesAndTemporaryErrorShouldNotRemoveMessageFromQueue()
+        {
+            this.HttpClient.Setup(hc => hc.Post(It.IsAny<IMessage>())).Returns(Result.TemporaryError);
 
-                    this.Forward.Send();
+            var message = this.CreateMessage();
+            this.ForwardService.Start();
 
-                    this.Repository.Verify(r => r.Get(), Times.Exactly(2));
-                    this.HttpClient.Verify(hc => hc.Post(message), Times.Once());
-                    this.Repository.Verify(r => r.Remove(), Times.Once());
-                }
+            this.PersistentStore.Add(message);
+            Thread.Sleep(200);
 
-                [Fact]
-                public void WhenCallingSendAndMultipleMessagesInQueueAndSucceedsShouldLoopAndRemoveAllMessageFromQueue()
-                {
-                    var messageCounter = 0;
+            Assert.NotNull(this.PersistentStore.Get());
+            this.HttpClient.Verify(c => c.Post(It.IsAny<IMessage>()), Times.Once());
+        }
 
-                    var message = new Message(null, null);
-
-                    this.Repository.Setup(r => r.Get())
-                        .Callback(() => messageCounter++)
-                        .Returns(() => messageCounter < 5 ? message : (IMessage)null);
-                    this.HttpClient.Setup(hc => hc.Post(It.IsAny<IMessage>())).Returns(Result.Ok);
-                    this.Repository.Setup(r => r.Remove()).Returns(message);
-
-                    this.Forward.Send();
-
-                    this.Repository.Verify(r => r.Get(), Times.Exactly(5));
-                    this.HttpClient.Verify(hc => hc.Post(message), Times.Exactly(4));
-                    this.Repository.Verify(r => r.Remove(), Times.Exactly(4));
-                }
-
-                [Fact]
-                public void WhenCallingSendWithMultipleMessagesInQueueAndFirstFailsWithTemporaryErrorShouldStillSendSecond()
-                {
-                    var message = new Message(null, null);
-
-                    var peekCount = 0;
-                    var postCount = 0;
-
-                    this.Repository.Setup(r => r.Get())
-                        .Callback(() => peekCount++)
-                        .Returns(() => peekCount < 3 ? message : null);
-
-                    this.HttpClient.Setup(hc => hc.Post(It.IsAny<IMessage>()))
-                        .Callback(() => postCount++)
-                        .Returns(() => postCount == 1 ? Result.TemporaryError : Result.Ok);
-
-                    this.Forward.Send();
-
-                    this.Repository.Verify(r => r.Get(), Times.Exactly(3));
-                    this.HttpClient.Verify(hc => hc.Post(message), Times.Exactly(2));
-                    this.Repository.Verify(r => r.Remove(), Times.Once());
-                }*/
+        private IMessage CreateMessage()
+        {
+            return new Message(new Uri("http://test.com"), "BODY");
+        }
     }
 }

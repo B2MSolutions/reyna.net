@@ -73,6 +73,7 @@
     <Compile Include="Interfaces\IReyna.cs" />
     <Compile Include="Interfaces\IService.cs" />
     <Compile Include="Interfaces\Result.cs" />
+    <Compile Include="ServiceBase.cs" />
     <Compile Include="StoreService.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

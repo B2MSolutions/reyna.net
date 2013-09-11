@@ -96,24 +96,36 @@
         }
 
         [Fact]
+        public void WhenCallingStartStopDisposeShouldNotThrow()
+        {
+            this.StoreService.Start();
+            Thread.Sleep(50);
+
+            this.StoreService.Stop();
+            Thread.Sleep(50);
+            
+            this.StoreService.Dispose();
+        }
+
+        [Fact]
         public void WhenConstructingWithBothNullParametersShouldThrow()
         {
             var exception = Assert.Throws<ArgumentNullException>(() => new StoreService(null, null));
-            Assert.Equal("messageStore", exception.ParamName);
+            Assert.Equal("volatileStore", exception.ParamName);
         }
 
         [Fact]
         public void WhenConstructingWithNullMessageStoreParameterShouldThrow()
         {
             var exception = Assert.Throws<ArgumentNullException>(() => new StoreService(null, new Mock<IRepository>().Object));
-            Assert.Equal("messageStore", exception.ParamName);
+            Assert.Equal("volatileStore", exception.ParamName);
         }
 
         [Fact]
         public void WhenConstructingWithNullRepositoryParameterShouldThrow()
         {
             var exception = Assert.Throws<ArgumentNullException>(() => new StoreService(new InMemoryQueue(), null));
-            Assert.Equal("repository", exception.ParamName);
+            Assert.Equal("persistentStore", exception.ParamName);
         }
     }
 }
