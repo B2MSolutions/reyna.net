@@ -65,7 +65,7 @@
     <Compile Include="GivenAnHttpStatusCode.cs" />
     <Compile Include="GivenAnInMemoryQueue.cs" />
     <Compile Include="GivenAReynaService.cs" />
-    <Compile Include="GivenAStore.cs" />
+    <Compile Include="GivenAStoreService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

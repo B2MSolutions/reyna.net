@@ -14,6 +14,7 @@
         {
             File.Delete(this.DatabasePath);
             this.Repository = new SQLiteRepository();
+            this.Repository.Initialise();
         }
 
         private SQLiteRepository Repository { get; set; }
@@ -34,17 +35,19 @@
         }
 
         [Fact]
-        public void WhenCallingDoesNotExistAndDatabaseDoesNotExistShouldReturnTrue()
+        public void WhenCallingExistsAndDatabaseDoesNotExistShouldReturnFalse()
         {
-            Assert.True(this.Repository.DoesNotExist);
+            File.Delete(this.DatabasePath);
+
+            Assert.False(this.Repository.Exists);
         }
 
         [Fact]
-        public void WhenCallingDoesNotExistAndDatabaseExistsShouldReturnFalse()
+        public void WhenCallingExistsAndDatabaseExistsShouldReturnTrue()
         {
             File.WriteAllBytes(this.DatabasePath, new byte[] { });
             
-            Assert.False(this.Repository.DoesNotExist);
+            Assert.True(this.Repository.Exists);
         }
 
         [Fact]
@@ -93,12 +96,12 @@
         }
 
         [Fact]
-        public void WhenCallingEnqueueShouldRetunInsertMessage()
+        public void WhenCallingAddShouldReturnSucceed()
         {
             var message = this.GetMessage("http://HOST.com:9080/home", "{\"body\": body}");
 
             this.Repository.Create();
-            this.Repository.Enqueue(message);
+            this.Repository.Add(message);
 
             int mesageRowsCount = this.ExecuteScalar("SELECT COUNT(1) FROM Message");
             int headerRowsCount = this.ExecuteScalar("SELECT COUNT(1) FROM Header");
@@ -114,18 +117,18 @@
         }
 
         [Fact]
-        public void WhenCallingPeekShouldRetunExectedMessage()
+        public void WhenCallingGetShouldReturnExpectedMessage()
         {
             var message1 = this.GetMessage("http://HOST.com:9080/home1", "{\"body\": body}");
             var message2 = this.GetMessage("http://HOST.com:9080/home2", "body");
             var message3 = this.GetMessage("http://HOST.com:9080/home3", string.Empty);
 
             this.Repository.Create();
-            this.Repository.Enqueue(message1);
-            this.Repository.Enqueue(message2);
-            this.Repository.Enqueue(message3);
+            this.Repository.Add(message1);
+            this.Repository.Add(message2);
+            this.Repository.Add(message3);
 
-            var message = this.Repository.Peek();
+            var message = this.Repository.Get();
 
             Assert.Equal(new Uri("http://HOST.com:9080/home1"), message.Url);
             Assert.Equal("{\"body\": body}", message.Body);
@@ -141,14 +144,14 @@
             var message3 = this.GetMessage("http://HOST.com:9080/home3", string.Empty);
 
             this.Repository.Create();
-            this.Repository.Enqueue(message1);
-            this.Repository.Enqueue(message2);
-            this.Repository.Enqueue(message3);
+            this.Repository.Add(message1);
+            this.Repository.Add(message2);
+            this.Repository.Add(message3);
 
-            var actualMessage1 = this.Repository.Dequeue();
-            var actualMessage2 = this.Repository.Dequeue();
-            var actualMessage3 = this.Repository.Dequeue();
-            var actualMessage4 = this.Repository.Dequeue();
+            var actualMessage1 = this.Repository.Remove();
+            var actualMessage2 = this.Repository.Remove();
+            var actualMessage3 = this.Repository.Remove();
+            var actualMessage4 = this.Repository.Remove();
 
             Assert.Equal(new Uri("http://HOST.com:9080/home1"), actualMessage1.Url);
             Assert.Equal("{\"body\": body}", actualMessage1.Body);
@@ -166,6 +169,17 @@
             Assert.Equal("application/josn", actualMessage3.Headers["Content_Type"]);
 
             Assert.Null(actualMessage4);
+        }
+
+        [Fact]
+        public void WhenSubscribedToMessageAddedEventShouldReceiveEventWhenCallingAdd()
+        {
+            var received = false;
+            this.Repository.MessageAdded += (sender, e) => { received = true; };
+            this.Repository.Add(new Message(null, null));
+            System.Threading.Thread.Sleep(100);
+
+            Assert.True(received);
         }
 
         private IMessage GetMessage(string url, string body)

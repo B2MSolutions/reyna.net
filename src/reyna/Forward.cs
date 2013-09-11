@@ -18,14 +18,14 @@
         public void Send()
         {
             IMessage message = null;
-            while ((message = this.Repository.Peek()) != null)
+            while ((message = this.Repository.Get()) != null)
             {
                 if (this.HttpClient.Post(message) == Result.TemporaryError)
                 {
                     continue;
                 }
 
-                this.Repository.Dequeue();
+                this.Repository.Remove();
             }
         }
     }

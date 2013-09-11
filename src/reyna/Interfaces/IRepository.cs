@@ -4,14 +4,14 @@
 
     public interface IRepository
     {
-        bool DoesNotExist { get; }
+        event EventHandler<EventArgs> MessageAdded;
 
-        void Create();
+        void Initialise();
 
-        IMessage Enqueue(IMessage message);
+        void Add(IMessage message);
 
-        IMessage Peek();
+        IMessage Get();
 
-        IMessage Dequeue();
+        IMessage Remove();
     }
 }

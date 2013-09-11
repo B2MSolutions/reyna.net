@@ -1,6 +1,6 @@
 ﻿namespace Reyna.Interfaces
 {
-    public interface IStore
+    public interface IReyna : IService
     {
         void Put(IMessage message);
     }

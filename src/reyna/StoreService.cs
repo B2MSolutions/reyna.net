@@ -4,29 +4,33 @@
     using System.Threading;
     using Reyna.Interfaces;
 
-    public class Store : IDisposable
+    public class StoreService : IService, IDisposable
     {
-        public Store(IMessageStore messageStore, IRepository repository)
+        public StoreService(IRepository volatileStore, IRepository persistentStore)
         {
-            if (messageStore == null)
+            if (volatileStore == null)
             {
                 throw new ArgumentNullException("messageStore");
             }
 
-            if (repository == null)
+            if (persistentStore == null)
             {
                 throw new ArgumentNullException("repository");
             }
 
-            this.MessageStore = messageStore;
-            this.Repository = repository;
+            this.VolatileStore = volatileStore;
+            this.PersistentStore = persistentStore;
+
+            this.VolatileStore.Initialise();
+            this.PersistentStore.Initialise();
+
             this.NewMessageAdded = new AutoResetEvent(false);
-            this.MessageStore.MessageAdded += this.OnMessageAdded;
+            this.VolatileStore.MessageAdded += this.OnMessageAdded;
         }
 
-        private IMessageStore MessageStore { get; set; }
+        private IRepository VolatileStore { get; set; }
 
-        private IRepository Repository { get; set; }
+        private IRepository PersistentStore { get; set; }
 
         private AutoResetEvent NewMessageAdded { get; set; }
 
@@ -54,9 +58,9 @@
         {
             this.Stop();
 
-            if (this.MessageStore != null)
+            if (this.VolatileStore != null)
             {
-                this.MessageStore.MessageAdded -= this.OnMessageAdded;
+                this.VolatileStore.MessageAdded -= this.OnMessageAdded;
             }
         }
 
@@ -75,11 +79,11 @@
                 this.NewMessageAdded.WaitOne();
                 IMessage message = null;
 
-                while ((message = this.MessageStore.Get()) != null)
+                while ((message = this.VolatileStore.Get()) != null)
                 {
-                    this.Repository.Enqueue(message);
+                    this.PersistentStore.Add(message);
 
-                    this.MessageStore.Remove();
+                    this.VolatileStore.Remove();
                 }
 
                 this.NewMessageAdded.Reset();

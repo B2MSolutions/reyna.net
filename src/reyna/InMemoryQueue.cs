@@ -5,7 +5,7 @@
     using System.Collections.Generic;
     using Reyna.Interfaces;
 
-    public class InMemoryQueue : IMessageStore
+    public class InMemoryQueue : IRepository
     {
         private Queue<IMessage> queue;
 
@@ -22,6 +22,10 @@
             {
                 return ((ICollection)this.queue).SyncRoot;
             }
+        }
+
+        public void Initialise()
+        {
         }
 
         public void Add(IMessage message)

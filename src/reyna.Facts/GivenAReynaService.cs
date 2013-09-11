@@ -8,17 +8,17 @@
     {
         public GivenAReynaService()
         {
-            this.Repository = new Mock<IRepository>();
-            this.Forward = new Mock<IForward>();
+            this.VolatileStore = new Mock<IRepository>();
+            this.StoreService = new Mock<IService>();
 
             this.ReynaService = new ReynaService();
-            this.ReynaService.Repository = this.Repository.Object;
-            this.ReynaService.Forward = this.Forward.Object;
+            this.ReynaService.VolatileStore = this.VolatileStore.Object;
+            this.ReynaService.StoreService = this.StoreService.Object;
         }
 
-        private Mock<IRepository> Repository { get; set; }
+        private Mock<IRepository> VolatileStore { get; set; }
 
-        private Mock<IForward> Forward { get; set; }
+        private Mock<IService> StoreService { get; set; }
 
         private ReynaService ReynaService { get; set; }
 
@@ -29,42 +29,34 @@
         }
 
         [Fact]
-        public void WhenCallingPutAndRepositoryDoesNotExistShouldCreateItBeforeEnqueueing()
+        public void WhenCallingPutShouldAddMessage()
         {
-            this.Repository.SetupGet(r => r.DoesNotExist).Returns(true);
-            this.Repository.Setup(r => r.Create());
-            this.Repository.Setup(r => r.Enqueue(It.IsAny<IMessage>()));
+            this.VolatileStore.Setup(r => r.Add(It.IsAny<IMessage>()));
 
             var message = new Message(null, null);
             this.ReynaService.Put(message);
 
-            this.Repository.VerifyGet(r => r.DoesNotExist, Times.Once());
-            this.Repository.Verify(r => r.Create(), Times.Once());
-            this.Repository.Verify(r => r.Enqueue(message), Times.Once());
+            this.VolatileStore.Verify(r => r.Add(message), Times.Once());
         }
 
         [Fact]
-        public void WhenCallingPutShouldEnqueueRecord()
+        public void WhenCallingStartShouldStartStoreService()
         {
-            this.Repository.SetupGet(r => r.DoesNotExist).Returns(false);
-            this.Repository.Setup(r => r.Enqueue(It.IsAny<IMessage>()));
+            this.StoreService.Setup(s => s.Start());
 
-            var message = new Message(null, null);
-            this.ReynaService.Put(message);
+            this.ReynaService.Start();
 
-            this.Repository.VerifyGet(r => r.DoesNotExist, Times.Once());
-            this.Repository.Verify(r => r.Enqueue(message), Times.Once());
+            this.StoreService.Verify(s => s.Start(), Times.Once());
         }
 
         [Fact]
-        public void WhenCallingPutShouldForwardMessages()
+        public void WhenCallingStopShouldStopStoreService()
         {
-            this.Forward.Setup(f => f.Send());
+            this.StoreService.Setup(s => s.Stop());
 
-            var message = new Message(null, null);
-            this.ReynaService.Put(message);
+            this.ReynaService.Stop();
 
-            this.Forward.Verify(f => f.Send(), Times.Once());
+            this.StoreService.Verify(s => s.Stop(), Times.Once());
         }
     }
 }

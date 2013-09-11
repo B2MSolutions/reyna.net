@@ -6,23 +6,23 @@
     using Reyna.Interfaces;
     using Xunit;
 
-    public class GivenAStore
+    public class GivenAStoreService
     {
         [Fact]
         public void WhenCallingStartAndMessageAddedShouldCallPutOnRepository()
         {
             var messageStore = new InMemoryQueue();
             var repository = new Mock<IRepository>();
-            repository.Setup(r => r.Enqueue(It.IsAny<IMessage>()));
+            repository.Setup(r => r.Add(It.IsAny<IMessage>()));
 
-            var store = new Store(messageStore, repository.Object);
+            var store = new StoreService(messageStore, repository.Object);
 
             store.Start();
             messageStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
             Thread.Sleep(200);
 
             Assert.Null(messageStore.Get());
-            repository.Verify(r => r.Enqueue(It.IsAny<IMessage>()), Times.Once());
+            repository.Verify(r => r.Add(It.IsAny<IMessage>()), Times.Once());
         }
 
         [Fact]
@@ -30,9 +30,9 @@
         {
             var messageStore = new InMemoryQueue();
             var repository = new Mock<IRepository>();
-            repository.Setup(r => r.Enqueue(It.IsAny<IMessage>()));
+            repository.Setup(r => r.Add(It.IsAny<IMessage>()));
 
-            var store = new Store(messageStore, repository.Object);
+            var store = new StoreService(messageStore, repository.Object);
 
             store.Start();
             Thread.Sleep(50);
@@ -43,7 +43,7 @@
             Thread.Sleep(200);
 
             Assert.NotNull(messageStore.Get());
-            repository.Verify(r => r.Enqueue(It.IsAny<IMessage>()), Times.Once());
+            repository.Verify(r => r.Add(It.IsAny<IMessage>()), Times.Once());
         }
 
         [Fact]
@@ -51,9 +51,9 @@
         {
             var messageStore = new InMemoryQueue();
             var repository = new Mock<IRepository>();
-            repository.Setup(r => r.Enqueue(It.IsAny<IMessage>()));
+            repository.Setup(r => r.Add(It.IsAny<IMessage>()));
 
-            var store = new Store(messageStore, repository.Object);
+            var store = new StoreService(messageStore, repository.Object);
 
             var messageAddingThread = new Thread(new ThreadStart(() =>
                 {
@@ -78,7 +78,7 @@
             Thread.Sleep(1000);
 
             Assert.Null(messageStore.Get());
-            repository.Verify(r => r.Enqueue(It.IsAny<IMessage>()), Times.Exactly(10));
+            repository.Verify(r => r.Add(It.IsAny<IMessage>()), Times.Exactly(10));
         }
 
         [Fact]
@@ -86,7 +86,7 @@
         {
             var messageStore = new InMemoryQueue();
             var repository = new Mock<IRepository>();
-            var store = new Store(messageStore, repository.Object);
+            var store = new StoreService(messageStore, repository.Object);
             
             store.Stop();
         }
@@ -97,7 +97,7 @@
             var messageStore = new InMemoryQueue();
             var repository = new Mock<IRepository>();
 
-            var store = new Store(messageStore, repository.Object);
+            var store = new StoreService(messageStore, repository.Object);
 
             store.Dispose();
         }
@@ -105,21 +105,21 @@
         [Fact]
         public void WhenConstructingWithBothNullParametersShouldThrow()
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => new Store(null, null));
+            var exception = Assert.Throws<ArgumentNullException>(() => new StoreService(null, null));
             Assert.Equal("messageStore", exception.ParamName);
         }
 
         [Fact]
         public void WhenConstructingWithNullMessageStoreParameterShouldThrow()
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => new Store(null, new Mock<IRepository>().Object));
+            var exception = Assert.Throws<ArgumentNullException>(() => new StoreService(null, new Mock<IRepository>().Object));
             Assert.Equal("messageStore", exception.ParamName);
         }
 
         [Fact]
         public void WhenConstructingWithNullRepositoryParameterShouldThrow()
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => new Store(new InMemoryQueue(), null));
+            var exception = Assert.Throws<ArgumentNullException>(() => new StoreService(new InMemoryQueue(), null));
             Assert.Equal("repository", exception.ParamName);
         }
     }

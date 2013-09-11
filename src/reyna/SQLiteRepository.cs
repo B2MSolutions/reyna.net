@@ -22,11 +22,13 @@
 
         private delegate void ExecuteActionInTransaction(IMessage message, DbTransaction transaction);
 
-        public bool DoesNotExist
+        public event EventHandler<EventArgs> MessageAdded;
+
+        internal bool Exists
         {
             get
             {
-                return !File.Exists(this.DatabasePath);
+                return File.Exists(this.DatabasePath);
             }
         }
 
@@ -39,20 +41,19 @@
             }
         }
 
-        public void Create()
+        public void Initialise()
         {
-            SQLiteConnection.CreateFile(this.DatabasePath);
-
-            this.ExecuteInTransaction((t) =>
-                {
-                    var sql = SQLiteRepository.CreateTableSql;
-                    this.ExecuteNonQuery(sql, t);
-                });
+            if (this.Exists)
+            {
+                return;
+            }
+            
+            this.Create();
         }
 
-        public IMessage Enqueue(IMessage message)
+        public void Add(IMessage message)
         {
-            return this.ExecuteInTransaction((t) =>
+            this.ExecuteInTransaction((t) =>
                 {
                     var sql = SQLiteRepository.InsertMessageSql;
                     var url = this.CreateParameter("@url", message.Url);
@@ -68,16 +69,19 @@
                         this.ExecuteScalar(sql, t, messageId, key, value);
                     }
 
-                    return this.AssignIdTo(message, id);
+                    if (this.MessageAdded != null)
+                    {
+                        this.MessageAdded.Invoke(this, EventArgs.Empty);
+                    }
                 });
         }
 
-        public IMessage Peek()
+        public IMessage Get()
         {
             return this.GetFirstInQueue();
         }
 
-        public IMessage Dequeue()
+        public IMessage Remove()
         {
             return this.GetFirstInQueue((message, t) =>
                 {
@@ -87,18 +91,15 @@
                 });
         }
 
-        private IMessage AssignIdTo(IMessage message, int id)
+        internal void Create()
         {
-            var clone = new Message(message.Url, message.Body)
-            {
-                Id = id
-            };
-            foreach (string key in message.Headers)
-            {
-                clone.Headers.Add(key, message.Headers[key]);
-            }
+            SQLiteConnection.CreateFile(this.DatabasePath);
 
-            return clone;
+            this.ExecuteInTransaction((t) =>
+            {
+                var sql = SQLiteRepository.CreateTableSql;
+                this.ExecuteNonQuery(sql, t);
+            });
         }
 
         private DbConnection CreateConnection()

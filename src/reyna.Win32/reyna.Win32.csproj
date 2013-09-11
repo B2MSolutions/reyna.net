@@ -75,14 +75,14 @@
     <Compile Include="..\reyna\Interfaces\IMessage.cs">
       <Link>Interfaces\IMessage.cs</Link>
     </Compile>
-    <Compile Include="..\reyna\Interfaces\IMessageStore.cs">
-      <Link>Interfaces\IMessageStore.cs</Link>
-    </Compile>
     <Compile Include="..\reyna\Interfaces\IRepository.cs">
       <Link>Interfaces\IRepository.cs</Link>
     </Compile>
-    <Compile Include="..\reyna\Interfaces\IStore.cs">
-      <Link>Interfaces\IStore.cs</Link>
+    <Compile Include="..\reyna\Interfaces\IReyna.cs">
+      <Link>Interfaces\IReyna.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Interfaces\IService.cs">
+      <Link>Interfaces\IService.cs</Link>
     </Compile>
     <Compile Include="..\reyna\Interfaces\Result.cs">
       <Link>Interfaces\Result.cs</Link>
@@ -96,8 +96,8 @@
     <Compile Include="..\reyna\SQLiteRepository.cs">
       <Link>SQLiteRepository.cs</Link>
     </Compile>
-    <Compile Include="..\reyna\Store.cs">
-      <Link>Store.cs</Link>
+    <Compile Include="..\reyna\StoreService.cs">
+      <Link>StoreService.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
