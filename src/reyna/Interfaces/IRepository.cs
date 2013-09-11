@@ -2,7 +2,7 @@
 {
     using System;
 
-    internal interface IRepository
+    public interface IRepository
     {
         bool DoesNotExist { get; }
 

@@ -64,6 +64,7 @@
     <Compile Include="GivenAnAcceptAllCertificatePolicy.cs" />
     <Compile Include="GivenAnHttpStatusCode.cs" />
     <Compile Include="GivenAnInMemoryQueue.cs" />
+    <Compile Include="GivenAReynaService.cs" />
     <Compile Include="GivenAStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -1,70 +1,126 @@
 ﻿namespace Reyna.Facts
 {
+    using System;
+    using System.Threading;
     using Moq;
     using Reyna.Interfaces;
     using Xunit;
 
     public class GivenAStore
     {
-        public GivenAStore()
+        [Fact]
+        public void WhenCallingStartAndMessageAddedShouldCallPutOnRepository()
         {
-            this.Repository = new Mock<IRepository>();
-            this.Forward = new Mock<IForward>();
+            var messageStore = new InMemoryQueue();
+            var repository = new Mock<IRepository>();
+            repository.Setup(r => r.Enqueue(It.IsAny<IMessage>()));
+
+            var store = new Store(messageStore, repository.Object);
+
+            store.Start();
+            messageStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
+            Thread.Sleep(200);
+
+            Assert.Null(messageStore.Get());
+            repository.Verify(r => r.Enqueue(It.IsAny<IMessage>()), Times.Once());
+        }
+
+        [Fact]
+        public void WhenCallingStartAndMessageAddedThenImmediatelyStopShouldNotCallPutOnRepository()
+        {
+            var messageStore = new InMemoryQueue();
+            var repository = new Mock<IRepository>();
+            repository.Setup(r => r.Enqueue(It.IsAny<IMessage>()));
+
+            var store = new Store(messageStore, repository.Object);
+
+            store.Start();
+            Thread.Sleep(50);
+            messageStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
+            store.Stop();
+            Thread.Sleep(200);
+            messageStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
+            Thread.Sleep(200);
+
+            Assert.NotNull(messageStore.Get());
+            repository.Verify(r => r.Enqueue(It.IsAny<IMessage>()), Times.Once());
+        }
+
+        [Fact]
+        public void WhenCallingStartAndStopRapidlyWhilstAddingMessagesShouldNotCallPutOnRepository()
+        {
+            var messageStore = new InMemoryQueue();
+            var repository = new Mock<IRepository>();
+            repository.Setup(r => r.Enqueue(It.IsAny<IMessage>()));
+
+            var store = new Store(messageStore, repository.Object);
+
+            var messageAddingThread = new Thread(new ThreadStart(() =>
+                {
+                    for (int j = 0; j < 10; j++)
+                    {
+                        messageStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
+                        Thread.Sleep(100);
+                    }
+                }));
+
+            messageAddingThread.Start();
+            Thread.Sleep(50);
+
+            for (int k = 0; k < 10; k++)
+            {
+                store.Start();
+                Thread.Sleep(50);
+                store.Stop();
+                Thread.Sleep(200);
+            }
+
+            Thread.Sleep(1000);
+
+            Assert.Null(messageStore.Get());
+            repository.Verify(r => r.Enqueue(It.IsAny<IMessage>()), Times.Exactly(10));
+        }
+
+        [Fact]
+        public void WhenCallingStopOnStoreThatHasntStartedShouldNotThrow()
+        {
+            var messageStore = new InMemoryQueue();
+            var repository = new Mock<IRepository>();
+            var store = new Store(messageStore, repository.Object);
             
-            this.Store = new Store();
-            this.Store.Repository = this.Repository.Object;
-            this.Store.Forward = this.Forward.Object;
-        }
-
-        private Mock<IRepository> Repository { get; set; }
-
-        private Mock<IForward> Forward { get; set; }
-
-        private Store Store { get; set; }
-
-        [Fact]
-        public void WhenConstructingShouldNotThrow()
-        {
-            Assert.NotNull(this.Store);
+            store.Stop();
         }
 
         [Fact]
-        public void WhenCallingPutAndRepositoryDoesNotExistShouldCreateItBeforeEnqueueing()
+        public void WhenCallingDisposeShouldNotThrow()
         {
-            this.Repository.SetupGet(r => r.DoesNotExist).Returns(true);
-            this.Repository.Setup(r => r.Create());
-            this.Repository.Setup(r => r.Enqueue(It.IsAny<IMessage>()));
+            var messageStore = new InMemoryQueue();
+            var repository = new Mock<IRepository>();
 
-            var message = new Message(null, null);
-            this.Store.Put(message);
+            var store = new Store(messageStore, repository.Object);
 
-            this.Repository.VerifyGet(r => r.DoesNotExist, Times.Once());
-            this.Repository.Verify(r => r.Create(), Times.Once());
-            this.Repository.Verify(r => r.Enqueue(message), Times.Once());
+            store.Dispose();
         }
 
         [Fact]
-        public void WhenCallingPutShouldEnqueueRecord()
+        public void WhenConstructingWithBothNullParametersShouldThrow()
         {
-            this.Repository.SetupGet(r => r.DoesNotExist).Returns(false);
-            this.Repository.Setup(r => r.Enqueue(It.IsAny<IMessage>()));
-
-            var message = new Message(null, null);
-            this.Store.Put(message);
-
-            this.Repository.VerifyGet(r => r.DoesNotExist, Times.Once());
-            this.Repository.Verify(r => r.Enqueue(message), Times.Once());
+            var exception = Assert.Throws<ArgumentNullException>(() => new Store(null, null));
+            Assert.Equal("messageStore", exception.ParamName);
         }
 
         [Fact]
-        public void WhenCallingPutShouldForwardMessages()
+        public void WhenConstructingWithNullMessageStoreParameterShouldThrow()
         {
-            this.Forward.Setup(f => f.Send());
+            var exception = Assert.Throws<ArgumentNullException>(() => new Store(null, new Mock<IRepository>().Object));
+            Assert.Equal("messageStore", exception.ParamName);
+        }
 
-            var message = new Message(null, null);
-            this.Store.Put(message);
-
-            this.Forward.Verify(f => f.Send(), Times.Once());
+        [Fact]
+        public void WhenConstructingWithNullRepositoryParameterShouldThrow()
+        {
+            var exception = Assert.Throws<ArgumentNullException>(() => new Store(new InMemoryQueue(), null));
+            Assert.Equal("repository", exception.ParamName);
         }
     }
 }

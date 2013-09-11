@@ -1,26 +1,32 @@
 ﻿namespace Reyna
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using Reyna.Interfaces;
 
     public class InMemoryQueue : IMessageStore
     {
-        private object padlock;
-
         private Queue<IMessage> queue;
 
         public InMemoryQueue()
         {
-            this.padlock = new object();
             this.queue = new Queue<IMessage>();
         }
 
         public event EventHandler<EventArgs> MessageAdded;
 
+        private object SyncRoot
+        {
+            get
+            {
+                return ((ICollection)this.queue).SyncRoot;
+            }
+        }
+
         public void Add(IMessage message)
         {
-            lock (this.padlock)
+            lock (this.SyncRoot)
             {
                 this.queue.Enqueue(message);
                 this.FireMessageAdded();
@@ -29,15 +35,20 @@
 
         public IMessage Get()
         {
-            lock (this.padlock)
+            lock (this.SyncRoot)
             {
+                if (this.queue.Count == 0)
+                {
+                    return null;
+                }
+
                 return this.queue.Peek();
             }
         }
 
         public IMessage Remove()
         {
-            lock (this.padlock)
+            lock (this.SyncRoot)
             {
                 if (this.queue.Count == 0)
                 {

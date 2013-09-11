@@ -31,6 +31,13 @@
         }
 
         [Fact]
+        public void WhenCallingGetAndIsEmptyShouldNotThrow()
+        {
+            var queue = new InMemoryQueue();
+            Assert.Null(queue.Get());
+        }
+
+        [Fact]
         public void WhenCallingRemoveAndIsEmptyShouldNotThrow()
         {
             var queue = new InMemoryQueue();
