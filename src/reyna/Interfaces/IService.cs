@@ -1,6 +1,8 @@
 ﻿namespace Reyna.Interfaces
 {
-    public interface IService
+    using System;
+
+    public interface IService : IDisposable
     {
         void Start();
         

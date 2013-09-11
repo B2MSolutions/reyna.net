@@ -57,17 +57,14 @@
     <Compile Include="..\reyna\Extensions\HttpStatusCodeExtensions.cs">
       <Link>Extensions\HttpStatusCodeExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\reyna\Forward.cs">
-      <Link>Forward.cs</Link>
+    <Compile Include="..\reyna\ForwardService.cs">
+      <Link>ForwardService.cs</Link>
     </Compile>
     <Compile Include="..\reyna\HttpClient.cs">
       <Link>HttpClient.cs</Link>
     </Compile>
     <Compile Include="..\reyna\InMemoryQueue.cs">
       <Link>InMemoryQueue.cs</Link>
-    </Compile>
-    <Compile Include="..\reyna\Interfaces\IForward.cs">
-      <Link>Interfaces\IForward.cs</Link>
     </Compile>
     <Compile Include="..\reyna\Interfaces\IHttpClient.cs">
       <Link>Interfaces\IHttpClient.cs</Link>

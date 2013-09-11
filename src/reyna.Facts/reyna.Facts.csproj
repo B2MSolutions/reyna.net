@@ -59,7 +59,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GivenAForward.cs" />
+    <Compile Include="GivenAForwardService.cs" />
     <Compile Include="GivenAMessage.cs" />
     <Compile Include="GivenAnAcceptAllCertificatePolicy.cs" />
     <Compile Include="GivenAnHttpStatusCode.cs" />

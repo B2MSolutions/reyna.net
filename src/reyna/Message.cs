@@ -5,7 +5,7 @@
     using System.Net;
     using Reyna.Interfaces;
 
-    public class Message : IMessage
+    public sealed class Message : IMessage
     {
         public Message(Uri url, string body)
         {

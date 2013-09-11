@@ -2,7 +2,7 @@
 {
     using Reyna.Interfaces;
 
-    public class ReynaService : IReyna
+    public sealed class ReynaService : IReyna
     {
         public ReynaService()
         {
@@ -31,6 +31,14 @@
         public void Put(IMessage message)
         {
             this.VolatileStore.Add(message);
+        }
+
+        public void Dispose()
+        {
+            if (this.StoreService != null)
+            {
+                this.StoreService.Dispose();
+            }
         }
     }
 }

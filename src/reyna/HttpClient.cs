@@ -7,7 +7,7 @@
     using Extensions;
     using Reyna.Interfaces;
 
-    internal class HttpClient : IHttpClient
+    internal sealed class HttpClient : IHttpClient
     {
         public HttpClient()
         {

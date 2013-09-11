@@ -3,7 +3,7 @@
     using System.Net;
     using System.Security.Cryptography.X509Certificates;
 
-    public class AcceptAllCertificatePolicy : ICertificatePolicy
+    internal sealed class AcceptAllCertificatePolicy : ICertificatePolicy
     {
         public bool CheckValidationResult(
             ServicePoint srvPoint,

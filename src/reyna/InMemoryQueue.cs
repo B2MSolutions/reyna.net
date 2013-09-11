@@ -5,7 +5,7 @@
     using System.Collections.Generic;
     using Reyna.Interfaces;
 
-    public class InMemoryQueue : IRepository
+    internal sealed class InMemoryQueue : IRepository
     {
         private Queue<IMessage> queue;
 

@@ -58,5 +58,15 @@
 
             this.StoreService.Verify(s => s.Stop(), Times.Once());
         }
+
+        [Fact]
+        public void WhenCallingDisposeShouldCallDisposeOnStoreService()
+        {
+            this.StoreService.Setup(s => s.Dispose());
+
+            this.ReynaService.Dispose();
+
+            this.StoreService.Verify(s => s.Dispose(), Times.Once());
+        }
     }
 }

@@ -2,7 +2,7 @@
 {
     using System;
 
-    public interface IRepository
+    internal interface IRepository
     {
         event EventHandler<EventArgs> MessageAdded;
 

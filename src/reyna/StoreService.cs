@@ -4,7 +4,7 @@
     using System.Threading;
     using Reyna.Interfaces;
 
-    public class StoreService : IService, IDisposable
+    internal sealed class StoreService : IService
     {
         public StoreService(IRepository volatileStore, IRepository persistentStore)
         {

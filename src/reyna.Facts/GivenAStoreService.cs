@@ -8,58 +8,59 @@
 
     public class GivenAStoreService
     {
+        public GivenAStoreService()
+        {
+            this.VolatileStore = new InMemoryQueue();
+            this.PersistentStore = new Mock<IRepository>();
+
+            this.PersistentStore.Setup(r => r.Add(It.IsAny<IMessage>()));
+
+            this.StoreService = new StoreService(this.VolatileStore, this.PersistentStore.Object);
+        }
+
+        private IRepository VolatileStore { get; set; }
+
+        private Mock<IRepository> PersistentStore { get; set; }
+
+        private IService StoreService { get; set; }
+
         [Fact]
         public void WhenCallingStartAndMessageAddedShouldCallPutOnRepository()
         {
-            var messageStore = new InMemoryQueue();
-            var repository = new Mock<IRepository>();
-            repository.Setup(r => r.Add(It.IsAny<IMessage>()));
+            this.StoreService.Start();
 
-            var store = new StoreService(messageStore, repository.Object);
-
-            store.Start();
-            messageStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
+            this.VolatileStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
             Thread.Sleep(200);
 
-            Assert.Null(messageStore.Get());
-            repository.Verify(r => r.Add(It.IsAny<IMessage>()), Times.Once());
+            Assert.Null(this.VolatileStore.Get());
+            this.PersistentStore.Verify(r => r.Add(It.IsAny<IMessage>()), Times.Once());
         }
 
         [Fact]
         public void WhenCallingStartAndMessageAddedThenImmediatelyStopShouldNotCallPutOnRepository()
         {
-            var messageStore = new InMemoryQueue();
-            var repository = new Mock<IRepository>();
-            repository.Setup(r => r.Add(It.IsAny<IMessage>()));
-
-            var store = new StoreService(messageStore, repository.Object);
-
-            store.Start();
+            this.StoreService.Start();
             Thread.Sleep(50);
-            messageStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
-            store.Stop();
-            Thread.Sleep(200);
-            messageStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
+
+            this.VolatileStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
+            this.StoreService.Stop();
             Thread.Sleep(200);
 
-            Assert.NotNull(messageStore.Get());
-            repository.Verify(r => r.Add(It.IsAny<IMessage>()), Times.Once());
+            this.VolatileStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
+            Thread.Sleep(200);
+
+            Assert.NotNull(this.VolatileStore.Get());
+            this.PersistentStore.Verify(r => r.Add(It.IsAny<IMessage>()), Times.Once());
         }
 
         [Fact]
         public void WhenCallingStartAndStopRapidlyWhilstAddingMessagesShouldNotCallPutOnRepository()
         {
-            var messageStore = new InMemoryQueue();
-            var repository = new Mock<IRepository>();
-            repository.Setup(r => r.Add(It.IsAny<IMessage>()));
-
-            var store = new StoreService(messageStore, repository.Object);
-
             var messageAddingThread = new Thread(new ThreadStart(() =>
                 {
                     for (int j = 0; j < 10; j++)
                     {
-                        messageStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
+                        this.VolatileStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
                         Thread.Sleep(100);
                     }
                 }));
@@ -69,37 +70,29 @@
 
             for (int k = 0; k < 10; k++)
             {
-                store.Start();
+                this.StoreService.Start();
                 Thread.Sleep(50);
-                store.Stop();
+
+                this.StoreService.Stop();
                 Thread.Sleep(200);
             }
 
             Thread.Sleep(1000);
 
-            Assert.Null(messageStore.Get());
-            repository.Verify(r => r.Add(It.IsAny<IMessage>()), Times.Exactly(10));
+            Assert.Null(this.VolatileStore.Get());
+            this.PersistentStore.Verify(r => r.Add(It.IsAny<IMessage>()), Times.Exactly(10));
         }
 
         [Fact]
         public void WhenCallingStopOnStoreThatHasntStartedShouldNotThrow()
         {
-            var messageStore = new InMemoryQueue();
-            var repository = new Mock<IRepository>();
-            var store = new StoreService(messageStore, repository.Object);
-            
-            store.Stop();
+            this.StoreService.Stop();
         }
 
         [Fact]
         public void WhenCallingDisposeShouldNotThrow()
         {
-            var messageStore = new InMemoryQueue();
-            var repository = new Mock<IRepository>();
-
-            var store = new StoreService(messageStore, repository.Object);
-
-            store.Dispose();
+            this.StoreService.Dispose();
         }
 
         [Fact]

@@ -9,7 +9,7 @@
     using System.Text;
     using Reyna.Interfaces;
 
-    internal class SQLiteRepository : IRepository
+    internal sealed class SQLiteRepository : IRepository
     {
         private const string CreateTableSql = "CREATE TABLE Message (id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT, body TEXT);CREATE TABLE Header (id INTEGER PRIMARY KEY AUTOINCREMENT, messageid INTEGER, key TEXT, value TEXT, FOREIGN KEY(messageid) REFERENCES message(id));";
         private const string InsertMessageSql = "INSERT INTO Message(url, body) VALUES(@url, @body); SELECT last_insert_rowid();";
