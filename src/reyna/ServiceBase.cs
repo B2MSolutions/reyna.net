@@ -1,16 +1,27 @@
 ﻿namespace Reyna
 {
     using System;
-    using System.Collections.Generic;
-    using System.Text;
     using System.Threading;
+    using Reyna.Interfaces;
 
-    internal abstract class ServiceBase
+    internal abstract class ServiceBase : IService
     {
-        public ServiceBase()
+        public ServiceBase(IRepository sourceStore)
         {
+            if (sourceStore == null)
+            {
+                throw new ArgumentNullException("sourceStore");
+            }
+
+            this.SourceStore = sourceStore;
+            this.SourceStore.Initialise();
+
             this.NewMessageAdded = new AutoResetEvent(false);
+
+            this.SourceStore.MessageAdded += this.OnMessageAdded;
         }
+
+        protected IRepository SourceStore { get; set; }
 
         protected bool Terminate { get; set; }
 
@@ -32,6 +43,16 @@
             this.Terminate = true;
             this.NewMessageAdded.Set();
             this.WaitForWorkingThreadToFinish();
+        }
+
+        public void Dispose()
+        {
+            this.Stop();
+
+            if (this.SourceStore != null)
+            {
+                this.SourceStore.MessageAdded -= this.OnMessageAdded;
+            }
         }
 
         protected void WaitForWorkingThreadToFinish()

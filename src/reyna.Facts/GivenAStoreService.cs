@@ -111,21 +111,21 @@
         public void WhenConstructingWithBothNullParametersShouldThrow()
         {
             var exception = Assert.Throws<ArgumentNullException>(() => new StoreService(null, null));
-            Assert.Equal("volatileStore", exception.ParamName);
+            Assert.Equal("sourceStore", exception.ParamName);
         }
 
         [Fact]
         public void WhenConstructingWithNullMessageStoreParameterShouldThrow()
         {
             var exception = Assert.Throws<ArgumentNullException>(() => new StoreService(null, new Mock<IRepository>().Object));
-            Assert.Equal("volatileStore", exception.ParamName);
+            Assert.Equal("sourceStore", exception.ParamName);
         }
 
         [Fact]
         public void WhenConstructingWithNullRepositoryParameterShouldThrow()
         {
             var exception = Assert.Throws<ArgumentNullException>(() => new StoreService(new InMemoryQueue(), null));
-            Assert.Equal("persistentStore", exception.ParamName);
+            Assert.Equal("targetStore", exception.ParamName);
         }
     }
 }

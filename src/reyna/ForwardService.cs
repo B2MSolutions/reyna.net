@@ -3,39 +3,20 @@
     using System;
     using Reyna.Interfaces;
 
-    internal sealed class ForwardService : ServiceBase, IService
+    internal sealed class ForwardService : ServiceBase
     {
-        public ForwardService(IRepository persistentStore, IHttpClient httpClient)
+        public ForwardService(IRepository sourceStore, IHttpClient httpClient) : base(sourceStore)
         {
-            if (persistentStore == null)
-            {
-                throw new ArgumentNullException("persistentStore");
-            }
-
             if (httpClient == null)
             {
                 throw new ArgumentNullException("httpClient");
             }
 
-            this.PersistentStore = persistentStore;
             this.HttpClient = httpClient;
-            this.PersistentStore.MessageAdded += OnMessageAdded;
         }
-
-        private IRepository PersistentStore { get; set; }
 
         private IHttpClient HttpClient { get; set; }
         
-        public void Dispose()
-        {
-            this.Stop();
-
-            if (this.PersistentStore != null)
-            {
-                this.PersistentStore.MessageAdded -= this.OnMessageAdded;
-            }
-        }
-
         protected override void ThreadStart()
         {
             while (!this.Terminate)
@@ -43,7 +24,7 @@
                 this.NewMessageAdded.WaitOne();
                 IMessage message = null;
 
-                while ((message = this.PersistentStore.Get()) != null)
+                while ((message = this.SourceStore.Get()) != null)
                 {
                     var result = this.HttpClient.Post(message);
                     if (result == Result.TemporaryError)
@@ -51,7 +32,7 @@
                         break;
                     }
 
-                    this.PersistentStore.Remove();
+                    this.SourceStore.Remove();
                 }
 
                 this.NewMessageAdded.Reset();

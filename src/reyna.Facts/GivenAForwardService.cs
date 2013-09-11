@@ -124,14 +124,14 @@
         public void WhenConstructingWithBothNullParametersShouldThrow()
         {
             var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(null, null));
-            Assert.Equal("persistentStore", exception.ParamName);
+            Assert.Equal("sourceStore", exception.ParamName);
         }
 
         [Fact]
         public void WhenConstructingWithNullMessageStoreParameterShouldThrow()
         {
             var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(null, new Mock<IHttpClient>().Object));
-            Assert.Equal("persistentStore", exception.ParamName);
+            Assert.Equal("sourceStore", exception.ParamName);
         }
 
         [Fact]

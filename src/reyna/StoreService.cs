@@ -4,42 +4,20 @@
     using System.Threading;
     using Reyna.Interfaces;
 
-    internal sealed class StoreService : ServiceBase, IService
+    internal sealed class StoreService : ServiceBase
     {
-        public StoreService(IRepository volatileStore, IRepository persistentStore) : base()
+        public StoreService(IRepository sourceStore, IRepository targetStore) : base(sourceStore)
         {
-            if (volatileStore == null)
+            if (targetStore == null)
             {
-                throw new ArgumentNullException("volatileStore");
+                throw new ArgumentNullException("targetStore");
             }
 
-            if (persistentStore == null)
-            {
-                throw new ArgumentNullException("persistentStore");
-            }
-
-            this.VolatileStore = volatileStore;
-            this.PersistentStore = persistentStore;
-
-            this.VolatileStore.Initialise();
-            this.PersistentStore.Initialise();
-
-            this.VolatileStore.MessageAdded += this.OnMessageAdded;
+            this.TargetStore = targetStore;
+            this.TargetStore.Initialise();
         }
 
-        private IRepository VolatileStore { get; set; }
-
-        private IRepository PersistentStore { get; set; }
-
-        public void Dispose()
-        {
-            this.Stop();
-
-            if (this.VolatileStore != null)
-            {
-                this.VolatileStore.MessageAdded -= this.OnMessageAdded;
-            }
-        }
+        private IRepository TargetStore { get; set; }
 
         protected override void ThreadStart()
         {
@@ -48,11 +26,11 @@
                 this.NewMessageAdded.WaitOne();
                 IMessage message = null;
 
-                while ((message = this.VolatileStore.Get()) != null)
+                while ((message = this.SourceStore.Get()) != null)
                 {
-                    this.PersistentStore.Add(message);
+                    this.TargetStore.Add(message);
 
-                    this.VolatileStore.Remove();
+                    this.SourceStore.Remove();
                 }
 
                 this.NewMessageAdded.Reset();
