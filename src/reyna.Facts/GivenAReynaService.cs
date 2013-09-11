@@ -10,15 +10,19 @@
         {
             this.VolatileStore = new Mock<IRepository>();
             this.StoreService = new Mock<IService>();
+            this.ForwardService = new Mock<IService>();
 
             this.ReynaService = new ReynaService();
             this.ReynaService.VolatileStore = this.VolatileStore.Object;
             this.ReynaService.StoreService = this.StoreService.Object;
+            this.ReynaService.ForwardService = this.ForwardService.Object;
         }
 
         private Mock<IRepository> VolatileStore { get; set; }
 
         private Mock<IService> StoreService { get; set; }
+
+        private Mock<IService> ForwardService { get; set; }
 
         private ReynaService ReynaService { get; set; }
 
@@ -43,30 +47,36 @@
         public void WhenCallingStartShouldStartStoreService()
         {
             this.StoreService.Setup(s => s.Start());
+            this.ForwardService.Setup(f => f.Start());
 
             this.ReynaService.Start();
 
             this.StoreService.Verify(s => s.Start(), Times.Once());
+            this.ForwardService.Verify(f => f.Start(), Times.Once());
         }
 
         [Fact]
         public void WhenCallingStopShouldStopStoreService()
         {
             this.StoreService.Setup(s => s.Stop());
+            this.ForwardService.Setup(f => f.Stop());
 
             this.ReynaService.Stop();
 
             this.StoreService.Verify(s => s.Stop(), Times.Once());
+            this.ForwardService.Verify(f => f.Stop(), Times.Once());
         }
 
         [Fact]
         public void WhenCallingDisposeShouldCallDisposeOnStoreService()
         {
             this.StoreService.Setup(s => s.Dispose());
+            this.ForwardService.Setup(s => s.Dispose());
 
             this.ReynaService.Dispose();
 
             this.StoreService.Verify(s => s.Dispose(), Times.Once());
+            this.ForwardService.Verify(f => f.Dispose(), Times.Once());
         }
     }
 }
