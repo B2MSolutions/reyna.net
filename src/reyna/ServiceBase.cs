@@ -6,7 +6,7 @@
 
     internal abstract class ServiceBase : ThreadWorker
     {
-        public ServiceBase(IRepository sourceStore, IWaitHandle waitHandle) : base(waitHandle)
+        public ServiceBase(IRepository sourceStore, IWaitHandle waitHandle, bool runOnStart) : base(waitHandle, runOnStart)
         {
             if (sourceStore == null)
             {

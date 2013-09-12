@@ -15,7 +15,7 @@
             store.Put(GetMessage());
             store.Put(GetMessage());
 
-            Thread.Sleep(200);
+            Thread.Sleep(100);
 
             store.Put(GetMessage());
             store.Put(GetMessage());

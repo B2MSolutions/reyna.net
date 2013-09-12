@@ -5,7 +5,7 @@
 
     internal sealed class ForwardService : ServiceBase
     {
-        public ForwardService(IRepository sourceStore, IHttpClient httpClient, INetworkStateService networkState, IWaitHandle waitHandle) : base(sourceStore, waitHandle)
+        public ForwardService(IRepository sourceStore, IHttpClient httpClient, INetworkStateService networkState, IWaitHandle waitHandle) : base(sourceStore, waitHandle, true)
         {
             if (httpClient == null)
             {

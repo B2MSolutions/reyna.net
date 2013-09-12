@@ -8,7 +8,7 @@
     {
         private volatile bool terminate;
 
-        public ThreadWorker(IWaitHandle waitHandle)
+        public ThreadWorker(IWaitHandle waitHandle, bool runOnStart)
         {
             if (waitHandle == null)
             {
@@ -16,6 +16,7 @@
             }
 
             this.WaitHandle = waitHandle;
+            this.RunOnStart = runOnStart;
         }
 
         protected IWaitHandle WaitHandle { get; set; }
@@ -35,10 +36,18 @@
 
         private Thread WorkingThread { get; set; }
 
+        private bool RunOnStart { get; set; }
+
         public virtual void Start()
         {
             this.SetWorkerThreadStartState();
             this.CreateWorkerThread();
+            
+            if (!this.RunOnStart)
+            {
+                return;
+            }
+
             this.SignalWorkToDo();
         }
 

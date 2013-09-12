@@ -6,9 +6,9 @@
     
     internal sealed class NetworkStateService : ThreadWorker, INetworkStateService
     {
-        public static readonly string NetworkConnectedNamedEvent = "\\\\.\\Notifications\\NamedEvents\\NetworkConnected";
+        public static readonly string NetworkConnectedNamedEvent = "Reyna\\NetworkConnected";
 
-        public NetworkStateService(ISystemNotifier systemNotifier, IWaitHandle waitHandle) : base(waitHandle)
+        public NetworkStateService(ISystemNotifier systemNotifier, IWaitHandle waitHandle) : base(waitHandle, false)
         {
             if (systemNotifier == null)
             {

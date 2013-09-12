@@ -53,7 +53,7 @@
         {
             this.NetworkStateService.Start();
 
-            this.SystemNotifier.Verify(s => s.NotifyOnNetworkConnect("\\\\.\\Notifications\\NamedEvents\\NetworkConnected"), Times.Once());
+            this.SystemNotifier.Verify(s => s.NotifyOnNetworkConnect("Reyna\\NetworkConnected"), Times.Once());
         }
 
         [Fact]
@@ -61,7 +61,7 @@
         {
             this.NetworkStateService.Stop();
 
-            this.SystemNotifier.Verify(s => s.ClearNotification("\\\\.\\Notifications\\NamedEvents\\NetworkConnected"), Times.Once());
+            this.SystemNotifier.Verify(s => s.ClearNotification("Reyna\\NetworkConnected"), Times.Once());
         }
 
         [Fact]
@@ -69,7 +69,7 @@
         {
             this.NetworkStateService.Dispose();
 
-            this.SystemNotifier.Verify(s => s.ClearNotification("\\\\.\\Notifications\\NamedEvents\\NetworkConnected"), Times.Once());
+            this.SystemNotifier.Verify(s => s.ClearNotification("Reyna\\NetworkConnected"), Times.Once());
         }
 
         [Fact]
@@ -83,7 +83,7 @@
             System.Threading.Thread.Sleep(100);
 
             Assert.True(connectedEventFired);
-            this.SystemNotifier.Verify(s => s.NotifyOnNetworkConnect("\\\\.\\Notifications\\NamedEvents\\NetworkConnected"), Times.Once());
+            this.SystemNotifier.Verify(s => s.NotifyOnNetworkConnect("Reyna\\NetworkConnected"), Times.Once());
         }
 
         [Fact]
