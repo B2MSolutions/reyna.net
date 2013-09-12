@@ -12,15 +12,18 @@
         {
             this.VolatileStore = new InMemoryQueue();
             this.PersistentStore = new Mock<IRepository>();
+            this.WaitHandle = new AutoResetEventAdapter(false);
 
             this.PersistentStore.Setup(r => r.Add(It.IsAny<IMessage>()));
 
-            this.StoreService = new StoreService(this.VolatileStore, this.PersistentStore.Object);
+            this.StoreService = new StoreService(this.VolatileStore, this.PersistentStore.Object, this.WaitHandle);
         }
 
         private IRepository VolatileStore { get; set; }
 
         private Mock<IRepository> PersistentStore { get; set; }
+
+        private IWaitHandle WaitHandle { get; set; }
 
         private IService StoreService { get; set; }
 
@@ -110,22 +113,29 @@
         [Fact]
         public void WhenConstructingWithBothNullParametersShouldThrow()
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => new StoreService(null, null));
+            var exception = Assert.Throws<ArgumentNullException>(() => new StoreService(null, null, this.WaitHandle));
             Assert.Equal("sourceStore", exception.ParamName);
         }
 
         [Fact]
         public void WhenConstructingWithNullMessageStoreParameterShouldThrow()
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => new StoreService(null, new Mock<IRepository>().Object));
+            var exception = Assert.Throws<ArgumentNullException>(() => new StoreService(null, new Mock<IRepository>().Object, this.WaitHandle));
             Assert.Equal("sourceStore", exception.ParamName);
         }
 
         [Fact]
         public void WhenConstructingWithNullRepositoryParameterShouldThrow()
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => new StoreService(new InMemoryQueue(), null));
+            var exception = Assert.Throws<ArgumentNullException>(() => new StoreService(new InMemoryQueue(), null, this.WaitHandle));
             Assert.Equal("targetStore", exception.ParamName);
+        }
+
+        [Fact]
+        public void WhenConstructingWithNullWaitHandleStateParameterShouldThrow()
+        {
+            var exception = Assert.Throws<ArgumentNullException>(() => new StoreService(new Mock<IRepository>().Object, new Mock<IRepository>().Object, null));
+            Assert.Equal("waitHandle", exception.ParamName);
         }
     }
 }

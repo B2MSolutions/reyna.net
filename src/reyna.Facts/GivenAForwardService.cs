@@ -13,8 +13,9 @@
         public GivenAForwardService()
         {
             this.PersistentStore = new SQLiteRepository();
-            
             this.HttpClient = new Mock<IHttpClient>();
+            this.NetworkStateService = new Mock<INetworkStateService>();
+            this.WaitHandle = new AutoResetEventAdapter(false);
 
             File.Delete(this.DatabasePath);
             this.HttpClient.Setup(c => c.Post(It.IsAny<IMessage>()))
@@ -22,14 +23,18 @@
 
             this.PersistentStore.Initialise();
 
-            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object);
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle);
         }
 
-        internal IRepository PersistentStore { get; set; }
+        private IRepository PersistentStore { get; set; }
 
-        internal Mock<IHttpClient> HttpClient { get; set; }
+        private Mock<IHttpClient> HttpClient { get; set; }
 
-        internal IService ForwardService { get; set; }
+        private Mock<INetworkStateService> NetworkStateService { get; set; }
+
+        private IWaitHandle WaitHandle { get; set; }
+
+        private IService ForwardService { get; set; }
 
         private string DatabasePath
         {
@@ -161,24 +166,38 @@
         }
 
         [Fact]
-        public void WhenConstructingWithBothNullParametersShouldThrow()
+        public void WhenConstructingWithAllNullParametersShouldThrow()
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(null, null));
+            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(null, null, null, this.WaitHandle));
             Assert.Equal("sourceStore", exception.ParamName);
         }
 
         [Fact]
-        public void WhenConstructingWithNullMessageStoreParameterShouldThrow()
+        public void WhenConstructingWithNullSourceStoreParameterShouldThrow()
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(null, new Mock<IHttpClient>().Object));
+            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(null, new Mock<IHttpClient>().Object, new Mock<INetworkStateService>().Object, this.WaitHandle));
             Assert.Equal("sourceStore", exception.ParamName);
         }
 
         [Fact]
-        public void WhenConstructingWithNullRepositoryParameterShouldThrow()
+        public void WhenConstructingWithNullHttpClientParameterShouldThrow()
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(new Mock<IRepository>().Object, null));
+            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(new Mock<IRepository>().Object, null, new Mock<INetworkStateService>().Object, this.WaitHandle));
             Assert.Equal("httpClient", exception.ParamName);
+        }
+
+        [Fact]
+        public void WhenConstructingWithNullNetworkStateParameterShouldThrow()
+        {
+            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(new Mock<IRepository>().Object, new Mock<IHttpClient>().Object, null, this.WaitHandle));
+            Assert.Equal("networkState", exception.ParamName);
+        }
+
+        [Fact]
+        public void WhenConstructingWithNullWaitHandleStateParameterShouldThrow()
+        {
+            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(new Mock<IRepository>().Object, new Mock<IHttpClient>().Object, new Mock<INetworkStateService>().Object, null));
+            Assert.Equal("waitHandle", exception.ParamName);
         }
 
         [Fact]
@@ -221,6 +240,65 @@
 
             Assert.NotNull(this.PersistentStore.Get());
             this.HttpClient.Verify(c => c.Post(It.IsAny<IMessage>()), Times.Once());
+        }
+
+        [Fact]
+        public void WhenCallingNetworkStateChangeShouldPostAllMessages()
+        {
+            var networkStateWaitHandle = new AutoResetEventAdapter(false);
+            var networkState = new NetworkStateService(new Mock<ISystemNotifier>().Object, networkStateWaitHandle);
+
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, networkState, this.WaitHandle);
+
+            var returnResult = Result.TemporaryError;
+            this.HttpClient.Setup(c => c.Post(It.IsAny<IMessage>()))
+                .Returns(() => returnResult);
+
+            var message = this.CreateMessage();
+
+            this.ForwardService.Start();
+            networkState.Start();
+            Thread.Sleep(50);
+
+            this.PersistentStore.Add(message);
+            this.PersistentStore.Add(message);
+            this.PersistentStore.Add(message);
+            Thread.Sleep(200);
+
+            returnResult = Result.Ok;
+            networkStateWaitHandle.Set();
+            Thread.Sleep(500);
+
+            Assert.Null(this.PersistentStore.Get());
+        }
+
+        [Fact]
+        public void WhenCallingNetworkStateChangeAndServiceStopedShouldNotPostAllMessages()
+        {
+            var networkStateWaitHandle = new AutoResetEventAdapter(false);
+            var networkState = new NetworkStateService(new Mock<ISystemNotifier>().Object, networkStateWaitHandle);
+
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, networkState, this.WaitHandle);
+
+            var returnResult = Result.TemporaryError;
+            this.HttpClient.Setup(c => c.Post(It.IsAny<IMessage>()))
+                .Returns(() => returnResult);
+
+            var message = this.CreateMessage();
+
+            this.ForwardService.Start();
+            networkState.Start();
+            Thread.Sleep(50);
+
+            this.PersistentStore.Add(message);
+            Thread.Sleep(200);
+
+            this.ForwardService.Stop();
+            returnResult = Result.Ok;
+            networkStateWaitHandle.Set();
+            Thread.Sleep(500);
+
+            Assert.NotNull(this.PersistentStore.Get());
         }
 
         private IMessage CreateMessage()

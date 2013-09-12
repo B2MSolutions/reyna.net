@@ -6,7 +6,7 @@
 
     internal sealed class StoreService : ServiceBase
     {
-        public StoreService(IRepository sourceStore, IRepository targetStore) : base(sourceStore)
+        public StoreService(IRepository sourceStore, IRepository targetStore, IWaitHandle waitHandle) : base(sourceStore, waitHandle)
         {
             if (targetStore == null)
             {
@@ -23,7 +23,7 @@
         {
             while (!this.Terminate)
             {
-                this.DoWorkEvent.WaitOne();
+                this.WaitHandle.WaitOne();
                 IMessage message = null;
 
                 while ((message = this.SourceStore.Get()) != null)
@@ -33,7 +33,7 @@
                     this.SourceStore.Remove();
                 }
 
-                this.DoWorkEvent.Reset();
+                this.WaitHandle.Reset();
             }
         }
     }
