@@ -62,6 +62,8 @@
 
                     sql = SQLiteRepository.InsertHeaderSql;
                     var messageId = this.CreateParameter("@messageId", id);
+
+                    this.AddReynaIdToHeaders(message, id);
                     foreach (string headerKey in message.Headers.Keys)
                     {
                         var key = this.CreateParameter("@key", headerKey);
@@ -236,6 +238,11 @@
             var key = reader["key"] as string;
             var value = reader["value"] as string;
             message.Headers.Add(key, value);
+        }
+
+        private void AddReynaIdToHeaders(IMessage message, int id)
+        {
+            message.Headers.Add("reyna-id", id.ToString());
         }
     }
 }

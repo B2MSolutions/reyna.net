@@ -106,14 +106,16 @@
             int mesageRowsCount = this.ExecuteScalar("SELECT COUNT(1) FROM Message");
             int headerRowsCount = this.ExecuteScalar("SELECT COUNT(1) FROM Header");
             Assert.Equal(1, mesageRowsCount);
-            Assert.Equal(2, headerRowsCount);
+            Assert.Equal(3, headerRowsCount);
 
             var storedMessage = this.GetMessages()[0];
             Assert.Equal(new Uri("http://HOST.com:9080/home"), storedMessage.Url);
             Assert.Equal("{\"body\": body}", storedMessage.Body);
-            Assert.Equal(2, storedMessage.Headers.Count);
+            
+            Assert.Equal(3, storedMessage.Headers.Count);
             Assert.Equal("VALUE", storedMessage.Headers["PARAM"]);
             Assert.Equal("application/josn", storedMessage.Headers["Content_Type"]);
+            Assert.Equal("1", storedMessage.Headers["reyna-id"]);
         }
 
         [Fact]
