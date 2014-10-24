@@ -106,16 +106,15 @@
             int mesageRowsCount = this.ExecuteScalar("SELECT COUNT(1) FROM Message");
             int headerRowsCount = this.ExecuteScalar("SELECT COUNT(1) FROM Header");
             Assert.Equal(1, mesageRowsCount);
-            Assert.Equal(3, headerRowsCount);
+            Assert.Equal(2, headerRowsCount);
 
             var storedMessage = this.GetMessages()[0];
             Assert.Equal(new Uri("http://HOST.com:9080/home"), storedMessage.Url);
             Assert.Equal("{\"body\": body}", storedMessage.Body);
             
-            Assert.Equal(3, storedMessage.Headers.Count);
+            Assert.Equal(2, storedMessage.Headers.Count);
             Assert.Equal("VALUE", storedMessage.Headers["PARAM"]);
             Assert.Equal("application/josn", storedMessage.Headers["Content_Type"]);
-            Assert.Equal("1", storedMessage.Headers["reyna-id"]);
         }
 
         [Fact]
@@ -136,6 +135,25 @@
             Assert.Equal("{\"body\": body}", message.Body);
             Assert.Equal("VALUE", message.Headers["PARAM"]);
             Assert.Equal("application/josn", message.Headers["Content_Type"]);
+            
+            Assert.Equal("1", message.Headers["reyna-id"]);
+        }
+
+        [Fact]
+        public void WhenCallingGetShouldReturnCorrectReynaId()
+        {
+            var message1 = this.GetMessage("http://HOST.com:9080/home1", "{\"body\": body}");
+            var message2 = this.GetMessage("http://HOST.com:9080/home2", "body");
+
+            this.Repository.Create();
+            this.Repository.Add(message1);
+            this.Repository.Add(message2);
+
+            var testMessage1 = this.Repository.Get();
+            this.Repository.Remove();
+            var testMessage2 = this.Repository.Get();
+            Assert.Equal("1", testMessage1.Headers["reyna-id"]);
+            Assert.Equal("2", testMessage2.Headers["reyna-id"]);
         }
 
         [Fact]
