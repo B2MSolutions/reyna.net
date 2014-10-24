@@ -24,6 +24,8 @@
             this.PersistentStore.Initialise();
 
             this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle);
+            this.ForwardService.TemporaryErrorMilliseconds = 100;
+            this.ForwardService.SleepMilliseconds = 0;
         }
 
         private IRepository PersistentStore { get; set; }
@@ -34,7 +36,7 @@
 
         private IWaitHandle WaitHandle { get; set; }
 
-        private IService ForwardService { get; set; }
+        private ForwardService ForwardService { get; set; }
 
         private string DatabasePath
         {
@@ -88,6 +90,7 @@
         {
             var message = this.CreateMessage();
 
+            this.ForwardService.SleepMilliseconds = 0;
             this.ForwardService.Start();
             Thread.Sleep(50);
 
@@ -249,25 +252,27 @@
             var networkState = new NetworkStateService(new Mock<ISystemNotifier>().Object, networkStateWaitHandle);
 
             this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, networkState, this.WaitHandle);
+            this.ForwardService.TemporaryErrorMilliseconds = 100;
+            this.ForwardService.SleepMilliseconds = 0;
 
-            var returnResult = Result.TemporaryError;
             this.HttpClient.Setup(c => c.Post(It.IsAny<IMessage>()))
-                .Returns(() => returnResult);
+                .Returns(Result.TemporaryError);
 
             var message = this.CreateMessage();
 
             this.ForwardService.Start();
             networkState.Start();
-            Thread.Sleep(50);
+            Thread.Sleep(100);
 
             this.PersistentStore.Add(message);
             this.PersistentStore.Add(message);
             this.PersistentStore.Add(message);
             Thread.Sleep(200);
 
-            returnResult = Result.Ok;
+            this.HttpClient.Setup(c => c.Post(It.IsAny<IMessage>()))
+                .Returns(Result.Ok);
             networkStateWaitHandle.Set();
-            Thread.Sleep(500);
+            Thread.Sleep(5000);
 
             Assert.Null(this.PersistentStore.Get());
         }
@@ -279,6 +284,8 @@
             var networkState = new NetworkStateService(new Mock<ISystemNotifier>().Object, networkStateWaitHandle);
 
             this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, networkState, this.WaitHandle);
+            this.ForwardService.TemporaryErrorMilliseconds = 100;
+            this.ForwardService.SleepMilliseconds = 0;
 
             var returnResult = Result.TemporaryError;
             this.HttpClient.Setup(c => c.Post(It.IsAny<IMessage>()))
@@ -299,6 +306,57 @@
             Thread.Sleep(500);
 
             Assert.NotNull(this.PersistentStore.Get());
+        }
+
+        [Fact]
+        public void WhenReceivingTemporaryErrorMessageFromServerShouldSleepFor5Minutes()
+        {
+            this.HttpClient.Setup(c => c.Post(It.IsAny<IMessage>()))
+                .Returns(Result.TemporaryError);
+
+            var waitHandle = new Mock<IWaitHandle>();
+            var store = new Mock<IRepository>();
+            store.Setup(s => s.Get()).Returns(this.CreateMessage());
+
+            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle.Object);
+            forwardService.TemporaryErrorMilliseconds = 1000;
+            forwardService.Start();
+            Thread.Sleep(500);
+            forwardService.Stop();
+
+            store.Verify(s => s.Get(), Times.Once());
+        }
+
+        [Fact]
+        public void WhenSendingMessagesShouldSleepFor1SecondBetweenEachMessage()
+        {
+            this.HttpClient.Setup(c => c.Post(It.IsAny<IMessage>()))
+                .Returns(Result.Ok);
+
+            var waitHandle = new Mock<IWaitHandle>();
+            var store = new Mock<IRepository>();
+            store.Setup(s => s.Get()).Returns(this.CreateMessage());
+
+            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle.Object);
+            forwardService.Start();
+            Thread.Sleep(3000);
+            forwardService.Stop();
+
+            store.Verify(s => s.Get(), Times.AtMost(3));
+        }
+
+        [Fact]
+        public void ShouldSetTemporaryErrorMillisecondsTo5Minutes()
+        {
+            var forwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle);
+            Assert.Equal(300000, forwardService.TemporaryErrorMilliseconds);
+        }
+
+        [Fact]
+        public void ShouldSetSleepMillisecondsTo1Second()
+        {
+            var forwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle);
+            Assert.Equal(1000, forwardService.SleepMilliseconds);
         }
 
         private IMessage CreateMessage()
