@@ -1,5 +1,7 @@
 ﻿namespace Reyna
 {
+    using System;
+    using Microsoft.Win32;
     using Reyna.Interfaces;
 
     public sealed class ReynaService : IReyna
@@ -19,7 +21,7 @@
             this.NetworkStateService = new NetworkStateService(this.SystemNotifier, this.NetworkWaitHandle);
 
             this.StoreService = new StoreService(this.VolatileStore, this.PersistentStore, this.StoreWaitHandle);
-            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient, this.NetworkStateService, this.ForwardWaitHandle);
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient, this.NetworkStateService, this.ForwardWaitHandle, this.ForwardServiceTemporaryErrorBackout, this.ForwardServiceMessageBackout);
         }
 
         internal IRepository VolatileStore { get; set; }
@@ -41,6 +43,22 @@
         internal IWaitHandle NetworkWaitHandle { get; set; }
 
         internal ISystemNotifier SystemNotifier { get; set; }
+
+        internal int ForwardServiceTemporaryErrorBackout
+        {
+            get 
+            {
+                return GetRegistryValue("TemporaryErrorBackout", 5 * 60 * 1000);
+            }
+        }
+
+        internal int ForwardServiceMessageBackout
+        {
+            get
+            {
+                return GetRegistryValue("MessageBackout", 1000);
+            }
+        }
 
         public void Start()
         {
@@ -76,6 +94,19 @@
             if (this.StoreService != null)
             {
                 this.StoreService.Dispose();
+            }
+        }
+
+        private static int GetRegistryValue(string keyName, int defaultValue)
+        {
+            using (var key = Registry.LocalMachine.OpenSubKey(@"Software\Reyna", false))
+            {
+                if (key == null)
+                {
+                    return defaultValue;
+                }
+
+                return Convert.ToInt32(key.GetValue(keyName, defaultValue));
             }
         }
     }

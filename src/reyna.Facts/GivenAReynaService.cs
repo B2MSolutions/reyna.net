@@ -1,5 +1,6 @@
 ﻿namespace Reyna.Facts
 {
+    using Microsoft.Win32;
     using Moq;
     using Reyna.Interfaces;
     using Xunit;
@@ -87,6 +88,44 @@
             this.StoreService.Verify(s => s.Dispose(), Times.Once());
             this.ForwardService.Verify(f => f.Dispose(), Times.Once());
             this.NetworkStateService.Verify(f => f.Dispose(), Times.Once());
+        }
+
+        [Fact]
+        public void WhenGettingForwardServiceTemporaryErrorBackoutAndNoRegistryKeyShouldReturnDefault5Minutes()
+        {
+            Assert.Equal(300000, this.ReynaService.ForwardServiceTemporaryErrorBackout);
+        }
+
+        [Fact]
+        public void WhenGettingForwardServiceTemporaryErrorBackoutAndRegistryKeyExistsShouldReturnExpected()
+        {
+            using (var key = Registry.LocalMachine.CreateSubKey(@"Software\Reyna"))
+            {
+                key.SetValue("TemporaryErrorBackout", 100);
+            }
+            
+            Assert.Equal(100, this.ReynaService.ForwardServiceTemporaryErrorBackout);
+
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
+        }
+
+        [Fact]
+        public void WhenGettingForwardServiceMessageBackoutAndNoRegistryKeyShouldReturnDefault5Minutes()
+        {
+            Assert.Equal(1000, this.ReynaService.ForwardServiceMessageBackout);
+        }
+
+        [Fact]
+        public void WhenGettingForwardServiceMessageBackoutAndRegistryKeyExistsShouldReturnExpected()
+        {
+            using (var key = Registry.LocalMachine.CreateSubKey(@"Software\Reyna"))
+            {
+                key.SetValue("MessageBackout", 10);
+            }
+
+            Assert.Equal(10, this.ReynaService.ForwardServiceMessageBackout);
+
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
         }
     }
 }

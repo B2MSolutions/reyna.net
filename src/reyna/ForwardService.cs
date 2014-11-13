@@ -6,7 +6,8 @@
 
     internal sealed class ForwardService : ServiceBase
     {
-        public ForwardService(IRepository sourceStore, IHttpClient httpClient, INetworkStateService networkState, IWaitHandle waitHandle) : base(sourceStore, waitHandle, true)
+        public ForwardService(IRepository sourceStore, IHttpClient httpClient, INetworkStateService networkState, IWaitHandle waitHandle, int temporaryErrorMilliseconds, int sleepMilliseconds)
+            : base(sourceStore, waitHandle, true)
         {
             if (httpClient == null)
             {
@@ -21,8 +22,8 @@
             this.HttpClient = httpClient;
             this.NetworkState = networkState;
 
-            this.TemporaryErrorMilliseconds = 5 * 60 * 1000;
-            this.SleepMilliseconds = 1000;
+            this.TemporaryErrorMilliseconds = temporaryErrorMilliseconds;
+            this.SleepMilliseconds = sleepMilliseconds;
 
             this.NetworkState.NetworkConnected += this.OnNetworkConnected;
         }
