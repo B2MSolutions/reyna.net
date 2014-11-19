@@ -10,22 +10,22 @@ Reyna is a standard .net class library and can be referenced through add referen
 
 
 ```C#
-	using Reyna;
-  using Reyna.Interfaces;
+  	using Reyna;
+  	using Reyna.Interfaces;
 
 	// Add any headers if required
 	Header[] headers = new Header[]
 	{
 		new Header("Content-Type", "application/json"),
 		new Header("myheader", "header content"),
-
+	
 		// gzip content when posting
 		new Header("Content-Encoding", "gzip")
 	};
 
 	// Create the message to send
 	var reynaMessage = new Reyna.Message(new URI("http://server.tosendmessageto.com"), "body of post, probably JSON");
-  reynaMessage.Headers.Add(headers);
+        reynaMessage.Headers.Add(headers);
     
 	// Send the message to Reyna
 	var reyna = new ReynaService();
