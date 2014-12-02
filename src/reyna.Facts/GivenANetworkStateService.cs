@@ -101,5 +101,11 @@
 
             Assert.Equal(1, connectedEventFired);
         }
+
+        [Fact]
+        public void WhenCallingStartAndNoSubscribersForNetworkConnectedEventShouldNotThrow()
+        {
+            Assert.DoesNotThrow(() => this.NetworkStateService.SendNetworkConnectedEvent());
+        }
     }
 }

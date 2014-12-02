@@ -272,7 +272,7 @@
             this.HttpClient.Setup(c => c.Post(It.IsAny<IMessage>()))
                 .Returns(Result.Ok);
             networkStateWaitHandle.Set();
-            Thread.Sleep(5000);
+            Thread.Sleep(6000);
 
             Assert.Null(this.PersistentStore.Get());
         }

@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TestRunConfiguration name="Local SmartDevices Test Run" id="cd80e8b3-a76a-45df-ae07-282f6b13f85f" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2006">
+  <Description>This is a default test run configuration for a local SmartDevice test run.</Description>
+  <Deployment>
+    <DeploymentItem filename="AcceptanceTests\SQLite.Interop.066.DLL" />
+  </Deployment>
+  <Hosts type="Smart Device">
+    <DeviceHostRunConfigData name="Smart Device" deviceId="A9003413-9177-48e3-9CFC-878F81226DFE" deviceName="Windows Mobile 5.0 Pocket PC Phone Emulator" platformId="4118C335-430C-497f-BE48-11C3316B135E" platformName="Windows Mobile 5.0 Pocket PC SDK" uiPlatformId="4118C335-430C-497f-BE48-11C3316B135E" />
+  </Hosts>
+  <TestTypeSpecific />
+</TestRunConfiguration>

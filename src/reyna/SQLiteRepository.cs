@@ -18,6 +18,15 @@
         private const string SelectTop1MessageSql = "SELECT id, url, body FROM Message ORDER BY id ASC LIMIT 1";
         private const string SelectHeaderSql = "SELECT key, value FROM Header WHERE messageid = @messageId";
 
+        public SQLiteRepository()
+        {
+        }
+
+        public SQLiteRepository(byte[] password)
+        {
+            this.Password = password;
+        }
+
         private delegate IMessage ExecuteFunctionInTransaction(DbTransaction transaction);
 
         private delegate void ExecuteActionInTransaction(IMessage message, DbTransaction transaction);
@@ -31,6 +40,8 @@
                 return File.Exists(this.DatabasePath);
             }
         }
+
+        internal byte[] Password { get; set; }
 
         private string DatabasePath
         {
@@ -107,6 +118,12 @@
         {
             var connectionString = string.Format("Data Source={0}", this.DatabasePath);
             var connection = new SQLiteConnection(connectionString);
+
+            if (this.Password != null && this.Password.Length > 0)
+            {
+                connection.SetPassword(this.Password);
+            }
+
             connection.Open();
             return connection;
         }

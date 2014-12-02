@@ -4,10 +4,14 @@
 
     public sealed class ReynaService : IReyna
     {
-        public ReynaService()
+        public ReynaService() : this(null)
+        {
+        }
+
+        public ReynaService(byte[] password)
         {
             this.VolatileStore = new InMemoryQueue();
-            this.PersistentStore = new SQLiteRepository();
+            this.PersistentStore = new SQLiteRepository(password);
             this.HttpClient = new HttpClient();
 
             this.StoreWaitHandle = new AutoResetEventAdapter(false);

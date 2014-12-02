@@ -37,6 +37,23 @@
         }
 
         [Fact]
+        public void WhenConstructingAndReceivedPasswordShouldPassPasswordToSQLiteRepository()
+        {
+            var password = new byte[] { 0xFF, 0xAA, 0xCC, 0xCC };
+            var reynaService = new ReynaService(password);
+
+            Assert.Equal(password, ((SQLiteRepository)reynaService.PersistentStore).Password); 
+        }
+
+        [Fact]
+        public void WhenConstructingWithoutPasswordShouldNotPassAnyPasswordToSQLiteRepository()
+        {
+            var reynaService = new ReynaService();
+
+            Assert.Null(((SQLiteRepository)reynaService.PersistentStore).Password);
+        }
+
+        [Fact]
         public void WhenCallingPutShouldAddMessage()
         {
             this.VolatileStore.Setup(r => r.Add(It.IsAny<IMessage>()));

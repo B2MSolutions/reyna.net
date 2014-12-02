@@ -34,6 +34,21 @@
             this.UnSubscribeToNetworkStateChange();
         }
 
+        internal void SendNetworkConnectedEvent()
+        {
+            if (this.Terminate)
+            {
+                return;
+            }
+
+            if (this.NetworkConnected == null)
+            {
+                return;
+            }
+
+            this.NetworkConnected.Invoke(this, EventArgs.Empty);
+        }
+
         protected override void ThreadStart()
         {
             while (!this.Terminate)
@@ -54,21 +69,6 @@
         private void UnSubscribeToNetworkStateChange()
         {
             this.SystemNotifier.ClearNotification(NetworkStateService.NetworkConnectedNamedEvent);
-        }
-
-        private void SendNetworkConnectedEvent()
-        {
-            if (this.Terminate)
-            {
-                return;
-            }
-            
-            if (this.NetworkConnected == null)
-            {
-                return;
-            }
-                
-            this.NetworkConnected.Invoke(this, EventArgs.Empty);
         }
     }
 }
