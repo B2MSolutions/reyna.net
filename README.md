@@ -30,7 +30,7 @@ Reyna is a standard .net class library and can be referenced through add referen
 	reyna.Put(reynaMessage);
 	
 ```
-## Latest version is 1.0.36
+## Latest version is 1.0.38
 
 ## Contributors
 Pair programmed by [Youhana Hana] (https://github.com/youhana-hana) and [Steve Wood](https://github.com/swood).
