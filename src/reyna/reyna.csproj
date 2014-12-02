@@ -72,10 +72,12 @@
   <ItemGroup>
     <Compile Include="AcceptAllCertificatePolicy.cs" />
     <Compile Include="AutoResetEventAdapter.cs" />
+    <Compile Include="EncryptionChecker.cs" />
     <Compile Include="Extensions\HttpStatusCodeExtensions.cs" />
     <Compile Include="ForwardService.cs" />
     <Compile Include="HttpClient.cs" />
     <Compile Include="InMemoryQueue.cs" />
+    <Compile Include="Interfaces\IEncryptionChecker.cs" />
     <Compile Include="Interfaces\IWaitHandle.cs" />
     <Compile Include="Interfaces\IHttpClient.cs" />
     <Compile Include="Interfaces\IMessage.cs" />

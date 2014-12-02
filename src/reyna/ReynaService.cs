@@ -1,6 +1,7 @@
 ﻿namespace Reyna
 {
     using System;
+    using System.Diagnostics;
     using Microsoft.Win32;
     using Reyna.Interfaces;
 
@@ -12,9 +13,11 @@
 
         public ReynaService(byte[] password)
         {
+            this.Password = password;
             this.VolatileStore = new InMemoryQueue();
             this.PersistentStore = new SQLiteRepository(password);
             this.HttpClient = new HttpClient();
+            this.EncryptionChecker = new EncryptionChecker();
 
             this.StoreWaitHandle = new AutoResetEventAdapter(false);
             this.ForwardWaitHandle = new AutoResetEventAdapter(false);
@@ -27,6 +30,8 @@
             this.StoreService = new StoreService(this.VolatileStore, this.PersistentStore, this.StoreWaitHandle);
             this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient, this.NetworkStateService, this.ForwardWaitHandle, this.ForwardServiceTemporaryErrorBackout, this.ForwardServiceMessageBackout);
         }
+
+        internal IEncryptionChecker EncryptionChecker { get; set; }
 
         internal IRepository VolatileStore { get; set; }
 
@@ -64,8 +69,18 @@
             }
         }
 
+        private byte[] Password { get; set; }
+
         public void Start()
         {
+            if (this.Password != null && this.Password.Length > 0)
+            {
+                if (!this.EncryptionChecker.DbEncrypted())
+                {
+                    this.EncryptionChecker.EncryptDb(this.Password);
+                }
+            }
+
             this.StoreService.Start();
             this.ForwardService.Start();
             this.NetworkStateService.Start();

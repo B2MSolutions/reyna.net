@@ -58,6 +58,9 @@
     <Compile Include="..\reyna\AutoResetEventAdapter.cs">
       <Link>AutoResetEventAdapter.cs</Link>
     </Compile>
+    <Compile Include="..\reyna\EncryptionChecker.cs">
+      <Link>EncryptionChecker.cs</Link>
+    </Compile>
     <Compile Include="..\reyna\Extensions\HttpStatusCodeExtensions.cs">
       <Link>Extensions\HttpStatusCodeExtensions.cs</Link>
     </Compile>
@@ -69,6 +72,9 @@
     </Compile>
     <Compile Include="..\reyna\InMemoryQueue.cs">
       <Link>InMemoryQueue.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Interfaces\IEncryptionChecker.cs">
+      <Link>Interfaces\IEncryptionChecker.cs</Link>
     </Compile>
     <Compile Include="..\reyna\Interfaces\IHttpClient.cs">
       <Link>Interfaces\IHttpClient.cs</Link>
