@@ -41,7 +41,7 @@
         public void WhenConstructingAndReceivedPasswordShouldPassPasswordToSQLiteRepository()
         {
             var password = new byte[] { 0xFF, 0xAA, 0xCC, 0xCC };
-            var reynaService = new ReynaService(password);
+            var reynaService = new ReynaService(password, null);
 
             Assert.Equal(password, ((SQLiteRepository)reynaService.PersistentStore).Password); 
         }

@@ -1,22 +1,22 @@
 ﻿namespace Reyna
 {
     using System;
-    using System.Diagnostics;
+    using System.Net;
     using Microsoft.Win32;
     using Reyna.Interfaces;
 
     public sealed class ReynaService : IReyna
     {
-        public ReynaService() : this(null)
+        public ReynaService() : this(null, null)
         {
         }
 
-        public ReynaService(byte[] password)
+        public ReynaService(byte[] password, ICertificatePolicy certificatePolicy)
         {
             this.Password = password;
             this.VolatileStore = new InMemoryQueue();
             this.PersistentStore = new SQLiteRepository(password);
-            this.HttpClient = new HttpClient();
+            this.HttpClient = new HttpClient(certificatePolicy);
             this.EncryptionChecker = new EncryptionChecker();
 
             this.StoreWaitHandle = new AutoResetEventAdapter(false);

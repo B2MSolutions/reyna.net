@@ -26,11 +26,22 @@ Reyna is a standard .net class library and can be referenced through add referen
   	reynaMessage.Headers.Add("extra header", "extra header");
     
 	// Send the message to Reyna
-	var reyna = new ReynaService();
+	var reyna = new ReynaService(null, null);
 	reyna.Put(reynaMessage);
 	
+	// secured store
+	var password = System.Text.Encoding.UTF8.GetBytes("password");
+	var secureReyna = new ReynaService(password, null);
+	secureReyna.Put(reynaMessage);
+	
+	// secured store and certificate policy
+	var password = System.Text.Encoding.UTF8.GetBytes("password");
+	var certificatePolicy = new AcceptAllCertificatePolicy();
+	var secureReyna = new ReynaService(password, certificatePolicy);
+	secureReyna.Put(reynaMessage);
+	
 ```
-## Latest version is 1.0.38
+## Latest version is 1.0.39
 
 ## Contributors
 Pair programmed by [Youhana Hana] (https://github.com/youhana-hana) and [Steve Wood](https://github.com/swood).

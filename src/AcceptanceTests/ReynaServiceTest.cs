@@ -14,7 +14,7 @@
             var sqliteRepository = new SQLiteRepository();
             sqliteRepository.Create();
 
-            var reynaService = new ReynaService(new byte[] { 0x33, 0xFF, 0xAB });
+            var reynaService = new ReynaService(new byte[] { 0x33, 0xFF, 0xAB }, null);
             reynaService.Start();
 
             var assemblyFile = new FileInfo(Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);

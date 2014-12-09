@@ -9,13 +9,14 @@
 
     internal sealed class HttpClient : IHttpClient
     {
-        public HttpClient()
+        public HttpClient(ICertificatePolicy certificatePolicy)
         {
-// TODO
-// remove obsolete pragma
+            if (certificatePolicy != null)
+            {
 #pragma warning disable 0618
-            ServicePointManager.CertificatePolicy = new AcceptAllCertificatePolicy();
+                ServicePointManager.CertificatePolicy = certificatePolicy;
 #pragma warning restore 0618
+            }
         }
 
         public Result Post(IMessage message)

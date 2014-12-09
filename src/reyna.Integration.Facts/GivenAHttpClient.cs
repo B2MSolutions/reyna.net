@@ -10,7 +10,7 @@
         [Fact]
         public void WhenCallingPostWithVaidUrlShouldSucceed()
         {
-            var httpClient = new HttpClient();
+            var httpClient = new HttpClient(null);
             var message = new Message(new Uri("http://httpbin.org/post"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
             message.Headers.Add("content-type", "application/json");
             message.Headers.Add("param1", "Value1");
@@ -22,9 +22,23 @@
         }
 
         [Fact]
+        public void WhenCallingPostWithVaidUrlShouldSucceedUsingHttpsAndAcceptAllPolicy()
+        {
+            var httpClient = new HttpClient(new AcceptAllCertificatePolicy());
+            var message = new Message(new Uri("https://httpbin.org/post"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
+            message.Headers.Add("content-type", "application/json");
+            message.Headers.Add("param1", "Value1");
+            message.Headers.Add("param2", "Value2");
+            message.Headers.Add("param3", "Value3");
+            var result = httpClient.Post(message);
+
+            Assert.Equal(Result.Ok, result);
+        }
+
+        [Fact]
         public void WhenCallingPostWithInvalidUrlShouldReturnPermanentError()
         {
-            var httpClient = new HttpClient();
+            var httpClient = new HttpClient(null);
             var message = new Message(new Uri("http://httpbin.org/post2"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
             message.Headers.Add("content-type", "application/json");
             message.Headers.Add("param1", "Value1");
@@ -38,7 +52,7 @@
         [Fact]
         public void WhenCallingPostWithInvalidURLSchemeShouldReturnPermanentError()
         {
-            var httpClient = new HttpClient();
+            var httpClient = new HttpClient(null);
             var message = new Message(new Uri("test://httpbin.org/post"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
             message.Headers.Add("content-type", "application/json");
             message.Headers.Add("param1", "Value1");
