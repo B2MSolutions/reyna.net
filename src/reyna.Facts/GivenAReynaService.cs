@@ -146,43 +146,44 @@
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
         }
 
-        ////        [Fact]
-        ////        public void WhenSettingStorageLimitShouldSaveStorageLimit()
-        ////        {
-        ////            using (var key = Registry.LocalMachine.CreateSubKey(@"Software\Reyna"))
-        ////            {
-        ////                ReynaService.StorageSizeLimit = 42;
-        ////                Assert.Equal(42, ReynaService.StorageSizeLimit);
-        ////            }
-        ////
-        ////            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
-        ////        }
-        ////
-        ////        [Theory]
-        ////        [InlineData(-42)]
-        ////        [InlineData(0)]
-        ////        public void WhenSettingsStorageLimitShouldNotSaveTheLimitIfItLessThan0OrEqual0(long value) 
-        ////        {
-        ////            using (var key = Registry.LocalMachine.CreateSubKey(@"Software\Reyna"))
-        ////            {
-        ////                ReynaService.StorageSizeLimit = value;
-        ////                Assert.Equal(-1, ReynaService.StorageSizeLimit);
-        ////            }
-        ////
-        ////            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
-        ////        }
-        ////
-        ////        [Fact]
-        ////        public void WhenResettingsStorageLimitShouldSetItToDefault()
-        ////        {
-        ////            using (var key = Registry.LocalMachine.CreateSubKey(@"Software\Reyna"))
-        ////            {
-        ////                key.SetValue("StorageSizeLimit", 10);
-        ////                ReynaService.ResetStorageSizeLimit();
-        ////                Assert.Equal(-1, ReynaService.StorageSizeLimit);
-        ////            }
-        ////
-        ////            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
-        ////        }
+        [Fact]
+        public void WhenSettingStorageLimitShouldSaveStorageLimit()
+        {
+            using (var key = Registry.LocalMachine.CreateSubKey(@"Software\Reyna"))
+            {
+                ReynaService.SetStorageSizeLimit(null, 3145728);
+                Assert.Equal(3145728, ReynaService.StorageSizeLimit);
+            }
+
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
+        }
+        
+        [Theory]
+        [InlineData(-42)]
+        [InlineData(0)]
+        [InlineData(42)]
+        public void WhenSettingsStorageLimitShouldSetToMinimumValue(long value) 
+        {
+            using (var key = Registry.LocalMachine.CreateSubKey(@"Software\Reyna"))
+            {
+                ReynaService.SetStorageSizeLimit(null, value);
+                Assert.Equal(1867776, ReynaService.StorageSizeLimit); // 1867776 - min value, 1.8 Mb
+            }
+
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
+        }
+        
+        [Fact]
+        public void WhenResettingsStorageLimitShouldSetItToDefault()
+        {
+            using (var key = Registry.LocalMachine.CreateSubKey(@"Software\Reyna"))
+            {
+                key.SetValue("StorageSizeLimit", 10);
+                ReynaService.ResetStorageSizeLimit();
+                Assert.Equal(-1, ReynaService.StorageSizeLimit);
+            }
+
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
+        }
     }
 }

@@ -88,8 +88,8 @@
 
         public static void SetStorageSizeLimit(byte[] password, long limit)
         {
-            SetRegistryValue("StorageSizeLimit", limit);
             limit = limit < MinimumStorageLimit ? MinimumStorageLimit : limit;
+            SetRegistryValue("StorageSizeLimit", limit);
 
             var repository = new SQLiteRepository(password);
             repository.ShrinkDb(limit);
@@ -155,7 +155,7 @@
 
         private static void SetRegistryValue(string keyName, long value)
         {
-            using (var key = Registry.LocalMachine.OpenSubKey(@"Software\Reyna", true))
+            using (var key = Registry.LocalMachine.CreateSubKey(@"Software\Reyna"))
             {
                 key.SetValue(keyName, value);
             }

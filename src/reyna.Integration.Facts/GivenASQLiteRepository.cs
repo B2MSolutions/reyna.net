@@ -118,6 +118,69 @@
         }
 
         [Fact]
+        public void WhenCallingAddWithLimitReturnSucceed()
+        {
+            var message = this.GetMessage("http://HOST.com:9080/home", "{\"body\": body}");
+
+            this.Repository.Create();
+            this.Repository.Add(message, 6000);
+
+            int mesageRowsCount = this.ExecuteScalar("SELECT COUNT(1) FROM Message");
+            int headerRowsCount = this.ExecuteScalar("SELECT COUNT(1) FROM Header");
+            Assert.Equal(1, mesageRowsCount);
+            Assert.Equal(2, headerRowsCount);
+
+            var storedMessage = this.GetMessages()[0];
+            Assert.Equal(new Uri("http://HOST.com:9080/home"), storedMessage.Url);
+            Assert.Equal("{\"body\": body}", storedMessage.Body);
+
+            Assert.Equal(2, storedMessage.Headers.Count);
+            Assert.Equal("VALUE", storedMessage.Headers["PARAM"]);
+            Assert.Equal("application/josn", storedMessage.Headers["Content_Type"]);
+        }
+
+        [Fact]
+        public void WhenCallingAddWithLimitAndLimitIsLowerThanTheActualSizeShouldDeleteTheOldestMessageWithSameTypeReturnSucceed()
+        {
+            var message = this.GetMessage("http://HOST.com:9080/home", "{\"body\": body}");
+
+            this.Repository.Create();
+            this.Repository.Add(message);
+            this.Repository.Add(message, 307200);
+
+            int mesageRowsCount = this.ExecuteScalar("SELECT COUNT(*) FROM Message");
+            int headerRowsCount = this.ExecuteScalar("SELECT COUNT(*) FROM Header");
+            Assert.Equal(1, mesageRowsCount);
+            Assert.Equal(2, headerRowsCount);
+
+            var storedMessage = this.GetMessages()[0];
+            Assert.Equal(new Uri("http://HOST.com:9080/home"), storedMessage.Url);
+            Assert.Equal("{\"body\": body}", storedMessage.Body);
+
+            Assert.Equal(2, storedMessage.Headers.Count);
+            Assert.Equal("VALUE", storedMessage.Headers["PARAM"]);
+            Assert.Equal("application/josn", storedMessage.Headers["Content_Type"]);
+        }
+
+        [Fact]
+        public void WhenCallingShrinkDbShouldReduceStorageByRemovingOldestMessages()
+        {
+            var message = this.GetMessage("http://HOST.com:9080/home", "{\"body\": body}");
+            this.Repository.Create();
+
+            for (int i = 0; i < 100; i++)
+            {
+                this.Repository.Add(message);
+            }
+
+            this.Repository.SizeDifferenceToStartCleaning = 1024;
+            this.Repository.ShrinkDb(5120);
+            int result = this.ExecuteScalar("SELECT id FROM Message LIMIT 1");
+
+            Assert.Equal(result, 88);
+        }
+
+        [Fact]
         public void WhenCallingGetShouldReturnExpectedMessage()
         {
             var message1 = this.GetMessage("http://HOST.com:9080/home1", "{\"body\": body}");
