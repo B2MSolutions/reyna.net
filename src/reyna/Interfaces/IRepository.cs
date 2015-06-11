@@ -10,6 +10,8 @@
 
         void Add(IMessage message);
 
+        void Add(IMessage message, long storageSizeLimit);
+
         IMessage Get();
 
         IMessage Remove();

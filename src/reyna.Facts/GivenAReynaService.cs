@@ -4,6 +4,7 @@
     using Moq;
     using Reyna.Interfaces;
     using Xunit;
+    using Xunit.Extensions;
 
     public class GivenAReynaService
     {
@@ -144,5 +145,44 @@
 
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
         }
+
+        ////        [Fact]
+        ////        public void WhenSettingStorageLimitShouldSaveStorageLimit()
+        ////        {
+        ////            using (var key = Registry.LocalMachine.CreateSubKey(@"Software\Reyna"))
+        ////            {
+        ////                ReynaService.StorageSizeLimit = 42;
+        ////                Assert.Equal(42, ReynaService.StorageSizeLimit);
+        ////            }
+        ////
+        ////            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
+        ////        }
+        ////
+        ////        [Theory]
+        ////        [InlineData(-42)]
+        ////        [InlineData(0)]
+        ////        public void WhenSettingsStorageLimitShouldNotSaveTheLimitIfItLessThan0OrEqual0(long value) 
+        ////        {
+        ////            using (var key = Registry.LocalMachine.CreateSubKey(@"Software\Reyna"))
+        ////            {
+        ////                ReynaService.StorageSizeLimit = value;
+        ////                Assert.Equal(-1, ReynaService.StorageSizeLimit);
+        ////            }
+        ////
+        ////            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
+        ////        }
+        ////
+        ////        [Fact]
+        ////        public void WhenResettingsStorageLimitShouldSetItToDefault()
+        ////        {
+        ////            using (var key = Registry.LocalMachine.CreateSubKey(@"Software\Reyna"))
+        ////            {
+        ////                key.SetValue("StorageSizeLimit", 10);
+        ////                ReynaService.ResetStorageSizeLimit();
+        ////                Assert.Equal(-1, ReynaService.StorageSizeLimit);
+        ////            }
+        ////
+        ////            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
+        ////        }
     }
 }

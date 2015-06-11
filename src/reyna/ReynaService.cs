@@ -7,6 +7,8 @@
 
     public sealed class ReynaService : IReyna
     {
+        private const long MinimumStorageLimit = 1867776; // 1Mb 800Kb
+
         public ReynaService() : this(null, null)
         {
         }
@@ -31,6 +33,14 @@
             this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient, this.NetworkStateService, this.ForwardWaitHandle, this.ForwardServiceTemporaryErrorBackout, this.ForwardServiceMessageBackout);
         }
 
+        public static long StorageSizeLimit
+        {
+            get
+            {
+                return GetRegistryValue("StorageSizeLimit", -1);
+            }
+        }
+
         internal IEncryptionChecker EncryptionChecker { get; set; }
 
         internal IRepository VolatileStore { get; set; }
@@ -40,7 +50,7 @@
         internal IHttpClient HttpClient { get; set; }
 
         internal IService StoreService { get; set; }
-        
+
         internal IService ForwardService { get; set; }
 
         internal INetworkStateService NetworkStateService { get; set; }
@@ -70,6 +80,20 @@
         }
 
         private byte[] Password { get; set; }
+
+        public static void ResetStorageSizeLimit()
+        {
+            SetRegistryValue("StorageSizeLimit", -1);
+        }
+
+        public static void SetStorageSizeLimit(byte[] password, long limit)
+        {
+            SetRegistryValue("StorageSizeLimit", limit);
+            limit = limit < MinimumStorageLimit ? MinimumStorageLimit : limit;
+
+            var repository = new SQLiteRepository(password);
+            repository.ShrinkDb(limit);
+        }
 
         public void Start()
         {
@@ -126,6 +150,14 @@
                 }
 
                 return Convert.ToInt32(key.GetValue(keyName, defaultValue));
+            }
+        }
+
+        private static void SetRegistryValue(string keyName, long value)
+        {
+            using (var key = Registry.LocalMachine.OpenSubKey(@"Software\Reyna", true))
+            {
+                key.SetValue(keyName, value);
             }
         }
     }

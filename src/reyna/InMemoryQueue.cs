@@ -37,6 +37,11 @@
             }
         }
 
+        public void Add(IMessage message, long storageSizeLimit)
+        {
+            this.Add(message);
+        }
+
         public IMessage Get()
         {
             lock (this.SyncRoot)

@@ -1,7 +1,6 @@
 ﻿namespace Reyna
 {
     using System;
-    using System.Threading;
     using Reyna.Interfaces;
 
     internal sealed class StoreService : ServiceBase
@@ -28,8 +27,16 @@
 
                 while ((message = this.SourceStore.Get()) != null)
                 {
-                    this.TargetStore.Add(message);
-
+                    long storageSizeLimit = ReynaService.StorageSizeLimit;
+                    if (storageSizeLimit == -1)
+                    {
+                        this.TargetStore.Add(message);
+                    }
+                    else
+                    {
+                        this.TargetStore.Add(message, storageSizeLimit);
+                    }
+                    
                     this.SourceStore.Remove();
                 }
 
