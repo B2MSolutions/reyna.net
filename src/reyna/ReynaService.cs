@@ -9,6 +9,8 @@
     {
         private const long MinimumStorageLimit = 1867776; // 1Mb 800Kb
 
+        private const string StorageSizeLimitKeyName = "StorageSizeLimit";
+
         public ReynaService() : this(null, null)
         {
         }
@@ -37,7 +39,7 @@
         {
             get
             {
-                return GetRegistryValue("StorageSizeLimit", -1);
+                return GetRegistryValue(StorageSizeLimitKeyName, -1);
             }
         }
 
@@ -83,13 +85,13 @@
 
         public static void ResetStorageSizeLimit()
         {
-            SetRegistryValue("StorageSizeLimit", -1);
+            DeleteRegistryValue(StorageSizeLimitKeyName);
         }
 
         public static void SetStorageSizeLimit(byte[] password, long limit)
         {
             limit = limit < MinimumStorageLimit ? MinimumStorageLimit : limit;
-            SetRegistryValue("StorageSizeLimit", limit);
+            SetRegistryValue(StorageSizeLimitKeyName, limit);
 
             var repository = new SQLiteRepository(password);
             repository.ShrinkDb(limit);
@@ -158,6 +160,14 @@
             using (var key = Registry.LocalMachine.CreateSubKey(@"Software\Reyna"))
             {
                 key.SetValue(keyName, value);
+            }
+        }
+
+        private static void DeleteRegistryValue(string keyName)
+        {
+            using (var key = Registry.LocalMachine.OpenSubKey(@"Software\Reyna", true))
+            {
+                key.DeleteValue(keyName);
             }
         }
     }
