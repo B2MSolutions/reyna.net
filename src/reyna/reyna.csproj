@@ -90,6 +90,7 @@
     <Compile Include="NamedWaitHandle.cs" />
     <Compile Include="NetworkStateService.cs" />
     <Compile Include="ServiceBase.cs" />
+    <Compile Include="Sleep.cs" />
     <Compile Include="StoreService.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
