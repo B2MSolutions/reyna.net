@@ -94,6 +94,7 @@
             SetRegistryValue(StorageSizeLimitKeyName, limit);
 
             var repository = new SQLiteRepository(password);
+            repository.Initialise();
             repository.ShrinkDb(limit);
         }
 

@@ -1,5 +1,6 @@
 ﻿namespace Reyna.Facts
 {
+    using System.IO;
     using Microsoft.Win32;
     using Moq;
     using Reyna.Interfaces;
@@ -154,12 +155,20 @@
 
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
         }
+
+        [Fact]
+        public void WhenSettingStorageLimitShouldInitializeReyna()
+        {
+            File.Delete("reyna.db");
+            ReynaService.SetStorageSizeLimit(null, 3145728);
+            Assert.True(File.Exists("reyna.db"));
+        }
         
         [Theory]
         [InlineData(-42)]
         [InlineData(0)]
         [InlineData(42)]
-        public void WhenSettingsStorageLimitShouldSetToMinimumValue(long value) 
+        public void WhenSettingStorageLimitShouldSetToMinimumValue(long value) 
         {
             ReynaService.SetStorageSizeLimit(null, value);
             Assert.Equal(1867776, ReynaService.StorageSizeLimit); // 1867776 - min value, 1.8 Mb
