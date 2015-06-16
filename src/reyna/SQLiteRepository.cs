@@ -17,14 +17,23 @@
         private const string DeleteMessageSql = "DELETE FROM Header WHERE messageid = @messageId;DELETE FROM Message WHERE id = @messageId";
         private const string SelectTop1MessageSql = "SELECT id, url, body FROM Message ORDER BY id ASC LIMIT 1";
         private const string SelectHeaderSql = "SELECT key, value FROM Header WHERE messageid = @messageId";
+        private const string SelectMinIdWithTypeSql = "SELECT min(id) FROM Message WHERE url = @type";
+        private const string SelectNumberOfMessagesSql = "SELECT count(*) from Message";
+        private const string SelectMessageIdWithOffsetSql = "SELECT id FROM Message LIMIT 1 OFFSET @offset";
+        private const string DeleteMessagesToIdSql = "DELETE FROM Message WHERE id < @id";
+        private const string DeleteHeadersToMessageIdSql = "DELETE FROM Header WHERE messageid < @id";
+
+        private static readonly object Locker = new object();
 
         public SQLiteRepository()
         {
+            this.SizeDifferenceToStartCleaning = 307200; ////300Kb in bytes
         }
 
         public SQLiteRepository(byte[] password)
         {
             this.Password = password;
+            this.SizeDifferenceToStartCleaning = 307200; ////300Kb in bytes
         }
 
         private delegate IMessage ExecuteFunctionInTransaction(DbTransaction transaction);
@@ -32,6 +41,8 @@
         private delegate void ExecuteActionInTransaction(IMessage message, DbTransaction transaction);
 
         public event EventHandler<EventArgs> MessageAdded;
+
+        internal long SizeDifferenceToStartCleaning { get; set; }
 
         internal bool Exists
         {
@@ -64,28 +75,28 @@
 
         public void Add(IMessage message)
         {
-            this.ExecuteInTransaction((t) =>
+            lock (Locker)
+            {
+                this.ExecuteInTransaction((t) => this.InsertMessage(t, message));
+            }
+        }
+
+        public void Add(IMessage message, long storageSizeLimit)
+        {
+            lock (Locker)
+            {
+                this.ExecuteInTransaction(t =>
                 {
-                    var sql = SQLiteRepository.InsertMessageSql;
-                    var url = this.CreateParameter("@url", message.Url);
-                    var body = this.CreateParameter("@body", message.Body);
-                    var id = Convert.ToInt32(this.ExecuteScalar(sql, t, url, body));
+                    long dbSize = this.GetDbSize(t);
 
-                    sql = SQLiteRepository.InsertHeaderSql;
-                    var messageId = this.CreateParameter("@messageId", id);
-
-                    foreach (string headerKey in message.Headers.Keys)
+                    if (this.DbSizeApproachesLimit(dbSize, storageSizeLimit))
                     {
-                        var key = this.CreateParameter("@key", headerKey);
-                        var value = this.CreateParameter("@value", message.Headers[headerKey]);
-                        this.ExecuteScalar(sql, t, messageId, key, value);
+                        this.ClearOldRecords(t, message);
                     }
 
-                    if (this.MessageAdded != null)
-                    {
-                        this.MessageAdded.Invoke(this, EventArgs.Empty);
-                    }
+                    this.InsertMessage(t, message);
                 });
+            }
         }
 
         public IMessage Get()
@@ -96,11 +107,36 @@
         public IMessage Remove()
         {
             return this.GetFirstInQueue((message, t) =>
+            {
+                var sql = SQLiteRepository.DeleteMessageSql;
+                var messageId = this.CreateParameter("@messageId", message.Id);
+                this.ExecuteNonQuery(sql, t, messageId);
+            });
+        }
+
+        public void ShrinkDb(long limit)
+        {
+            lock (Locker)
+            {
+                this.Execute(connection =>
                 {
-                    var sql = SQLiteRepository.DeleteMessageSql;
-                    var messageId = this.CreateParameter("@messageId", message.Id);
-                    this.ExecuteNonQuery(sql, t, messageId);
+                    limit -= this.SizeDifferenceToStartCleaning;
+                    long size = this.GetDbSize(connection);
+
+                    if (size <= limit)
+                    {
+                        return;
+                    }
+
+                    do
+                    {
+                        this.Shrink(connection, limit, size);
+                        this.Vacuum(connection);
+                        size = this.GetDbSize(connection);
+                    }
+                    while (size > limit);
                 });
+            }
         }
 
         internal void Create()
@@ -112,6 +148,117 @@
                 var sql = SQLiteRepository.CreateTableSql;
                 this.ExecuteNonQuery(sql, t);
             });
+        }
+
+        private void InsertMessage(DbTransaction transaction, IMessage message)
+        {
+            var sql = SQLiteRepository.InsertMessageSql;
+            var url = this.CreateParameter("@url", message.Url);
+            var body = this.CreateParameter("@body", message.Body);
+            var id = Convert.ToInt32(this.ExecuteScalar(sql, transaction, url, body));
+
+            sql = SQLiteRepository.InsertHeaderSql;
+            var messageId = this.CreateParameter("@messageId", id);
+
+            foreach (string headerKey in message.Headers.Keys)
+            {
+                var key = this.CreateParameter("@key", headerKey);
+                var value = this.CreateParameter("@value", message.Headers[headerKey]);
+                this.ExecuteScalar(sql, transaction, messageId, key, value);
+            }
+
+            if (this.MessageAdded != null)
+            {
+                this.MessageAdded.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        private long GetDbSize(DbTransaction transaction)
+        {
+            return (long)this.ExecuteScalar("pragma page_size", transaction) * (long)this.ExecuteScalar("pragma page_count", transaction);
+        }
+
+        private long GetDbSize(DbConnection connection)
+        {
+            return (long)this.ExecuteScalar("pragma page_size", connection) * (long)this.ExecuteScalar("pragma page_count", connection);
+        }
+
+        private bool DbSizeApproachesLimit(long size, long limit)
+        {
+            return (limit > size) && (limit - size) < this.SizeDifferenceToStartCleaning;
+        }
+
+        private void ClearOldRecords(DbTransaction transaction, IMessage message)
+        {
+            long? oldestMessageId = this.FindOldestMessageIdWithType(transaction, message.Url);
+
+            if (oldestMessageId.HasValue)
+            {
+                this.RemoveExistingMessage(transaction, oldestMessageId.Value);
+            }
+        }
+
+        private void RemoveExistingMessage(DbTransaction transaction, long messageId)
+        {
+            var messageParameter = this.CreateParameter("@messageid", messageId);
+            this.ExecuteNonQuery(SQLiteRepository.DeleteMessageSql, transaction, messageParameter);
+        }
+
+        private long? FindOldestMessageIdWithType(DbTransaction transaction, Uri type)
+        {
+            var typeParameter = this.CreateParameter("@type", type);
+            object result = this.ExecuteScalar(SelectMinIdWithTypeSql, transaction, typeParameter);
+
+            if (result is DBNull)
+            {
+                return null;
+            }
+
+            return (long)result;
+        }
+
+        private void Shrink(DbConnection connection, long sizeLimit, long size)
+        {
+            double limitPercentage = 1 - ((double)sizeLimit / size);
+            long numberOfMessages = this.GetNumberOfMessages(connection);
+            long numberOfMessagesToRemove = (long)Math.Round(numberOfMessages * limitPercentage);
+            numberOfMessagesToRemove = numberOfMessagesToRemove == 0 ? 1 : numberOfMessagesToRemove;
+
+            long thresholdId = this.GetMessageIdToWhichShrink(connection, numberOfMessagesToRemove);
+
+            this.ExecuteInTransaction((t) =>
+            {
+                this.RemoveFromHeadersToMessageId(t, thresholdId);
+                this.RemoveFromMessagesToId(t, thresholdId);
+            });
+        }
+
+        private long GetNumberOfMessages(DbConnection connection)
+        {
+            return (long)this.ExecuteScalar(SelectNumberOfMessagesSql, connection);
+        }
+
+        private long GetMessageIdToWhichShrink(DbConnection connection, long numberOfMessagesToRemove)
+        {
+            var offsetParameter = this.CreateParameter("@offset", numberOfMessagesToRemove);
+            return (long)this.ExecuteScalar(SelectMessageIdWithOffsetSql, connection, offsetParameter);
+        }
+
+        private void RemoveFromMessagesToId(DbTransaction transaction, long thresholdId)
+        {
+            var id = this.CreateParameter("@id", thresholdId);
+            this.ExecuteNonQuery(DeleteMessagesToIdSql, transaction, id);
+        }
+
+        private void RemoveFromHeadersToMessageId(DbTransaction transaction, long thresholdId)
+        {
+            var id = this.CreateParameter("@id", thresholdId);
+            this.ExecuteNonQuery(DeleteHeadersToMessageIdSql, transaction, id);
+        }
+
+        private void Vacuum(DbConnection connection)
+        {
+            this.ExecuteNonQuery("vacuum", connection);
         }
 
         private DbConnection CreateConnection()
@@ -148,6 +295,20 @@
             return command;
         }
 
+        private DbCommand CreateCommand(string sql, DbConnection connection, params DbParameter[] parameters)
+        {
+            var command = connection.CreateCommand();
+            command.CommandText = sql;
+            command.Connection = connection;
+
+            foreach (var parameter in parameters)
+            {
+                command.Parameters.Add(parameter);
+            }
+
+            return command;
+        }
+
         private int ExecuteNonQuery(string sql, DbTransaction transaction, params DbParameter[] parameters)
         {
             using (var command = this.CreateCommand(sql, transaction, parameters))
@@ -156,9 +317,25 @@
             }
         }
 
+        private int ExecuteNonQuery(string sql, DbConnection connection, params DbParameter[] parameters)
+        {
+            using (var command = this.CreateCommand(sql, connection, parameters))
+            {
+                return command.ExecuteNonQuery();
+            }
+        }
+
         private object ExecuteScalar(string sql, DbTransaction transaction, params DbParameter[] parameters)
         {
             using (var command = this.CreateCommand(sql, transaction, parameters))
+            {
+                return command.ExecuteScalar();
+            }
+        }
+
+        private object ExecuteScalar(string sql, DbConnection connection, params DbParameter[] parameters)
+        {
+            using (var command = this.CreateCommand(sql, connection, parameters))
             {
                 return command.ExecuteScalar();
             }
@@ -190,6 +367,14 @@
             {
                 action(transaction);
                 transaction.Commit();
+            }
+        }
+
+        private void Execute(Action<DbConnection> action)
+        {
+            using (var connection = this.CreateConnection())
+            {
+                action(connection);
             }
         }
 

@@ -7,6 +7,10 @@
 
     public sealed class ReynaService : IReyna
     {
+        private const long MinimumStorageLimit = 1867776; // 1Mb 800Kb
+
+        private const string StorageSizeLimitKeyName = "StorageSizeLimit";
+
         public ReynaService() : this(null, null)
         {
         }
@@ -31,6 +35,14 @@
             this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient, this.NetworkStateService, this.ForwardWaitHandle, this.ForwardServiceTemporaryErrorBackout, this.ForwardServiceMessageBackout);
         }
 
+        public static long StorageSizeLimit
+        {
+            get
+            {
+                return GetRegistryValue(StorageSizeLimitKeyName, -1);
+            }
+        }
+
         internal IEncryptionChecker EncryptionChecker { get; set; }
 
         internal IRepository VolatileStore { get; set; }
@@ -40,7 +52,7 @@
         internal IHttpClient HttpClient { get; set; }
 
         internal IService StoreService { get; set; }
-        
+
         internal IService ForwardService { get; set; }
 
         internal INetworkStateService NetworkStateService { get; set; }
@@ -70,6 +82,21 @@
         }
 
         private byte[] Password { get; set; }
+
+        public static void ResetStorageSizeLimit()
+        {
+            DeleteRegistryValue(StorageSizeLimitKeyName);
+        }
+
+        public static void SetStorageSizeLimit(byte[] password, long limit)
+        {
+            limit = limit < MinimumStorageLimit ? MinimumStorageLimit : limit;
+            SetRegistryValue(StorageSizeLimitKeyName, limit);
+
+            var repository = new SQLiteRepository(password);
+            repository.Initialise();
+            repository.ShrinkDb(limit);
+        }
 
         public void Start()
         {
@@ -126,6 +153,22 @@
                 }
 
                 return Convert.ToInt32(key.GetValue(keyName, defaultValue));
+            }
+        }
+
+        private static void SetRegistryValue(string keyName, long value)
+        {
+            using (var key = Registry.LocalMachine.CreateSubKey(@"Software\Reyna"))
+            {
+                key.SetValue(keyName, value);
+            }
+        }
+
+        private static void DeleteRegistryValue(string keyName)
+        {
+            using (var key = Registry.LocalMachine.OpenSubKey(@"Software\Reyna", true))
+            {
+                key.DeleteValue(keyName);
             }
         }
     }

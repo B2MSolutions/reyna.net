@@ -48,13 +48,13 @@
                     var result = this.HttpClient.Post(message);
                     if (result == Result.TemporaryError)
                     {
-                        Thread.Sleep(this.TemporaryErrorMilliseconds);
+                        this.Sleep(this.TemporaryErrorMilliseconds);
                         this.WaitHandle.Reset();
                         break;
                     }
 
                     this.SourceStore.Remove();
-                    Thread.Sleep(this.SleepMilliseconds);
+                    this.Sleep(this.SleepMilliseconds);
                 }
 
                 this.WaitHandle.Reset();
@@ -69,6 +69,23 @@
             }
 
             this.SignalWorkToDo();
+        }
+
+        private void Sleep(int millisecondsTimeout)
+        {
+            int timeoutInFiveSecondsPeriod = millisecondsTimeout / 1000 * 5;
+            if (timeoutInFiveSecondsPeriod > 1)
+            {
+                while (!this.Terminate && timeoutInFiveSecondsPeriod > 0)
+                {
+                    Reyna.Sleep.Wait(5);
+                    timeoutInFiveSecondsPeriod--;
+                }
+            }
+            else
+            {
+                Reyna.Sleep.Wait(millisecondsTimeout / 1000);
+            }
         }
     }
 }

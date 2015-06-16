@@ -126,6 +126,7 @@
     </Compile>
     <Compile Include="NamedWaitHandle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sleep.cs" />
     <Compile Include="SystemNotifier.cs" />
   </ItemGroup>
   <ItemGroup>

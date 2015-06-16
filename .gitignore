@@ -5,3 +5,5 @@ src/**/bin/*
 src/**/obj/*
 StyleCop.Cache
 Coverage/
+src/TestResults/
+*.DotSettings.user

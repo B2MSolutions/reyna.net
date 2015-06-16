@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading;
+    using Microsoft.Win32;
     using Moq;
     using Reyna.Interfaces;
     using Xunit;
@@ -37,6 +38,24 @@
 
             Assert.Null(this.VolatileStore.Get());
             this.PersistentStore.Verify(r => r.Add(It.IsAny<IMessage>()), Times.Once());
+        }
+
+        [Fact]
+        public void WhenCallingStartAndMessageAddedAndStorageSizeLimitExistsShouldCallAddWithLimitOnRepository()
+        {
+            using (var key = Registry.LocalMachine.CreateSubKey(@"Software\Reyna"))
+            {
+                ReynaService.SetStorageSizeLimit(null, 2000000);
+                this.StoreService.Start();
+
+                this.VolatileStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
+                Thread.Sleep(200);
+
+                Assert.Null(this.VolatileStore.Get());
+                this.PersistentStore.Verify(r => r.Add(It.IsAny<IMessage>(), 2000000), Times.Once());
+            }
+
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna");
         }
 
         [Fact]
