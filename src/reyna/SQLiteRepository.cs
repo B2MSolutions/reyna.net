@@ -48,7 +48,8 @@
         {
             get
             {
-                return File.Exists(this.DatabasePath);
+                FileInfo fileInfo = new FileInfo(this.DatabasePath);
+                return File.Exists(this.DatabasePath) && fileInfo.Length >= 4096;
             }
         }
 
@@ -65,12 +66,15 @@
 
         public void Initialise()
         {
-            if (this.Exists)
+            lock (Locker)
             {
-                return;
+                if (this.Exists)
+                {
+                    return;
+                }
+
+                this.Create();
             }
-            
-            this.Create();
         }
 
         public void Add(IMessage message)

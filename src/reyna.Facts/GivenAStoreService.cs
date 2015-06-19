@@ -88,7 +88,7 @@
                 }));
 
             messageAddingThread.Start();
-            Thread.Sleep(50);
+            Thread.Sleep(100);
 
             for (int k = 0; k < 10; k++)
             {

@@ -43,10 +43,19 @@
         }
 
         [Fact]
-        public void WhenCallingExistsAndDatabaseExistsShouldReturnTrue()
+        public void WhenCallingExistsAndDatabaseFileExistsButNoCompleteShouldReturnFalse()
         {
             File.WriteAllBytes(this.DatabasePath, new byte[] { });
             
+            Assert.False(this.Repository.Exists);
+        }
+
+        [Fact]
+        public void WhenCallingCreateAndFileExistsButZeroBytesShouldCreate()
+        {
+            File.WriteAllBytes(this.DatabasePath, new byte[] { });
+
+            this.Repository.Create();
             Assert.True(this.Repository.Exists);
         }
 
@@ -56,6 +65,7 @@
             this.Repository.Create();
 
             Assert.True(File.Exists(this.DatabasePath));
+            Assert.True(this.Repository.Exists);
         }
 
         [Fact]
