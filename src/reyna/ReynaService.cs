@@ -160,7 +160,10 @@
         {
             using (var key = Registry.LocalMachine.CreateSubKey(@"Software\Reyna"))
             {
-                key.SetValue(keyName, value);
+                if (key != null)
+                {
+                    key.SetValue(keyName, value);
+                }
             }
         }
 
@@ -168,7 +171,10 @@
         {
             using (var key = Registry.LocalMachine.OpenSubKey(@"Software\Reyna", true))
             {
-                key.DeleteValue(keyName);
+                if (key != null)
+                {
+                    key.DeleteValue(keyName);
+                }
             }
         }
     }

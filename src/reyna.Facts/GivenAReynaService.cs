@@ -183,5 +183,13 @@
             ReynaService.ResetStorageSizeLimit();
             Assert.Equal(-1, ReynaService.StorageSizeLimit);
         }
+
+        [Fact]
+        public void WhenResettingsStorageLimitAndRegistryKeyNotExistsShouldNotThrows()
+        {
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
+            
+            ReynaService.ResetStorageSizeLimit();
+        }
     }
 }
