@@ -57,6 +57,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\tools\Open.NetCF\2.3.12004\OpenNETCF.dll</HintPath>
     </Reference>
+    <Reference Include="OpenNETCF.Net, Version=2.3.12004.0, Culture=neutral, PublicKeyToken=e60dbea84bb431b7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\tools\Open.NetCF\2.3.12004\OpenNETCF.Net.dll</HintPath>
+    </Reference>
     <Reference Include="OpenNETCF.WindowsCE, Version=2.3.12004.0, Culture=neutral, PublicKeyToken=e60dbea84bb431b7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\tools\Open.NetCF\2.3.12004\OpenNETCF.WindowsCE.dll</HintPath>
@@ -72,6 +76,10 @@
   <ItemGroup>
     <Compile Include="AcceptAllCertificatePolicy.cs" />
     <Compile Include="AutoResetEventAdapter.cs" />
+    <Compile Include="Blackout\Time.cs" />
+    <Compile Include="Blackout\TimeRange.cs" />
+    <Compile Include="Connection\IConnectionInfo.cs" />
+    <Compile Include="Connection\ConnectionInfo.cs" />
     <Compile Include="EncryptionChecker.cs" />
     <Compile Include="Extensions\HttpStatusCodeExtensions.cs" />
     <Compile Include="ForwardService.cs" />
@@ -89,6 +97,7 @@
     <Compile Include="Interfaces\Result.cs" />
     <Compile Include="NamedWaitHandle.cs" />
     <Compile Include="NetworkStateService.cs" />
+    <Compile Include="Preferences.cs" />
     <Compile Include="ServiceBase.cs" />
     <Compile Include="Sleep.cs" />
     <Compile Include="StoreService.cs" />

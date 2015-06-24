@@ -9,8 +9,6 @@
     {
         private const long MinimumStorageLimit = 1867776; // 1Mb 800Kb
 
-        private const string StorageSizeLimitKeyName = "StorageSizeLimit";
-
         public ReynaService() : this(null, null)
         {
         }
@@ -32,14 +30,14 @@
             this.NetworkStateService = new NetworkStateService(this.SystemNotifier, this.NetworkWaitHandle);
 
             this.StoreService = new StoreService(this.VolatileStore, this.PersistentStore, this.StoreWaitHandle);
-            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient, this.NetworkStateService, this.ForwardWaitHandle, this.ForwardServiceTemporaryErrorBackout, this.ForwardServiceMessageBackout);
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient, this.NetworkStateService, this.ForwardWaitHandle, Preferences.ForwardServiceTemporaryErrorBackout, Preferences.ForwardServiceMessageBackout);
         }
 
         public static long StorageSizeLimit
         {
             get
             {
-                return GetRegistryValue(StorageSizeLimitKeyName, -1);
+                return Preferences.StorageSizeLimit;
             }
         }
 
@@ -65,37 +63,31 @@
 
         internal ISystemNotifier SystemNotifier { get; set; }
 
-        internal int ForwardServiceTemporaryErrorBackout
-        {
-            get 
-            {
-                return GetRegistryValue("TemporaryErrorBackout", 5 * 60 * 1000);
-            }
-        }
-
-        internal int ForwardServiceMessageBackout
-        {
-            get
-            {
-                return GetRegistryValue("MessageBackout", 1000);
-            }
-        }
-
         private byte[] Password { get; set; }
 
         public static void ResetStorageSizeLimit()
         {
-            DeleteRegistryValue(StorageSizeLimitKeyName);
+            Preferences.ResetStorageSizeLimit();
         }
 
         public static void SetStorageSizeLimit(byte[] password, long limit)
         {
             limit = limit < MinimumStorageLimit ? MinimumStorageLimit : limit;
-            SetRegistryValue(StorageSizeLimitKeyName, limit);
+            Preferences.SetStorageSizeLimit(limit);
 
             var repository = new SQLiteRepository(password);
             repository.Initialise();
             repository.ShrinkDb(limit);
+        }
+
+        public static void SetCellularDataBlackout(TimeRange timeRange)
+        {
+            Preferences.SetCellularDataBlackout(timeRange);
+        }
+
+        public static void ResetCellularDataBlackout()
+        {
+            Preferences.ResetCellularDataBlackout();
         }
 
         public void Start()
@@ -140,41 +132,6 @@
             if (this.StoreService != null)
             {
                 this.StoreService.Dispose();
-            }
-        }
-
-        private static int GetRegistryValue(string keyName, int defaultValue)
-        {
-            using (var key = Registry.LocalMachine.OpenSubKey(@"Software\Reyna", false))
-            {
-                if (key == null)
-                {
-                    return defaultValue;
-                }
-
-                return Convert.ToInt32(key.GetValue(keyName, defaultValue));
-            }
-        }
-
-        private static void SetRegistryValue(string keyName, long value)
-        {
-            using (var key = Registry.LocalMachine.CreateSubKey(@"Software\Reyna"))
-            {
-                if (key != null)
-                {
-                    key.SetValue(keyName, value);
-                }
-            }
-        }
-
-        private static void DeleteRegistryValue(string keyName)
-        {
-            using (var key = Registry.LocalMachine.OpenSubKey(@"Software\Reyna", true))
-            {
-                if (key != null)
-                {
-                    key.DeleteValue(keyName, false);
-                }
             }
         }
     }

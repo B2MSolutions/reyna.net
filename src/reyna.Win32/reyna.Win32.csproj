@@ -58,6 +58,18 @@
     <Compile Include="..\reyna\AutoResetEventAdapter.cs">
       <Link>AutoResetEventAdapter.cs</Link>
     </Compile>
+    <Compile Include="..\reyna\Blackout\Time.cs">
+      <Link>Blackout\Time.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Blackout\TimeRange.cs">
+      <Link>Blackout\TimeRange.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Connection\ConnectionInfo.cs">
+      <Link>Connection\ConnectionInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Connection\IConnectionInfo.cs">
+      <Link>Connection\IConnectionInfo.cs</Link>
+    </Compile>
     <Compile Include="..\reyna\EncryptionChecker.cs">
       <Link>EncryptionChecker.cs</Link>
     </Compile>
@@ -109,6 +121,9 @@
     <Compile Include="..\reyna\NetworkStateService.cs">
       <Link>NetworkStateService.cs</Link>
     </Compile>
+    <Compile Include="..\reyna\Preferences.cs">
+      <Link>Preferences.cs</Link>
+    </Compile>
     <Compile Include="..\reyna\ReynaService.cs">
       <Link>ReynaService.cs</Link>
     </Compile>
@@ -124,6 +139,9 @@
     <Compile Include="..\reyna\ThreadWorker.cs">
       <Link>ThreadWorker.cs</Link>
     </Compile>
+    <Compile Include="Connection\OpenNETCF.Net.cs" >
+	<ExcludeFromStyleCop>True</ExcludeFromStyleCop>
+	</Compile>
     <Compile Include="NamedWaitHandle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sleep.cs" />

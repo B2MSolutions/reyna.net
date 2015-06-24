@@ -53,6 +53,11 @@
                         break;
                     }
 
+                    if (result == Result.Blackout || result == Result.NotConnected)
+                    {
+                        return;
+                    }
+
                     this.SourceStore.Remove();
                     this.Sleep(this.SleepMilliseconds);
                 }
