@@ -173,7 +173,7 @@
             {
                 if (key != null)
                 {
-                    key.DeleteValue(keyName);
+                    key.DeleteValue(keyName, false);
                 }
             }
         }

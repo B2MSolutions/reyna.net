@@ -31,7 +31,7 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("2.8.0.41")]
+[assembly: AssemblyVersion("2.8.0.42")]
 [assembly: InternalsVisibleTo("Reyna.Integration.Facts.dll")]
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("AcceptanceTests")]
