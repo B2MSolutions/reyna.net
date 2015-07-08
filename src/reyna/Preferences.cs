@@ -39,7 +39,7 @@
                 {
                     int minuteOfDayFrom = GetRegistryValue("DataBlackou:From", -1);
                     int minuteOfDayTo = GetRegistryValue("DataBlackout:To", -1);
-                    if (minuteOfDayFrom == -1 && minuteOfDayTo == -1)
+                    if (minuteOfDayFrom == -1 || minuteOfDayTo == -1)
                     {
                         return null;
                     }
