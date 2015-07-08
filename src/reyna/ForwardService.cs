@@ -78,7 +78,7 @@
 
         private void Sleep(int millisecondsTimeout)
         {
-            int timeoutInFiveSecondsPeriod = millisecondsTimeout / 1000 * 5;
+            int timeoutInFiveSecondsPeriod = millisecondsTimeout / (1000 * 5);
             if (timeoutInFiveSecondsPeriod > 1)
             {
                 while (!this.Terminate && timeoutInFiveSecondsPeriod > 0)
