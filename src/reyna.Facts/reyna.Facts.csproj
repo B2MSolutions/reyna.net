@@ -59,6 +59,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GivenAPreferences.cs" />
+    <Compile Include="GivenATimeRange.cs" />
     <Compile Include="GivenAForwardService.cs" />
     <Compile Include="GivenAMessage.cs" />
     <Compile Include="GivenAnAcceptAllCertificatePolicy.cs" />
@@ -69,6 +71,7 @@
     <Compile Include="GivenAReynaService.cs" />
     <Compile Include="GivenAStoreService.cs" />
     <Compile Include="GivenASystemNotifier.cs" />
+    <Compile Include="GivenATime.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -10,6 +10,9 @@
             var store = new ReynaService();
 
             store.Start();
+            Time from = new Time(10, 00);
+            Time to = new Time(12, 59);
+            ReynaService.SetCellularDataBlackout(new TimeRange(from, to));
 
             store.Put(GetMessage());
             store.Put(GetMessage());

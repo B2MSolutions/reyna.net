@@ -112,7 +112,7 @@
         [Fact]
         public void WhenGettingForwardServiceTemporaryErrorBackoutAndNoRegistryKeyShouldReturnDefault5Minutes()
         {
-            Assert.Equal(300000, this.ReynaService.ForwardServiceTemporaryErrorBackout);
+            Assert.Equal(300000, Preferences.ForwardServiceTemporaryErrorBackout);
         }
 
         [Fact]
@@ -122,8 +122,8 @@
             {
                 key.SetValue("TemporaryErrorBackout", 100);
             }
-            
-            Assert.Equal(100, this.ReynaService.ForwardServiceTemporaryErrorBackout);
+
+            Assert.Equal(100, Preferences.ForwardServiceTemporaryErrorBackout);
 
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
         }
@@ -131,7 +131,7 @@
         [Fact]
         public void WhenGettingForwardServiceMessageBackoutAndNoRegistryKeyShouldReturnDefault5Minutes()
         {
-            Assert.Equal(1000, this.ReynaService.ForwardServiceMessageBackout);
+            Assert.Equal(1000, Preferences.ForwardServiceMessageBackout);
         }
 
         [Fact]
@@ -142,13 +142,22 @@
                 key.SetValue("MessageBackout", 10);
             }
 
-            Assert.Equal(10, this.ReynaService.ForwardServiceMessageBackout);
+            Assert.Equal(10, Preferences.ForwardServiceMessageBackout);
 
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
         }
 
         [Fact]
         public void WhenSettingStorageLimitShouldSaveStorageLimit()
+        {
+            ReynaService.SetStorageSizeLimit(null, 3145728);
+            Assert.Equal(3145728, Preferences.StorageSizeLimit);
+
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
+        }
+
+        [Fact]
+        public void WhenGettingStorageLimitShouldSaveStorageLimit()
         {
             ReynaService.SetStorageSizeLimit(null, 3145728);
             Assert.Equal(3145728, ReynaService.StorageSizeLimit);
@@ -171,7 +180,7 @@
         public void WhenSettingStorageLimitShouldSetToMinimumValue(long value) 
         {
             ReynaService.SetStorageSizeLimit(null, value);
-            Assert.Equal(1867776, ReynaService.StorageSizeLimit); // 1867776 - min value, 1.8 Mb
+            Assert.Equal(1867776, Preferences.StorageSizeLimit); // 1867776 - min value, 1.8 Mb
 
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
         }
@@ -181,7 +190,7 @@
         {
             ReynaService.SetStorageSizeLimit(null, 100);
             ReynaService.ResetStorageSizeLimit();
-            Assert.Equal(-1, ReynaService.StorageSizeLimit);
+            Assert.Equal(-1, Preferences.StorageSizeLimit);
         }
 
         [Fact]
@@ -190,6 +199,29 @@
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
             
             ReynaService.ResetStorageSizeLimit();
+        }
+
+        [Fact]
+        public void WhenSetCellularDataBlackoutShouldStoreIt()
+        {
+            TimeRange range = new TimeRange(new Time(11, 00), new Time(12, 01));
+            ReynaService.SetCellularDataBlackout(range);
+            
+            TimeRange timeRange = Preferences.CellularDataBlackout;
+
+            Assert.Equal(range.From.MinuteOfDay, timeRange.From.MinuteOfDay);
+            Assert.Equal(range.To.MinuteOfDay, timeRange.To.MinuteOfDay);
+        }
+
+        [Fact]
+        public void WhenResetCellularDataBlackoutThenGetCellularDataBlackoutShouldReturnNull()
+        {
+            TimeRange range = new TimeRange(new Time(11, 00), new Time(12, 01));
+            ReynaService.ResetCellularDataBlackout();
+
+            TimeRange timeRange = Preferences.CellularDataBlackout;
+
+            Assert.Null(timeRange);
         }
     }
 }

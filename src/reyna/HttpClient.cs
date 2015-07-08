@@ -2,7 +2,6 @@
 {
     using System;
     using System.Net;
-    using System.Security.Cryptography.X509Certificates;
     using System.Text;
     using Extensions;
     using Reyna.Interfaces;
@@ -23,11 +22,15 @@
         {
             try
             {
+                Result result = CanSend();
+                if (result != Result.Ok)
+                {
+                    return result;
+                }
+
                 var request = WebRequest.Create(message.Url) as HttpWebRequest;
                 request.Method = "POST";
 
-                // TODO
-                // replace this fugly header setting
                 foreach (string key in message.Headers.Keys)
                 {
                     var value = message.Headers[key];
@@ -47,6 +50,28 @@
             {
                 return Result.PermanentError;
             }
+        }
+
+        internal static Result CanSend()
+        {
+            ConnectionInfo connectionInfo = new ConnectionInfo();
+            if (!connectionInfo.Connected)
+            {
+                return Result.NotConnected;
+            }
+
+            TimeRange range = Preferences.CellularDataBlackout;
+            if (range == null)
+            {
+                return Result.Ok;
+            }
+
+            if (!connectionInfo.Mobile)
+            {
+                return Result.Ok;
+            }
+
+            return range.Contains(new Time()) ? Result.Blackout : Result.Ok;
         }
 
         internal static HttpStatusCode GetStatusCode(HttpWebResponse response)

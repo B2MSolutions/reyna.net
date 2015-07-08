@@ -351,6 +351,44 @@
             Assert.Equal(1000, forwardService.SleepMilliseconds);
         }
 
+        [Fact]
+        public void WhenReceivingBlackoutErrorShouldNotSleepAndNotDeletingMessages()
+        {
+            this.HttpClient.Setup(c => c.Post(It.IsAny<IMessage>()))
+                .Returns(Result.Blackout);
+
+            var waitHandle = new Mock<IWaitHandle>();
+            var store = new Mock<IRepository>();
+            store.Setup(s => s.Get()).Returns(this.CreateMessage());
+
+            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle.Object, 1000, 0);
+            forwardService.Start();
+            Thread.Sleep(500);
+            forwardService.Stop();
+
+            store.Verify(s => s.Get(), Times.Once());
+            store.Verify(s => s.Remove(), Times.Never());
+        }
+
+        [Fact]
+        public void WhenReceivingNotConnectedErrorShouldNotSleepAndNotDeletingMessages()
+        {
+            this.HttpClient.Setup(c => c.Post(It.IsAny<IMessage>()))
+                .Returns(Result.NotConnected);
+
+            var waitHandle = new Mock<IWaitHandle>();
+            var store = new Mock<IRepository>();
+            store.Setup(s => s.Get()).Returns(this.CreateMessage());
+
+            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle.Object, 1000, 0);
+            forwardService.Start();
+            Thread.Sleep(500);
+            forwardService.Stop();
+
+            store.Verify(s => s.Get(), Times.Once());
+            store.Verify(s => s.Remove(), Times.Never());
+        }
+
         private IMessage CreateMessage()
         {
             return new Message(new Uri("http://test.com"), "BODY");

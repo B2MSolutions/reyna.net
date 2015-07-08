@@ -4,6 +4,8 @@
     {
         Ok,
         PermanentError,
-        TemporaryError
+        TemporaryError,
+        Blackout,
+        NotConnected
     }
 }
