@@ -1,11 +1,17 @@
 ﻿namespace Reyna
 {
     using System;
+    using System.Text.RegularExpressions;
     using Microsoft.Win32;
 
     internal static class Preferences
     {
         private const string StorageSizeLimitKeyName = "StorageSizeLimit";
+        private const string WlanBlackoutRangeKeyName = "WlanBlackoutRange";
+        private const string WwanBlackoutRangeKeyName = "WwanBlackoutRange";
+        private const string RoamingBlackoutKeyName = "RoamingBlackout";
+        private const string OnChargeBlackoutKeyName = "OnChargeBlackout";
+        private const string OffChargeBlackoutKeyName = "OffChargeBlackout";
 
         internal static long StorageSizeLimit
         {
@@ -56,6 +62,86 @@
             }
         }
 
+        internal static string WlanBlackoutRange
+        {
+            get
+            {
+                try
+                {
+                    return (string)GetRegistryValue(WlanBlackoutRangeKeyName, null);
+                }
+                catch (Exception)
+                {
+                }
+
+                return null;
+            }
+        }
+
+        internal static string WwanBlackoutRange
+        {
+            get
+            {
+                try
+                {
+                    return (string)GetRegistryValue(WwanBlackoutRangeKeyName, null);
+                }
+                catch (Exception)
+                {
+                }
+
+                return null;
+            }
+        }
+
+        internal static bool RoamingBlackout
+        {
+            get
+            {
+                try
+                {
+                    return GetRegistryValue(RoamingBlackoutKeyName, false);                    
+                }
+                catch (Exception)
+                {
+                }
+
+                return false;
+            }
+        }
+
+        internal static bool OnChargeBlackout
+        {
+            get
+            {
+                try
+                {
+                    return GetRegistryValue(OnChargeBlackoutKeyName, true);
+                }
+                catch (Exception)
+                {
+                }
+
+                return true;
+            }
+        }
+
+        internal static bool OffChargeBlackout
+        {
+            get
+            {
+                try
+                {
+                    return GetRegistryValue(OffChargeBlackoutKeyName, true);
+                }
+                catch (Exception)
+                {
+                }
+
+                return true;
+            }
+        }
+
         internal static void SetStorageSizeLimit(long limit)
         {
             SetRegistryValue(StorageSizeLimitKeyName, limit);
@@ -78,6 +164,85 @@
             DeleteRegistryValue("DataBlackout:To");
         }
 
+        internal static void SetWlanBlackoutRange(string range)
+        {
+            if (IsBlackoutRangeValid(range))
+            {
+                SetRegistryValue(WlanBlackoutRangeKeyName, range);
+            }
+            else
+            {
+                SetRegistryValue(WlanBlackoutRangeKeyName, null);
+            }
+        }
+
+        internal static void ResetWlanBlackoutRange()
+        {
+            DeleteRegistryValue(WlanBlackoutRangeKeyName);
+        }
+
+        internal static void SetWwanBlackoutRange(string range)
+        {
+            if (IsBlackoutRangeValid(range))
+            {
+                SetRegistryValue(WwanBlackoutRangeKeyName, range);
+            }
+            else
+            {
+                SetRegistryValue(WwanBlackoutRangeKeyName, null);
+            }
+        }
+
+        internal static void ResetWwanBlackoutRange()
+        {
+            DeleteRegistryValue(WwanBlackoutRangeKeyName);
+        }
+
+        internal static void SetRoamingBlackout(bool value)
+        {
+            SetRegistryValue(RoamingBlackoutKeyName, value);
+        }
+
+        internal static void ResetRoamingBlackout()
+        {
+            DeleteRegistryValue(RoamingBlackoutKeyName);
+        }
+
+        internal static void SetOnChargeBlackout(bool value)
+        {
+            SetRegistryValue(OnChargeBlackoutKeyName, value);
+        }
+
+        internal static void ResetOnChargeBlackout()
+        {
+            DeleteRegistryValue(OnChargeBlackoutKeyName);
+        }
+
+        internal static void SetOffChargeBlackout(bool value)
+        {
+            SetRegistryValue(OffChargeBlackoutKeyName, value);
+        }
+
+        internal static void ResetOffChargeBlackout()
+        {
+            DeleteRegistryValue(OffChargeBlackoutKeyName);
+        }
+
+        internal static bool IsBlackoutRangeValid(string ranges)
+        {
+            string[] splitRanges = ranges.Split(',');
+            foreach (string range in splitRanges) 
+            {
+                string regex = "^[0-9][0-9]:[0-9][0-9]-[0-9][0-9]:[0-9][0-9]$";
+                if (!Regex.IsMatch(range, regex, RegexOptions.IgnoreCase))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         private static int GetRegistryValue(string keyName, int defaultValue)
         {
             using (var key = Registry.LocalMachine.OpenSubKey(@"Software\Reyna", false))
@@ -91,7 +256,44 @@
             }
         }
 
+        private static object GetRegistryValue(string keyName, object defaultValue)
+        {
+            using (var key = Registry.LocalMachine.OpenSubKey(@"Software\Reyna", false))
+            {
+                if (key == null)
+                {
+                    return defaultValue;
+                }
+
+                return key.GetValue(keyName, defaultValue);
+            }
+        }
+
+        private static bool GetRegistryValue(string keyName, bool defaultValue)
+        {
+            using (var key = Registry.LocalMachine.OpenSubKey(@"Software\Reyna", false))
+            {
+                if (key == null)
+                {
+                    return defaultValue;
+                }
+
+                return bool.Parse((string)key.GetValue(keyName, defaultValue));
+            }
+        }
+
         private static void SetRegistryValue(string keyName, long value)
+        {
+            using (var key = Registry.LocalMachine.CreateSubKey(@"Software\Reyna"))
+            {
+                if (key != null)
+                {
+                    key.SetValue(keyName, value);
+                }
+            }
+        }
+
+        private static void SetRegistryValue(string keyName, object value)
         {
             using (var key = Registry.LocalMachine.CreateSubKey(@"Software\Reyna"))
             {
