@@ -58,6 +58,9 @@
     <Compile Include="..\reyna\AutoResetEventAdapter.cs">
       <Link>AutoResetEventAdapter.cs</Link>
     </Compile>
+    <Compile Include="..\reyna\Blackout\BlackoutTime.cs">
+      <Link>Blackout\BlackoutTime.cs</Link>
+    </Compile>
     <Compile Include="..\reyna\Blackout\Time.cs">
       <Link>Blackout\Time.cs</Link>
     </Compile>
@@ -139,9 +142,9 @@
     <Compile Include="..\reyna\ThreadWorker.cs">
       <Link>ThreadWorker.cs</Link>
     </Compile>
-    <Compile Include="Connection\OpenNETCF.Net.cs" >
-	<ExcludeFromStyleCop>True</ExcludeFromStyleCop>
-	</Compile>
+    <Compile Include="Connection\OpenNETCF.Net.cs">
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
+    </Compile>
     <Compile Include="NamedWaitHandle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sleep.cs" />

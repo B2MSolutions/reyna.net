@@ -21,5 +21,10 @@
 
             return time.CompareTo(this.From) >= 0 || time.CompareTo(this.To) <= 0;
         }
+
+        internal bool IsEmpty()
+        {
+            return this.From.MinuteOfDay == this.To.MinuteOfDay;
+        }
     }
 }

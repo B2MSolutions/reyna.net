@@ -76,6 +76,7 @@
   <ItemGroup>
     <Compile Include="AcceptAllCertificatePolicy.cs" />
     <Compile Include="AutoResetEventAdapter.cs" />
+    <Compile Include="Blackout\BlackoutTime.cs" />
     <Compile Include="Blackout\Time.cs" />
     <Compile Include="Blackout\TimeRange.cs" />
     <Compile Include="Connection\IConnectionInfo.cs" />

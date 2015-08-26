@@ -59,6 +59,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GivenABlackoutTime.cs" />
     <Compile Include="GivenAPreferences.cs" />
     <Compile Include="GivenATimeRange.cs" />
     <Compile Include="GivenAForwardService.cs" />
