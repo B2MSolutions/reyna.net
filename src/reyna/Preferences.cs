@@ -6,6 +6,7 @@
 
     internal static class Preferences
     {
+        private const string SubKey = @"Software\Reyna";
         private const string StorageSizeLimitKeyName = "StorageSizeLimit";
         private const string WlanBlackoutRangeKeyName = "WlanBlackoutRange";
         private const string WwanBlackoutRangeKeyName = "WwanBlackoutRange";
@@ -172,7 +173,7 @@
             }
             else
             {
-                SetRegistryValue(WlanBlackoutRangeKeyName, null);
+                ResetWlanBlackoutRange();
             }
         }
 
@@ -189,7 +190,7 @@
             }
             else
             {
-                SetRegistryValue(WwanBlackoutRangeKeyName, null);
+                ResetWwanBlackoutRange();
             }
         }
 
@@ -245,7 +246,7 @@
 
         private static int GetRegistryValue(string keyName, int defaultValue)
         {
-            using (var key = Registry.LocalMachine.OpenSubKey(@"Software\Reyna", false))
+            using (var key = Registry.LocalMachine.OpenSubKey(SubKey, false))
             {
                 if (key == null)
                 {
@@ -258,7 +259,7 @@
 
         private static object GetRegistryValue(string keyName, object defaultValue)
         {
-            using (var key = Registry.LocalMachine.OpenSubKey(@"Software\Reyna", false))
+            using (var key = Registry.LocalMachine.OpenSubKey(SubKey, false))
             {
                 if (key == null)
                 {
@@ -271,7 +272,7 @@
 
         private static bool GetRegistryValue(string keyName, bool defaultValue)
         {
-            using (var key = Registry.LocalMachine.OpenSubKey(@"Software\Reyna", false))
+            using (var key = Registry.LocalMachine.OpenSubKey(SubKey, false))
             {
                 if (key == null)
                 {
@@ -284,7 +285,7 @@
 
         private static void SetRegistryValue(string keyName, long value)
         {
-            using (var key = Registry.LocalMachine.CreateSubKey(@"Software\Reyna"))
+            using (var key = Registry.LocalMachine.CreateSubKey(SubKey))
             {
                 if (key != null)
                 {
@@ -295,7 +296,7 @@
 
         private static void SetRegistryValue(string keyName, object value)
         {
-            using (var key = Registry.LocalMachine.CreateSubKey(@"Software\Reyna"))
+            using (var key = Registry.LocalMachine.CreateSubKey(SubKey))
             {
                 if (key != null)
                 {
@@ -306,7 +307,7 @@
 
         private static void DeleteRegistryValue(string keyName)
         {
-            using (var key = Registry.LocalMachine.OpenSubKey(@"Software\Reyna", true))
+            using (var key = Registry.LocalMachine.OpenSubKey(SubKey, true))
             {
                 if (key != null)
                 {
