@@ -54,24 +54,30 @@
 
         internal static Result CanSend()
         {
-            ConnectionInfo connectionInfo = new ConnectionInfo();
-            if (!connectionInfo.Connected)
+            ConnectionInfo info = new ConnectionInfo();
+            if (!info.Connected)
             {
                 return Result.NotConnected;
             }
 
-            TimeRange range = Preferences.CellularDataBlackout;
-            if (range == null)
+            if (Preferences.WwanBlackoutRange == null)
             {
-                return Result.Ok;
+                SaveCellularDataAsWwanForBackwardsCompatibility();
             }
 
-            if (!connectionInfo.Mobile)
+            BlackoutTime blackoutTime = new BlackoutTime();
+
+            if (info.Wifi && !CanSendNow(blackoutTime, Preferences.WlanBlackoutRange))
             {
-                return Result.Ok;
+                return Result.Blackout;
             }
 
-            return range.Contains(new Time()) ? Result.Blackout : Result.Ok;
+            if (info.Mobile && !CanSendNow(blackoutTime, Preferences.WwanBlackoutRange))
+            {
+                return Result.Blackout;
+            }
+
+            return Result.Ok;
         }
 
         internal static HttpStatusCode GetStatusCode(HttpWebResponse response)
@@ -82,6 +88,33 @@
             }
 
             return response.StatusCode;
+        }
+
+        private static void SaveCellularDataAsWwanForBackwardsCompatibility()
+        {
+            TimeRange timeRange = Preferences.CellularDataBlackout;
+            if (timeRange != null)
+            {
+                int hourFrom = (int)Math.Floor((double)timeRange.From.MinuteOfDay / 60);
+                int minuteFrom = timeRange.From.MinuteOfDay % 60;
+                string blackoutFrom = ZeroPad(hourFrom) + ":" + ZeroPad(minuteFrom);
+
+                int hourTo = (int)Math.Floor((double)timeRange.To.MinuteOfDay / 60);
+                int minuteTo = timeRange.To.MinuteOfDay % 60;
+                string blackoutTo = ZeroPad(hourTo) + ":" + ZeroPad(minuteTo);
+
+                Preferences.SetWwanBlackoutRange(blackoutFrom + "-" + blackoutTo);
+            }
+        }
+
+        private static object ZeroPad(int numToPad)
+        {
+            return numToPad.ToString("D2");
+        }
+
+        private static bool CanSendNow(BlackoutTime blackoutTime, string range)
+        {
+            return blackoutTime.CanSendAtTime(System.DateTime.Now, range);
         }
 
         private Result RequestAndRespond(HttpWebRequest request, string content)

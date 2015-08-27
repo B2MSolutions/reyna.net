@@ -62,6 +62,34 @@
             }
         }
 
+        public bool Wifi
+        {
+            get
+            {
+                try
+                {
+                    var interfaces = NetworkInterface.GetAllNetworkInterfaces();
+                    foreach (var ni in interfaces)
+                    {
+                        if (WifiNetwork(ni))
+                        {
+                            return true;
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                }
+
+                return false;
+            }
+        }
+
+        private static bool WifiNetwork(INetworkInterface ni)
+        {
+            return ni.Name.ToLower(System.Globalization.CultureInfo.CurrentCulture).StartsWith("wifi", StringComparison.CurrentCulture);
+        }
+
         private static bool GPRSNetwork(INetworkInterface ni)
         {
             return ni.Name.ToLower(System.Globalization.CultureInfo.CurrentCulture).StartsWith("cellular line", StringComparison.CurrentCulture);

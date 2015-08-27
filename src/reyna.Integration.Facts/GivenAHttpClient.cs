@@ -12,6 +12,11 @@
         {
             NetworkInterface.NetworkInterfaces = new INetworkInterface[0];
             Preferences.ResetCellularDataBlackout();
+            Preferences.ResetWlanBlackoutRange();
+            Preferences.ResetWwanBlackoutRange();
+            Preferences.ResetRoamingBlackout();
+            Preferences.ResetOnChargeBlackout();
+            Preferences.ResetOffChargeBlackout();
         }
 
         [Fact]
@@ -244,6 +249,54 @@
             ConnectionInfo connectionInfo = new ConnectionInfo();
 
             Assert.False(connectionInfo.Mobile);
+        }
+
+        [Fact]
+        public void WhenCallingCanSendAndInsideWlanBlackoutReturnBlackout()
+        {
+            var networkInterface = new NetworkInterface();
+            networkInterface.CurrentIpAddress = new IPAddress(42);
+            networkInterface.Name = "wifi";
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
+            Preferences.SetWlanBlackoutRange("00:00-23:59");
+
+            Assert.True(HttpClient.CanSend() == Result.Blackout);
+        }
+
+        [Fact]
+        public void WhenCallingCanSendAndOutsideWlanBlackoutReturnOk()
+        {
+            var networkInterface = new NetworkInterface();
+            networkInterface.CurrentIpAddress = new IPAddress(42);
+            networkInterface.Name = "wifi";
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
+            Preferences.SetWlanBlackoutRange("02:00-02:01");
+
+            Assert.True(HttpClient.CanSend() == Result.Ok);
+        }
+
+        [Fact]
+        public void WhenCallingCanSendAndInsideWwanBlackoutReturnBlackout()
+        {
+            var networkInterface = new NetworkInterface();
+            networkInterface.CurrentIpAddress = new IPAddress(42);
+            networkInterface.Name = "cellular line";
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
+            Preferences.SetWwanBlackoutRange("00:00-23:59");
+
+            Assert.True(HttpClient.CanSend() == Result.Blackout);
+        }
+
+        [Fact]
+        public void WhenCallingCanSendAndOutsideWwanBlackoutReturnOk()
+        {
+            var networkInterface = new NetworkInterface();
+            networkInterface.CurrentIpAddress = new IPAddress(42);
+            networkInterface.Name = "cellular line";
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
+            Preferences.SetWwanBlackoutRange("02:00-02:01");
+
+            Assert.True(HttpClient.CanSend() == Result.Ok);
         }
     }
 }
