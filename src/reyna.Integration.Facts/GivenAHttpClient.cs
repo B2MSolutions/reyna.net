@@ -298,5 +298,29 @@
 
             Assert.True(HttpClient.CanSend() == Result.Ok);
         }
+
+        [Fact]
+        public void WhenCallingCanSendAndRoamingBlackoutReturnBlackout()
+        {
+            var networkInterface = new NetworkInterface();
+            networkInterface.CurrentIpAddress = new IPAddress(42);
+            networkInterface.Name = "roaming";
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
+            Preferences.SetRoamingBlackout(false);
+
+            Assert.True(HttpClient.CanSend() == Result.Blackout);
+        }
+
+        [Fact]
+        public void WhenCallingCanSendAndNotRoamingBlackoutReturnOk()
+        {
+            var networkInterface = new NetworkInterface();
+            networkInterface.CurrentIpAddress = new IPAddress(42);
+            networkInterface.Name = "roaming";
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
+            Preferences.SetRoamingBlackout(true);
+
+            Assert.True(HttpClient.CanSend() == Result.Ok);
+        }
     }
 }

@@ -85,6 +85,34 @@
             }
         }
 
+        public bool Roaming
+        {
+            get
+            {
+                try
+                {
+                    var interfaces = NetworkInterface.GetAllNetworkInterfaces();
+                    foreach (var ni in interfaces)
+                    {
+                        if (RoamingNetwork(ni))
+                        {
+                            return true;
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                }
+
+                return false;
+            }
+        }
+
+        private static bool RoamingNetwork(INetworkInterface ni)
+        {
+            return ni.Name.ToLower(System.Globalization.CultureInfo.CurrentCulture).StartsWith("roaming", StringComparison.CurrentCulture);
+        }
+
         private static bool WifiNetwork(INetworkInterface ni)
         {
             return ni.Name.ToLower(System.Globalization.CultureInfo.CurrentCulture).StartsWith("wifi", StringComparison.CurrentCulture);

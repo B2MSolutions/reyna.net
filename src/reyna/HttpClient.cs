@@ -65,6 +65,11 @@
                 SaveCellularDataAsWwanForBackwardsCompatibility();
             }
 
+            if (info.Roaming && !Preferences.RoamingBlackout)
+            {
+                return Result.Blackout;
+            }
+
             BlackoutTime blackoutTime = new BlackoutTime();
 
             if (info.Wifi && !CanSendNow(blackoutTime, Preferences.WlanBlackoutRange))
