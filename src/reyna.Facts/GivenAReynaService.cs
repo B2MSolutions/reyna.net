@@ -223,5 +223,57 @@
 
             Assert.Null(timeRange);
         }
+
+        [Fact]
+        public void WhenSetWlanBlackoutRangeShouldStoreIt()
+        {
+            string range = "00:00-00:10";
+            ReynaService.SetWlanBlackoutRange(range);
+
+            string actual = Preferences.WlanBlackoutRange;
+
+            Assert.Equal(range, actual);
+        }
+
+        [Fact]
+        public void WhenSetWwanBlackoutRangeShouldStoreIt()
+        {
+            string range = "00:00-00:10";
+            ReynaService.SetWwanBlackoutRange(range);
+
+            string actual = Preferences.WwanBlackoutRange;
+
+            Assert.Equal(range, actual);
+        }
+
+        [Fact]
+        public void WhenSetRoamingBlackoutShouldStoreIt()
+        {
+            ReynaService.SetRoamingBlackout(false);
+
+            bool actual = Preferences.RoamingBlackout;
+
+            Assert.False(actual);
+        }
+
+        [Fact]
+        public void WhenSetOnChargeBlackoutShouldStoreIt()
+        {
+            ReynaService.SetOnChargeBlackout(false);
+
+            bool actual = Preferences.OnChargeBlackout;
+
+            Assert.False(actual);
+        }
+
+        [Fact]
+        public void WhenSetOffChargeBlackoutShouldStoreIt()
+        {
+            ReynaService.SetOffChargeBlackout(false);
+
+            bool actual = Preferences.OffChargeBlackout;
+
+            Assert.False(actual);
+        }
     }
 }

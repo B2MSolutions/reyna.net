@@ -2,9 +2,11 @@
 {
     using System;
     using System.Net;
-    using System.Text;
+    using System.Runtime.InteropServices;
+    using System.Text;    
     using Extensions;
     using Reyna.Interfaces;
+    using Reyna.Power;
 
     internal sealed class HttpClient : IHttpClient
     {
@@ -65,8 +67,19 @@
                 SaveCellularDataAsWwanForBackwardsCompatibility();
             }
 
-            if (info.Roaming && !Preferences.RoamingBlackout)
+            PowerManager powerManager = new PowerManager();
+            if (powerManager.IsBatteryCharging() && !Preferences.OnChargeBlackout)
             {
+                return Result.Blackout;
+            }
+
+            if (!powerManager.IsBatteryCharging() && !Preferences.OffChargeBlackout)
+            {
+                return Result.Blackout;
+            }
+
+            if (info.Roaming && !Preferences.RoamingBlackout)
+            {                
                 return Result.Blackout;
             }
 

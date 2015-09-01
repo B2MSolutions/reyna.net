@@ -134,5 +134,30 @@
                 this.StoreService.Dispose();
             }
         }
+
+        internal static void SetWlanBlackoutRange(string range)
+        {
+            Preferences.SetWlanBlackoutRange(range);
+        }
+
+        internal static void SetWwanBlackoutRange(string range)
+        {
+            Preferences.SetWwanBlackoutRange(range);
+        }
+
+        internal static void SetRoamingBlackout(bool value)
+        {
+            Preferences.SetRoamingBlackout(value);
+        }
+
+        internal static void SetOnChargeBlackout(bool value)
+        {
+            Preferences.SetOnChargeBlackout(value);            
+        }
+
+        internal static void SetOffChargeBlackout(bool value)
+        {
+            Preferences.SetOffChargeBlackout(value);            
+        }
     }
 }

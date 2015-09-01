@@ -97,6 +97,9 @@
     <Compile Include="Interfaces\ISystemNotifier.cs" />
     <Compile Include="Interfaces\Result.cs" />
     <Compile Include="NamedWaitHandle.cs" />
+    <Compile Include="NativeMethods\NativeMethods.cs" />
+    <Compile Include="Power\PowerManager.cs" />
+    <Compile Include="Power\SystemPowerStatus.cs" />
     <Compile Include="NetworkStateService.cs" />
     <Compile Include="Preferences.cs" />
     <Compile Include="ServiceBase.cs" />

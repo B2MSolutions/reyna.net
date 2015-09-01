@@ -124,6 +124,12 @@
     <Compile Include="..\reyna\NetworkStateService.cs">
       <Link>NetworkStateService.cs</Link>
     </Compile>
+    <Compile Include="..\reyna\Power\PowerManager.cs">
+      <Link>Power\PowerManager.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Power\SystemPowerStatus.cs">
+      <Link>Power\SystemPowerStatus.cs</Link>
+    </Compile>
     <Compile Include="..\reyna\Preferences.cs">
       <Link>Preferences.cs</Link>
     </Compile>
@@ -146,6 +152,7 @@
       <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>
     <Compile Include="NamedWaitHandle.cs" />
+    <Compile Include="NativeMethods\NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sleep.cs" />
     <Compile Include="SystemNotifier.cs" />

@@ -4,6 +4,7 @@
     using System.Net;
     using OpenNETCF.Net.NetworkInformation;
     using Reyna.Interfaces;
+    using Reyna.Power;
     using Xunit;
 
     public class GivenAHttpClient
@@ -319,6 +320,62 @@
             networkInterface.Name = "roaming";
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
             Preferences.SetRoamingBlackout(true);
+
+            Assert.True(HttpClient.CanSend() == Result.Ok);
+        }
+
+        [Fact]
+        public void WhenCallingCanSendAndOnChargeBlackoutAndIsChargingReturnBlackout()
+        {
+            var networkInterface = new NetworkInterface();
+            networkInterface.CurrentIpAddress = new IPAddress(42);
+            networkInterface.Name = "wifi";
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
+
+            NativeMethods.ACLineStatus = 1;
+            Preferences.SetOnChargeBlackout(false);
+
+            Assert.True(HttpClient.CanSend() == Result.Blackout);
+        }
+
+        [Fact]
+        public void WhenCallingCanSendAndOnChargeBlackoutAndNotChargingReturnOk()
+        {
+            var networkInterface = new NetworkInterface();
+            networkInterface.CurrentIpAddress = new IPAddress(42);
+            networkInterface.Name = "wifi";
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
+
+            NativeMethods.ACLineStatus = 0;
+            Preferences.SetOnChargeBlackout(false);
+
+            Assert.True(HttpClient.CanSend() == Result.Ok);
+        }
+
+        [Fact]
+        public void WhenCallingCanSendAndOffChargeBlackoutAndNotChargingReturnBlackout()
+        {
+            var networkInterface = new NetworkInterface();
+            networkInterface.CurrentIpAddress = new IPAddress(42);
+            networkInterface.Name = "wifi";
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
+
+            NativeMethods.ACLineStatus = 0;
+            Preferences.SetOffChargeBlackout(false);
+
+            Assert.True(HttpClient.CanSend() == Result.Blackout);
+        }
+
+        [Fact]
+        public void WhenCallingCanSendAndOffChargeBlackoutAndIsChargingReturnOk()
+        {
+            var networkInterface = new NetworkInterface();
+            networkInterface.CurrentIpAddress = new IPAddress(42);
+            networkInterface.Name = "wifi";
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
+
+            NativeMethods.ACLineStatus = 1;
+            Preferences.SetOffChargeBlackout(false);
 
             Assert.True(HttpClient.CanSend() == Result.Ok);
         }
