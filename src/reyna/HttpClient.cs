@@ -68,17 +68,17 @@
             }
 
             PowerManager powerManager = new PowerManager();
-            if (powerManager.IsBatteryCharging() && !Preferences.OnChargeBlackout)
+            if (powerManager.IsBatteryCharging() && Preferences.OnChargeBlackout)
             {
                 return Result.Blackout;
             }
 
-            if (!powerManager.IsBatteryCharging() && !Preferences.OffChargeBlackout)
+            if (!powerManager.IsBatteryCharging() && Preferences.OffChargeBlackout)
             {
                 return Result.Blackout;
             }
 
-            if (info.Roaming && !Preferences.RoamingBlackout)
+            if (info.Roaming && Preferences.RoamingBlackout)
             {                
                 return Result.Blackout;
             }

@@ -135,23 +135,23 @@
         }
 
         [Fact]
-        public void WhenResetRoamingBlackoutThenGetRoamingBlackoutShouldReturnFalse()
+        public void WhenResetRoamingBlackoutThenGetRoamingBlackoutShouldReturnTrue()
         {
-            Preferences.SetRoamingBlackout(true);
+            Preferences.SetRoamingBlackout(false);
             Preferences.ResetRoamingBlackout();
             bool roamingBlackout = Preferences.RoamingBlackout;
 
-            Assert.False(roamingBlackout);
+            Assert.True(roamingBlackout);
         }
 
         [Fact]
         public void WhenGetRoamingBlackoutAndNotCorrectlySavedReturnTrue()
         {
-            Preferences.SetRoamingBlackout(true);
+            Preferences.SetRoamingBlackout(false);
             DeleteRegistryValue("RoamingBlackout");
             bool roamingBlackout = Preferences.RoamingBlackout;
 
-            Assert.False(roamingBlackout);
+            Assert.True(roamingBlackout);
         }
 
         [Fact]
@@ -169,23 +169,23 @@
         }
 
         [Fact]
-        public void WhenResetOnChargeBlackoutThenGetOnChargeBlackoutShouldReturnTrue()
+        public void WhenResetOnChargeBlackoutThenGetOnChargeBlackoutShouldReturnFalse()
         {
-            Preferences.SetOnChargeBlackout(false);
+            Preferences.SetOnChargeBlackout(true);
             Preferences.ResetOnChargeBlackout();
             bool chargingBlackout = Preferences.OnChargeBlackout;
 
-            Assert.True(chargingBlackout);
+            Assert.False(chargingBlackout);
         }
 
         [Fact]
-        public void WhenGetOnChargeBlackoutAndNotCorrectlySavedReturnTrue()
+        public void WhenGetOnChargeBlackoutAndNotCorrectlySavedReturnFalse()
         {
-            Preferences.SetOnChargeBlackout(false);
+            Preferences.SetOnChargeBlackout(true);
             DeleteRegistryValue("OnChargeBlackout");
             bool chargingBlackout = Preferences.OnChargeBlackout;
 
-            Assert.True(chargingBlackout);
+            Assert.False(chargingBlackout);
         }
 
         [Fact]
@@ -203,23 +203,23 @@
         }
 
         [Fact]
-        public void WhenResetOffChargeBlackoutThenGetOffChargeBlackoutShouldReturnTrue()
+        public void WhenResetOffChargeBlackoutThenGetOffChargeBlackoutShouldReturnFalse()
         {
-            Preferences.SetOffChargeBlackout(false);
+            Preferences.SetOffChargeBlackout(true);
             Preferences.ResetOffChargeBlackout();
             bool dischargingBlackout = Preferences.OffChargeBlackout;
 
-            Assert.True(dischargingBlackout);
+            Assert.False(dischargingBlackout);
         }
 
         [Fact]
-        public void WhenGetOffChargeBlackoutAndNotCorrectlySavedReturnTrue()
+        public void WhenGetOffChargeBlackoutAndNotCorrectlySavedReturnFalse()
         {
-            Preferences.SetOffChargeBlackout(false);
+            Preferences.SetOffChargeBlackout(true);
             DeleteRegistryValue("OffChargeBlackout");
             bool dischargingBlackout = Preferences.OffChargeBlackout;
 
-            Assert.True(dischargingBlackout);
+            Assert.False(dischargingBlackout);
         }
 
         [Fact]

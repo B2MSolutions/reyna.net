@@ -307,7 +307,7 @@
             networkInterface.CurrentIpAddress = new IPAddress(42);
             networkInterface.Name = "roaming";
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
-            Preferences.SetRoamingBlackout(false);
+            Preferences.SetRoamingBlackout(true);
 
             Assert.True(HttpClient.CanSend() == Result.Blackout);
         }
@@ -319,7 +319,7 @@
             networkInterface.CurrentIpAddress = new IPAddress(42);
             networkInterface.Name = "roaming";
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
-            Preferences.SetRoamingBlackout(true);
+            Preferences.SetRoamingBlackout(false);
 
             Assert.True(HttpClient.CanSend() == Result.Ok);
         }
@@ -333,7 +333,7 @@
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
 
             NativeMethods.ACLineStatus = 1;
-            Preferences.SetOnChargeBlackout(false);
+            Preferences.SetOnChargeBlackout(true);
 
             Assert.True(HttpClient.CanSend() == Result.Blackout);
         }
@@ -347,7 +347,7 @@
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
 
             NativeMethods.ACLineStatus = 0;
-            Preferences.SetOnChargeBlackout(false);
+            Preferences.SetOnChargeBlackout(true);
 
             Assert.True(HttpClient.CanSend() == Result.Ok);
         }
@@ -361,7 +361,7 @@
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
 
             NativeMethods.ACLineStatus = 0;
-            Preferences.SetOffChargeBlackout(false);
+            Preferences.SetOffChargeBlackout(true);
 
             Assert.True(HttpClient.CanSend() == Result.Blackout);
         }
@@ -375,7 +375,7 @@
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
 
             NativeMethods.ACLineStatus = 1;
-            Preferences.SetOffChargeBlackout(false);
+            Preferences.SetOffChargeBlackout(true);
 
             Assert.True(HttpClient.CanSend() == Result.Ok);
         }
