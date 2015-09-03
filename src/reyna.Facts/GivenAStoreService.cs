@@ -26,7 +26,7 @@
 
         private IWaitHandle WaitHandle { get; set; }
 
-        private IService StoreService { get; set; }
+        private StoreService StoreService { get; set; }
 
         [Fact]
         public void WhenCallingStartAndMessageAddedShouldCallPutOnRepository()

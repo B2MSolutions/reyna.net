@@ -8,7 +8,7 @@
     using Reyna.Interfaces;
     using Reyna.Power;
 
-    internal sealed class HttpClient : IHttpClient
+    public sealed class HttpClient : IHttpClient
     {
         public HttpClient(ICertificatePolicy certificatePolicy)
         {
@@ -18,6 +18,12 @@
                 ServicePointManager.CertificatePolicy = certificatePolicy;
 #pragma warning restore 0618
             }
+        }
+
+        public static Result CanSend()
+        {
+            ConnectionInfo info = new ConnectionInfo();
+            return new ConnectionManager().CanSend();
         }
 
         public Result Post(IMessage message)
@@ -54,50 +60,6 @@
             }
         }
 
-        internal static Result CanSend()
-        {
-            ConnectionInfo info = new ConnectionInfo();
-            if (!info.Connected)
-            {
-                return Result.NotConnected;
-            }
-
-            if (Preferences.WwanBlackoutRange == null)
-            {
-                SaveCellularDataAsWwanForBackwardsCompatibility();
-            }
-
-            PowerManager powerManager = new PowerManager();
-            if (powerManager.IsBatteryCharging() && Preferences.OnChargeBlackout)
-            {
-                return Result.Blackout;
-            }
-
-            if (!powerManager.IsBatteryCharging() && Preferences.OffChargeBlackout)
-            {
-                return Result.Blackout;
-            }
-
-            if (info.Roaming && Preferences.RoamingBlackout)
-            {                
-                return Result.Blackout;
-            }
-
-            BlackoutTime blackoutTime = new BlackoutTime();
-
-            if (info.Wifi && !CanSendNow(blackoutTime, Preferences.WlanBlackoutRange))
-            {
-                return Result.Blackout;
-            }
-
-            if (info.Mobile && !CanSendNow(blackoutTime, Preferences.WwanBlackoutRange))
-            {
-                return Result.Blackout;
-            }
-
-            return Result.Ok;
-        }
-
         internal static HttpStatusCode GetStatusCode(HttpWebResponse response)
         {
             if (response == null)
@@ -108,9 +70,10 @@
             return response.StatusCode;
         }
 
-        private static void SaveCellularDataAsWwanForBackwardsCompatibility()
+        internal static void SaveCellularDataAsWwanForBackwardsCompatibility()
         {
-            TimeRange timeRange = Preferences.CellularDataBlackout;
+            Preferences preferences = new Preferences();
+            TimeRange timeRange = preferences.CellularDataBlackout;
             if (timeRange != null)
             {
                 int hourFrom = (int)Math.Floor((double)timeRange.From.MinuteOfDay / 60);
@@ -121,18 +84,18 @@
                 int minuteTo = timeRange.To.MinuteOfDay % 60;
                 string blackoutTo = ZeroPad(hourTo) + ":" + ZeroPad(minuteTo);
 
-                Preferences.SetWwanBlackoutRange(blackoutFrom + "-" + blackoutTo);
+                preferences.SetWwanBlackoutRange(blackoutFrom + "-" + blackoutTo);
             }
+        }
+
+        internal static bool CanSendNow(BlackoutTime blackoutTime, string range)
+        {
+            return blackoutTime.CanSendAtTime(System.DateTime.Now, range);
         }
 
         private static object ZeroPad(int numToPad)
         {
             return numToPad.ToString("D2");
-        }
-
-        private static bool CanSendNow(BlackoutTime blackoutTime, string range)
-        {
-            return blackoutTime.CanSendAtTime(System.DateTime.Now, range);
         }
 
         private Result RequestAndRespond(HttpWebRequest request, string content)

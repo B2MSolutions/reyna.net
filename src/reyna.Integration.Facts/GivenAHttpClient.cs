@@ -12,13 +12,16 @@
         public GivenAHttpClient()
         {
             NetworkInterface.NetworkInterfaces = new INetworkInterface[0];
-            Preferences.ResetCellularDataBlackout();
-            Preferences.ResetWlanBlackoutRange();
-            Preferences.ResetWwanBlackoutRange();
-            Preferences.ResetRoamingBlackout();
-            Preferences.ResetOnChargeBlackout();
-            Preferences.ResetOffChargeBlackout();
+            this.Preferences = new Preferences();
+            this.Preferences.ResetCellularDataBlackout();
+            this.Preferences.ResetWlanBlackoutRange();
+            this.Preferences.ResetWwanBlackoutRange();
+            this.Preferences.ResetRoamingBlackout();
+            this.Preferences.ResetOnChargeBlackout();
+            this.Preferences.ResetOffChargeBlackout();
         }
+
+        public Preferences Preferences { get; set; }
 
         [Fact]
         public void WhenCallingPostWithVaidUrlShouldSucceed()
@@ -175,7 +178,7 @@
             networkInterface.Name = "cellular line";
             var from = new Time();
             var to = new Time(from.MinuteOfDay + 1);
-            Preferences.SetCellularDataBlackout(new TimeRange(from, to));
+            this.Preferences.SetCellularDataBlackout(new TimeRange(from, to));
 
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
 
@@ -199,7 +202,7 @@
             var time = DateTime.Now.AddHours(-1);
             var from = new Time(time.Hour, time.Minute);
             var to = new Time(from.MinuteOfDay + 1);
-            Preferences.SetCellularDataBlackout(new TimeRange(from, to));
+            this.Preferences.SetCellularDataBlackout(new TimeRange(from, to));
 
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
 
@@ -222,7 +225,7 @@
             networkInterface.Name = "wifi";
             var from = new Time();
             var to = new Time(from.MinuteOfDay + 1);
-            Preferences.SetCellularDataBlackout(new TimeRange(from, to));
+            this.Preferences.SetCellularDataBlackout(new TimeRange(from, to));
 
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
 
@@ -245,7 +248,7 @@
             networkInterface.Name = "cellular line";
             var from = new Time();
             var to = new Time(from.MinuteOfDay + 1);
-            Preferences.SetCellularDataBlackout(new TimeRange(from, to));
+            this.Preferences.SetCellularDataBlackout(new TimeRange(from, to));
 
             ConnectionInfo connectionInfo = new ConnectionInfo();
 
@@ -259,7 +262,7 @@
             networkInterface.CurrentIpAddress = new IPAddress(42);
             networkInterface.Name = "wifi";
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
-            Preferences.SetWlanBlackoutRange("00:00-23:59");
+            this.Preferences.SetWlanBlackoutRange("00:00-23:59");
 
             Assert.True(HttpClient.CanSend() == Result.Blackout);
         }
@@ -271,7 +274,7 @@
             networkInterface.CurrentIpAddress = new IPAddress(42);
             networkInterface.Name = "wifi";
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
-            Preferences.SetWlanBlackoutRange("02:00-02:01");
+            this.Preferences.SetWlanBlackoutRange("02:00-02:01");
 
             Assert.True(HttpClient.CanSend() == Result.Ok);
         }
@@ -283,7 +286,7 @@
             networkInterface.CurrentIpAddress = new IPAddress(42);
             networkInterface.Name = "cellular line";
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
-            Preferences.SetWwanBlackoutRange("00:00-23:59");
+            this.Preferences.SetWwanBlackoutRange("00:00-23:59");
 
             Assert.True(HttpClient.CanSend() == Result.Blackout);
         }
@@ -295,7 +298,7 @@
             networkInterface.CurrentIpAddress = new IPAddress(42);
             networkInterface.Name = "cellular line";
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
-            Preferences.SetWwanBlackoutRange("02:00-02:01");
+            this.Preferences.SetWwanBlackoutRange("02:00-02:01");
 
             Assert.True(HttpClient.CanSend() == Result.Ok);
         }
@@ -307,7 +310,7 @@
             networkInterface.CurrentIpAddress = new IPAddress(42);
             networkInterface.Name = "roaming";
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
-            Preferences.SetRoamingBlackout(true);
+            this.Preferences.SetRoamingBlackout(true);
 
             Assert.True(HttpClient.CanSend() == Result.Blackout);
         }
@@ -319,7 +322,7 @@
             networkInterface.CurrentIpAddress = new IPAddress(42);
             networkInterface.Name = "roaming";
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
-            Preferences.SetRoamingBlackout(false);
+            this.Preferences.SetRoamingBlackout(false);
 
             Assert.True(HttpClient.CanSend() == Result.Ok);
         }
@@ -333,7 +336,7 @@
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
 
             NativeMethods.ACLineStatus = 1;
-            Preferences.SetOnChargeBlackout(true);
+            this.Preferences.SetOnChargeBlackout(true);
 
             Assert.True(HttpClient.CanSend() == Result.Blackout);
         }
@@ -347,7 +350,7 @@
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
 
             NativeMethods.ACLineStatus = 0;
-            Preferences.SetOnChargeBlackout(true);
+            this.Preferences.SetOnChargeBlackout(true);
 
             Assert.True(HttpClient.CanSend() == Result.Ok);
         }
@@ -361,7 +364,7 @@
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
 
             NativeMethods.ACLineStatus = 0;
-            Preferences.SetOffChargeBlackout(true);
+            this.Preferences.SetOffChargeBlackout(true);
 
             Assert.True(HttpClient.CanSend() == Result.Blackout);
         }
@@ -375,7 +378,7 @@
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
 
             NativeMethods.ACLineStatus = 1;
-            Preferences.SetOffChargeBlackout(true);
+            this.Preferences.SetOffChargeBlackout(true);
 
             Assert.True(HttpClient.CanSend() == Result.Ok);
         }

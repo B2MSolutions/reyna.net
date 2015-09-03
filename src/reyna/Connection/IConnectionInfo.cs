@@ -5,5 +5,9 @@
         bool Connected { get; }
 
         bool Mobile { get; }
+
+        bool Wifi { get; }
+
+        bool Roaming { get; }
     }
 }

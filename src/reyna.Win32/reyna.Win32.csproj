@@ -70,6 +70,9 @@
     <Compile Include="..\reyna\Connection\ConnectionInfo.cs">
       <Link>Connection\ConnectionInfo.cs</Link>
     </Compile>
+    <Compile Include="..\reyna\Connection\ConnectionManager.cs">
+      <Link>Connection\ConnectionManager.cs</Link>
+    </Compile>
     <Compile Include="..\reyna\Connection\IConnectionInfo.cs">
       <Link>Connection\IConnectionInfo.cs</Link>
     </Compile>

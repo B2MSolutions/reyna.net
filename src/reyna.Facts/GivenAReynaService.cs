@@ -151,7 +151,7 @@
         public void WhenSettingStorageLimitShouldSaveStorageLimit()
         {
             ReynaService.SetStorageSizeLimit(null, 3145728);
-            Assert.Equal(3145728, Preferences.StorageSizeLimit);
+            Assert.Equal(3145728, ReynaService.StorageSizeLimit);
 
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
         }
@@ -180,7 +180,7 @@
         public void WhenSettingStorageLimitShouldSetToMinimumValue(long value) 
         {
             ReynaService.SetStorageSizeLimit(null, value);
-            Assert.Equal(1867776, Preferences.StorageSizeLimit); // 1867776 - min value, 1.8 Mb
+            Assert.Equal(1867776, ReynaService.StorageSizeLimit); // 1867776 - min value, 1.8 Mb
 
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
         }
@@ -190,7 +190,7 @@
         {
             ReynaService.SetStorageSizeLimit(null, 100);
             ReynaService.ResetStorageSizeLimit();
-            Assert.Equal(-1, Preferences.StorageSizeLimit);
+            Assert.Equal(-1, ReynaService.StorageSizeLimit);
         }
 
         [Fact]
@@ -206,8 +206,8 @@
         {
             TimeRange range = new TimeRange(new Time(11, 00), new Time(12, 01));
             ReynaService.SetCellularDataBlackout(range);
-            
-            TimeRange timeRange = Preferences.CellularDataBlackout;
+
+            TimeRange timeRange = new Preferences().CellularDataBlackout;
 
             Assert.Equal(range.From.MinuteOfDay, timeRange.From.MinuteOfDay);
             Assert.Equal(range.To.MinuteOfDay, timeRange.To.MinuteOfDay);
@@ -219,7 +219,7 @@
             TimeRange range = new TimeRange(new Time(11, 00), new Time(12, 01));
             ReynaService.ResetCellularDataBlackout();
 
-            TimeRange timeRange = Preferences.CellularDataBlackout;
+            TimeRange timeRange = new Preferences().CellularDataBlackout;
 
             Assert.Null(timeRange);
         }
@@ -230,7 +230,7 @@
             string range = "00:00-00:10";
             ReynaService.SetWlanBlackoutRange(range);
 
-            string actual = Preferences.WlanBlackoutRange;
+            string actual = new Preferences().WlanBlackoutRange;
 
             Assert.Equal(range, actual);
         }
@@ -241,7 +241,7 @@
             string range = "00:00-00:10";
             ReynaService.SetWwanBlackoutRange(range);
 
-            string actual = Preferences.WwanBlackoutRange;
+            string actual = new Preferences().WwanBlackoutRange;
 
             Assert.Equal(range, actual);
         }
@@ -251,7 +251,7 @@
         {
             ReynaService.SetRoamingBlackout(false);
 
-            bool actual = Preferences.RoamingBlackout;
+            bool actual = new Preferences().RoamingBlackout;
 
             Assert.False(actual);
         }
@@ -261,7 +261,7 @@
         {
             ReynaService.SetOnChargeBlackout(false);
 
-            bool actual = Preferences.OnChargeBlackout;
+            bool actual = new Preferences().OnChargeBlackout;
 
             Assert.False(actual);
         }
@@ -271,7 +271,7 @@
         {
             ReynaService.SetOffChargeBlackout(false);
 
-            bool actual = Preferences.OffChargeBlackout;
+            bool actual = new Preferences().OffChargeBlackout;
 
             Assert.False(actual);
         }

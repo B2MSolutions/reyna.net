@@ -27,17 +27,17 @@
 
             this.SystemNotifier = new SystemNotifier();
 
-            this.NetworkStateService = new NetworkStateService(this.SystemNotifier, this.NetworkWaitHandle);
+            this.NetworkStateService = new NetworkStateService(this.SystemNotifier, this.NetworkWaitHandle);                       
 
             this.StoreService = new StoreService(this.VolatileStore, this.PersistentStore, this.StoreWaitHandle);
-            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient, this.NetworkStateService, this.ForwardWaitHandle, Preferences.ForwardServiceTemporaryErrorBackout, Preferences.ForwardServiceMessageBackout);
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient, this.NetworkStateService, this.ForwardWaitHandle, Preferences.ForwardServiceTemporaryErrorBackout, Preferences.ForwardServiceMessageBackout);            
         }
 
         public static long StorageSizeLimit
         {
             get
             {
-                return Preferences.StorageSizeLimit;
+                return new Preferences().StorageSizeLimit;
             }
         }
 
@@ -65,29 +65,54 @@
 
         private byte[] Password { get; set; }
 
-        public static void ResetStorageSizeLimit()
-        {
-            Preferences.ResetStorageSizeLimit();
-        }
-
         public static void SetStorageSizeLimit(byte[] password, long limit)
         {
             limit = limit < MinimumStorageLimit ? MinimumStorageLimit : limit;
-            Preferences.SetStorageSizeLimit(limit);
+            new Preferences().SetStorageSizeLimit(limit);
 
             var repository = new SQLiteRepository(password);
             repository.Initialise();
             repository.ShrinkDb(limit);
         }
 
+        public static void ResetStorageSizeLimit()
+        {
+            new Preferences().ResetStorageSizeLimit();
+        }
+
         public static void SetCellularDataBlackout(TimeRange timeRange)
         {
-            Preferences.SetCellularDataBlackout(timeRange);
+            new Preferences().SetCellularDataBlackout(timeRange);
         }
 
         public static void ResetCellularDataBlackout()
         {
-            Preferences.ResetCellularDataBlackout();
+            new Preferences().ResetCellularDataBlackout();
+        }
+
+        public static void SetWlanBlackoutRange(string range)
+        {
+            new Preferences().SetWlanBlackoutRange(range);
+        }
+
+        public static void SetWwanBlackoutRange(string range)
+        {
+            new Preferences().SetWwanBlackoutRange(range);
+        }
+
+        public static void SetRoamingBlackout(bool value)
+        {
+            new Preferences().SetRoamingBlackout(value);
+        }
+
+        public static void SetOnChargeBlackout(bool value)
+        {
+            new Preferences().SetOnChargeBlackout(value);
+        }
+
+        public static void SetOffChargeBlackout(bool value)
+        {
+            new Preferences().SetOffChargeBlackout(value);
         }
 
         public void Start()
@@ -133,31 +158,6 @@
             {
                 this.StoreService.Dispose();
             }
-        }
-
-        internal static void SetWlanBlackoutRange(string range)
-        {
-            Preferences.SetWlanBlackoutRange(range);
-        }
-
-        internal static void SetWwanBlackoutRange(string range)
-        {
-            Preferences.SetWwanBlackoutRange(range);
-        }
-
-        internal static void SetRoamingBlackout(bool value)
-        {
-            Preferences.SetRoamingBlackout(value);
-        }
-
-        internal static void SetOnChargeBlackout(bool value)
-        {
-            Preferences.SetOnChargeBlackout(value);            
-        }
-
-        internal static void SetOffChargeBlackout(bool value)
-        {
-            Preferences.SetOffChargeBlackout(value);            
         }
     }
 }

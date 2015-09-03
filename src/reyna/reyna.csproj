@@ -79,6 +79,7 @@
     <Compile Include="Blackout\BlackoutTime.cs" />
     <Compile Include="Blackout\Time.cs" />
     <Compile Include="Blackout\TimeRange.cs" />
+    <Compile Include="Connection\ConnectionManager.cs" />
     <Compile Include="Connection\IConnectionInfo.cs" />
     <Compile Include="Connection\ConnectionInfo.cs" />
     <Compile Include="EncryptionChecker.cs" />

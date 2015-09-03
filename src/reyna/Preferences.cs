@@ -4,7 +4,7 @@
     using System.Text.RegularExpressions;
     using Microsoft.Win32;
 
-    internal static class Preferences
+    public class Preferences
     {
         private const string SubKey = @"Software\Reyna";
         private const string StorageSizeLimitKeyName = "StorageSizeLimit";
@@ -14,31 +14,7 @@
         private const string OnChargeBlackoutKeyName = "OnChargeBlackout";
         private const string OffChargeBlackoutKeyName = "OffChargeBlackout";
 
-        internal static long StorageSizeLimit
-        {
-            get
-            {
-                return GetRegistryValue(StorageSizeLimitKeyName, -1);
-            }
-        }
-
-        internal static int ForwardServiceTemporaryErrorBackout
-        {
-            get
-            {
-                return GetRegistryValue("TemporaryErrorBackout", 5 * 60 * 1000);
-            }
-        }
-
-        internal static int ForwardServiceMessageBackout
-        {
-            get
-            {
-                return GetRegistryValue("MessageBackout", 1000);
-            }
-        }
-
-        internal static TimeRange CellularDataBlackout
+        public TimeRange CellularDataBlackout
         {
             get
             {
@@ -63,7 +39,7 @@
             }
         }
 
-        internal static string WlanBlackoutRange
+        public string WlanBlackoutRange
         {
             get
             {
@@ -79,7 +55,7 @@
             }
         }
 
-        internal static string WwanBlackoutRange
+        public string WwanBlackoutRange
         {
             get
             {
@@ -95,7 +71,7 @@
             }
         }
 
-        internal static bool RoamingBlackout
+        public bool RoamingBlackout
         {
             get
             {
@@ -111,7 +87,7 @@
             }
         }
 
-        internal static bool OnChargeBlackout
+        public bool OnChargeBlackout
         {
             get
             {
@@ -127,7 +103,7 @@
             }
         }
 
-        internal static bool OffChargeBlackout
+        public bool OffChargeBlackout
         {
             get
             {
@@ -143,29 +119,43 @@
             }
         }
 
-        internal static void SetStorageSizeLimit(long limit)
+        internal static int ForwardServiceTemporaryErrorBackout
         {
-            SetRegistryValue(StorageSizeLimitKeyName, limit);
-        }
-        
-        internal static void ResetStorageSizeLimit()
-        {
-            DeleteRegistryValue(StorageSizeLimitKeyName);
+            get
+            {
+                return GetRegistryValue("TemporaryErrorBackout", 5 * 60 * 1000);
+            }
         }
 
-        internal static void SetCellularDataBlackout(TimeRange range)
+        internal static int ForwardServiceMessageBackout
+        {
+            get
+            {
+                return GetRegistryValue("MessageBackout", 1000);
+            }
+        }
+
+        internal long StorageSizeLimit
+        {
+            get
+            {
+                return GetRegistryValue(StorageSizeLimitKeyName, -1);
+            }
+        }
+
+        public void SetCellularDataBlackout(TimeRange range)
         {
             SetRegistryValue("DataBlackou:From", range.From.MinuteOfDay);
             SetRegistryValue("DataBlackout:To", range.To.MinuteOfDay);
         }
 
-        internal static void ResetCellularDataBlackout()
+        public void ResetCellularDataBlackout()
         {
             DeleteRegistryValue("DataBlackou:From");
             DeleteRegistryValue("DataBlackout:To");
         }
 
-        internal static void SetWlanBlackoutRange(string range)
+        public void SetWlanBlackoutRange(string range)
         {
             if (IsBlackoutRangeValid(range))
             {
@@ -173,16 +163,16 @@
             }
             else
             {
-                ResetWlanBlackoutRange();
+                this.ResetWlanBlackoutRange();
             }
         }
 
-        internal static void ResetWlanBlackoutRange()
+        public void ResetWlanBlackoutRange()
         {
             DeleteRegistryValue(WlanBlackoutRangeKeyName);
         }
 
-        internal static void SetWwanBlackoutRange(string range)
+        public void SetWwanBlackoutRange(string range)
         {
             if (IsBlackoutRangeValid(range))
             {
@@ -190,41 +180,41 @@
             }
             else
             {
-                ResetWwanBlackoutRange();
+                this.ResetWwanBlackoutRange();
             }
         }
 
-        internal static void ResetWwanBlackoutRange()
+        public void ResetWwanBlackoutRange()
         {
             DeleteRegistryValue(WwanBlackoutRangeKeyName);
         }
 
-        internal static void SetRoamingBlackout(bool value)
+        public void SetRoamingBlackout(bool value)
         {
             SetRegistryValue(RoamingBlackoutKeyName, value);
         }
 
-        internal static void ResetRoamingBlackout()
+        public void ResetRoamingBlackout()
         {
             DeleteRegistryValue(RoamingBlackoutKeyName);
         }
 
-        internal static void SetOnChargeBlackout(bool value)
+        public void SetOnChargeBlackout(bool value)
         {
             SetRegistryValue(OnChargeBlackoutKeyName, value);
         }
 
-        internal static void ResetOnChargeBlackout()
+        public void ResetOnChargeBlackout()
         {
             DeleteRegistryValue(OnChargeBlackoutKeyName);
         }
 
-        internal static void SetOffChargeBlackout(bool value)
+        public void SetOffChargeBlackout(bool value)
         {
             SetRegistryValue(OffChargeBlackoutKeyName, value);
         }
 
-        internal static void ResetOffChargeBlackout()
+        public void ResetOffChargeBlackout()
         {
             DeleteRegistryValue(OffChargeBlackoutKeyName);
         }
@@ -232,7 +222,7 @@
         internal static bool IsBlackoutRangeValid(string ranges)
         {
             string[] splitRanges = ranges.Split(',');
-            foreach (string range in splitRanges) 
+            foreach (string range in splitRanges)
             {
                 string regex = "^[0-9][0-9]:[0-9][0-9]-[0-9][0-9]:[0-9][0-9]$";
                 if (!Regex.IsMatch(range, regex, RegexOptions.IgnoreCase))
@@ -242,6 +232,16 @@
             }
 
             return true;
+        }
+
+        internal void SetStorageSizeLimit(long limit)
+        {
+            SetRegistryValue(StorageSizeLimitKeyName, limit);
+        }
+
+        internal void ResetStorageSizeLimit()
+        {
+            DeleteRegistryValue(StorageSizeLimitKeyName);
         }
 
         private static int GetRegistryValue(string keyName, int defaultValue)

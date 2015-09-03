@@ -5,11 +5,18 @@
 
     public class GivenAPreferences
     {
+        public GivenAPreferences()
+        {
+            this.Preferences = new Preferences();
+        }
+
+        public Preferences Preferences { get; set; }
+
         [Fact]
         public void WhenSettingCellularDataBlackoutThenGetCellularDataBlackoutShouldReturnExpected()
         {
             TimeRange range = new TimeRange(new Time(11, 00), new Time(12, 01));
-            Preferences.SetCellularDataBlackout(range);
+            this.Preferences.SetCellularDataBlackout(range);
             
             TimeRange timeRange = Preferences.CellularDataBlackout;
 
@@ -21,7 +28,7 @@
         public void WhenResetCellularDataBlackoutThenGetCellularDataBlackoutShouldReturnNull()
         {
             TimeRange range = new TimeRange(new Time(11, 00), new Time(12, 01));
-            Preferences.ResetCellularDataBlackout();
+            this.Preferences.ResetCellularDataBlackout();
 
             TimeRange timeRange = Preferences.CellularDataBlackout;
 
@@ -32,7 +39,7 @@
         public void WhenGetCellularDataBlackoutAndNotCorrectlySavedShouldReturnNull()
         {
             TimeRange range = new TimeRange(new Time(11, 00), new Time(12, 01));
-            Preferences.SetCellularDataBlackout(range);
+            this.Preferences.SetCellularDataBlackout(range);
             DeleteRegistryValue("DataBlackou:From");
 
             TimeRange timeRange = Preferences.CellularDataBlackout;
@@ -43,21 +50,21 @@
         [Fact]
         public void WhenSettingWlanBlackoutRangeThenGetWlanBlackoutRangeShouldReturnExpected()
         {
-            Preferences.SetWlanBlackoutRange("00:00-00:01");
+            this.Preferences.SetWlanBlackoutRange("00:00-00:01");
 
             string actual = Preferences.WlanBlackoutRange;
 
             Assert.Equal("00:00-00:01", actual);
             Assert.Equal("00:00-00:01", actual);
 
-            Preferences.SetWlanBlackoutRange("00:00-00:01,01:00-01:30");
+            this.Preferences.SetWlanBlackoutRange("00:00-00:01,01:00-01:30");
 
             actual = Preferences.WlanBlackoutRange;
 
             Assert.Equal("00:00-00:01,01:00-01:30", actual);
             Assert.Equal("00:00-00:01,01:00-01:30", actual);
 
-            Preferences.SetWlanBlackoutRange("00:00-00:01,01:00-01:30,11:23-18:20");
+            this.Preferences.SetWlanBlackoutRange("00:00-00:01,01:00-01:30,11:23-18:20");
 
             actual = Preferences.WlanBlackoutRange;
 
@@ -69,9 +76,9 @@
         public void WhenResetWlanBlackoutRangeThenGetWlanBlackoutRangeShouldReturnNull()
         {
             string range = "00:00-00:01";
-            Preferences.ResetWlanBlackoutRange();
+            this.Preferences.ResetWlanBlackoutRange();
 
-            range = Preferences.WlanBlackoutRange;
+            range = this.Preferences.WlanBlackoutRange;
 
             Assert.Null(range);
         }
@@ -79,10 +86,10 @@
         [Fact]
         public void WhenGetWlanBlackoutRangeAndNotCorrectlySavedShouldReturnNull()
         {
-            Preferences.SetWlanBlackoutRange("00:00-00:01");
+            this.Preferences.SetWlanBlackoutRange("00:00-00:01");
             DeleteRegistryValue("WlanBlackoutRange");
 
-            string range = Preferences.WlanBlackoutRange;
+            string range = this.Preferences.WlanBlackoutRange;
 
             Assert.Null(range);
         }
@@ -90,9 +97,9 @@
         [Fact]
         public void WhenSettingWwanBlackoutRangeThenGetWwanBlackoutRangeShouldReturnExpected()
         {
-            Preferences.SetWwanBlackoutRange("00:00-00:01");
+            this.Preferences.SetWwanBlackoutRange("00:00-00:01");
 
-            string actual = Preferences.WwanBlackoutRange;
+            string actual = this.Preferences.WwanBlackoutRange;
 
             Assert.Equal("00:00-00:01", actual);
             Assert.Equal("00:00-00:01", actual);
@@ -102,9 +109,9 @@
         public void WhenResetWwanBlackoutRangeThenGetWwanBlackoutRangeShouldReturnNull()
         {
             string range = "00:00-00:01";
-            Preferences.ResetWwanBlackoutRange();
+            this.Preferences.ResetWwanBlackoutRange();
 
-            range = Preferences.WwanBlackoutRange;
+            range = this.Preferences.WwanBlackoutRange;
 
             Assert.Null(range);
         }
@@ -112,10 +119,10 @@
         [Fact]
         public void WhenGetWwanBlackoutRangeAndNotCorrectlySavedShouldReturnNull()
         {
-            Preferences.SetWwanBlackoutRange("00:00-00:01");
+            this.Preferences.SetWwanBlackoutRange("00:00-00:01");
             DeleteRegistryValue("WwanBlackoutRange");
 
-            string range = Preferences.WwanBlackoutRange;
+            string range = this.Preferences.WwanBlackoutRange;
 
             Assert.Null(range);
         }
@@ -123,13 +130,13 @@
         [Fact]
         public void WhenSettingRoamingBlackoutThenGetRoamingBlackoutShouldReturnExpected()
         {
-            Preferences.SetRoamingBlackout(true);
-            bool roamingBlackout = Preferences.RoamingBlackout;
+            this.Preferences.SetRoamingBlackout(true);
+            bool roamingBlackout = this.Preferences.RoamingBlackout;
 
             Assert.True(roamingBlackout);
 
-            Preferences.SetRoamingBlackout(false);
-            roamingBlackout = Preferences.RoamingBlackout;
+            this.Preferences.SetRoamingBlackout(false);
+            roamingBlackout = this.Preferences.RoamingBlackout;
 
             Assert.False(roamingBlackout);
         }
@@ -137,9 +144,9 @@
         [Fact]
         public void WhenResetRoamingBlackoutThenGetRoamingBlackoutShouldReturnTrue()
         {
-            Preferences.SetRoamingBlackout(false);
-            Preferences.ResetRoamingBlackout();
-            bool roamingBlackout = Preferences.RoamingBlackout;
+            this.Preferences.SetRoamingBlackout(false);
+            this.Preferences.ResetRoamingBlackout();
+            bool roamingBlackout = this.Preferences.RoamingBlackout;
 
             Assert.True(roamingBlackout);
         }
@@ -147,9 +154,9 @@
         [Fact]
         public void WhenGetRoamingBlackoutAndNotCorrectlySavedReturnTrue()
         {
-            Preferences.SetRoamingBlackout(false);
+            this.Preferences.SetRoamingBlackout(false);
             DeleteRegistryValue("RoamingBlackout");
-            bool roamingBlackout = Preferences.RoamingBlackout;
+            bool roamingBlackout = this.Preferences.RoamingBlackout;
 
             Assert.True(roamingBlackout);
         }
@@ -157,13 +164,13 @@
         [Fact]
         public void WhenSettingOnChargeBlackoutThenGetOnChargeBlackoutShouldReturnExpected()
         {
-            Preferences.SetOnChargeBlackout(true);
-            bool chargingBlackout = Preferences.OnChargeBlackout;
+            this.Preferences.SetOnChargeBlackout(true);
+            bool chargingBlackout = this.Preferences.OnChargeBlackout;
 
             Assert.True(chargingBlackout);
 
-            Preferences.SetOnChargeBlackout(false);
-            chargingBlackout = Preferences.OnChargeBlackout;
+            this.Preferences.SetOnChargeBlackout(false);
+            chargingBlackout = this.Preferences.OnChargeBlackout;
 
             Assert.False(chargingBlackout);
         }
@@ -171,9 +178,9 @@
         [Fact]
         public void WhenResetOnChargeBlackoutThenGetOnChargeBlackoutShouldReturnFalse()
         {
-            Preferences.SetOnChargeBlackout(true);
-            Preferences.ResetOnChargeBlackout();
-            bool chargingBlackout = Preferences.OnChargeBlackout;
+            this.Preferences.SetOnChargeBlackout(true);
+            this.Preferences.ResetOnChargeBlackout();
+            bool chargingBlackout = this.Preferences.OnChargeBlackout;
 
             Assert.False(chargingBlackout);
         }
@@ -181,9 +188,9 @@
         [Fact]
         public void WhenGetOnChargeBlackoutAndNotCorrectlySavedReturnFalse()
         {
-            Preferences.SetOnChargeBlackout(true);
+            this.Preferences.SetOnChargeBlackout(true);
             DeleteRegistryValue("OnChargeBlackout");
-            bool chargingBlackout = Preferences.OnChargeBlackout;
+            bool chargingBlackout = this.Preferences.OnChargeBlackout;
 
             Assert.False(chargingBlackout);
         }
@@ -191,13 +198,13 @@
         [Fact]
         public void WhenSettingOffChargeBlackoutThenGetOffChargeBlackoutShouldReturnExpected()
         {
-            Preferences.SetOffChargeBlackout(true);
-            bool dischargingBlackout = Preferences.OffChargeBlackout;
+            this.Preferences.SetOffChargeBlackout(true);
+            bool dischargingBlackout = this.Preferences.OffChargeBlackout;
 
             Assert.True(dischargingBlackout);
 
-            Preferences.SetOffChargeBlackout(false);
-            dischargingBlackout = Preferences.OffChargeBlackout;
+            this.Preferences.SetOffChargeBlackout(false);
+            dischargingBlackout = this.Preferences.OffChargeBlackout;
 
             Assert.False(dischargingBlackout);
         }
@@ -205,9 +212,9 @@
         [Fact]
         public void WhenResetOffChargeBlackoutThenGetOffChargeBlackoutShouldReturnFalse()
         {
-            Preferences.SetOffChargeBlackout(true);
-            Preferences.ResetOffChargeBlackout();
-            bool dischargingBlackout = Preferences.OffChargeBlackout;
+            this.Preferences.SetOffChargeBlackout(true);
+            this.Preferences.ResetOffChargeBlackout();
+            bool dischargingBlackout = this.Preferences.OffChargeBlackout;
 
             Assert.False(dischargingBlackout);
         }
@@ -215,9 +222,9 @@
         [Fact]
         public void WhenGetOffChargeBlackoutAndNotCorrectlySavedReturnFalse()
         {
-            Preferences.SetOffChargeBlackout(true);
+            this.Preferences.SetOffChargeBlackout(true);
             DeleteRegistryValue("OffChargeBlackout");
-            bool dischargingBlackout = Preferences.OffChargeBlackout;
+            bool dischargingBlackout = this.Preferences.OffChargeBlackout;
 
             Assert.False(dischargingBlackout);
         }
