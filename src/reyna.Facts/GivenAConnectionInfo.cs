@@ -117,5 +117,45 @@
 
             Assert.False(this.ConnectionInfo.Mobile);
         }
+
+        [Fact]
+        public void WhenCallingRoamingAndOnWifiShouldReturnFalse()
+        {
+            var networkInterface = new NetworkInterface();
+            networkInterface.CurrentIpAddress = new System.Net.IPAddress(43);
+            networkInterface.Name = "cellular line";
+
+            var roaming = new NetworkInterface();
+            roaming.CurrentIpAddress = new System.Net.IPAddress(43);
+            roaming.Name = "roaming";
+
+            var wifi = new NetworkInterface();
+            wifi.CurrentIpAddress = new System.Net.IPAddress(43);
+            wifi.Name = "wifi";
+
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface, roaming, wifi };
+
+            Assert.False(this.ConnectionInfo.Roaming);
+        }
+
+        [Fact]
+        public void WhenCallingRoamingAndOnMobileAndWifiNotConnectedShouldReturnTrue()
+        {
+            var networkInterface = new NetworkInterface();
+            networkInterface.CurrentIpAddress = new System.Net.IPAddress(43);
+            networkInterface.Name = "cellular line";
+
+            var roaming = new NetworkInterface();
+            roaming.CurrentIpAddress = new System.Net.IPAddress(43);
+            roaming.Name = "roaming";
+
+            var wifi = new NetworkInterface();
+            wifi.CurrentIpAddress = new System.Net.IPAddress(0);
+            wifi.Name = "wifi";
+
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface, roaming, wifi };
+
+            Assert.True(this.ConnectionInfo.Roaming);
+        }
     }
 }

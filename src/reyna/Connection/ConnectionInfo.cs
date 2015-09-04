@@ -92,13 +92,27 @@
                 try
                 {
                     var interfaces = NetworkInterface.GetAllNetworkInterfaces();
+                    bool roamingConnected = false;
+                    bool wifiConnected = false;
                     foreach (var ni in interfaces)
                     {
                         if (RoamingNetwork(ni))
                         {
-                            return true;
+                            if (NetworkConnected(ni))
+                            {
+                                roamingConnected = true;
+                            }
+                        }
+                        else if (WifiNetwork(ni))
+                        {
+                            if (NetworkConnected(ni))
+                            {
+                                wifiConnected = true;
+                            }
                         }
                     }
+
+                    return roamingConnected && !wifiConnected;
                 }
                 catch (Exception)
                 {
