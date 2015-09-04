@@ -17,7 +17,7 @@
             {
                 TimeRange timeRange = this.ParseTime(range);
                 Time timeNow = new Time(now.Hour, now.Minute);
-                if (timeRange.Contains(timeNow) && !timeRange.IsEmpty())
+                if (timeRange.Contains(timeNow))
                 {
                     return false;
                 }

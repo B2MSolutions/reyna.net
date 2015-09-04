@@ -14,17 +14,17 @@
 
         public bool Contains(Time time)
         {
+            if (this.From.MinuteOfDay == this.To.MinuteOfDay)
+            {
+                return false;
+            }
+
             if (this.To.CompareTo(this.From) >= 0)
             {
                return time.CompareTo(this.From) >= 0 && time.CompareTo(this.To) <= 0;
             }
 
             return time.CompareTo(this.From) >= 0 || time.CompareTo(this.To) <= 0;
-        }
-
-        internal bool IsEmpty()
-        {
-            return this.From.MinuteOfDay == this.To.MinuteOfDay;
         }
     }
 }
