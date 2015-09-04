@@ -77,7 +77,7 @@
             {
                 try
                 {
-                    return GetRegistryValue(RoamingBlackoutKeyName, false);                    
+                    return GetRegistryValue(RoamingBlackoutKeyName, true);                    
                 }
                 catch (Exception)
                 {
@@ -93,7 +93,7 @@
             {
                 try
                 {
-                    return GetRegistryValue(OnChargeBlackoutKeyName, true);
+                    return GetRegistryValue(OnChargeBlackoutKeyName, false);
                 }
                 catch (Exception)
                 {
@@ -109,7 +109,7 @@
             {
                 try
                 {
-                    return GetRegistryValue(OffChargeBlackoutKeyName, true);
+                    return GetRegistryValue(OffChargeBlackoutKeyName, false);
                 }
                 catch (Exception)
                 {
@@ -221,6 +221,11 @@
 
         internal static bool IsBlackoutRangeValid(string ranges)
         {
+            if (string.IsNullOrEmpty(ranges))
+            {
+                return false;
+            }
+
             string[] splitRanges = ranges.Split(',');
             foreach (string range in splitRanges)
             {

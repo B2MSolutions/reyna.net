@@ -236,6 +236,7 @@
             Assert.True(Preferences.IsBlackoutRangeValid("00:00-02:30,03:30-06:00"));
             Assert.True(Preferences.IsBlackoutRangeValid("00:00-02:30,03:30-06:00,07:00-07:01"));
 
+            Assert.False(Preferences.IsBlackoutRangeValid(null));
             Assert.False(Preferences.IsBlackoutRangeValid(string.Empty));
             Assert.False(Preferences.IsBlackoutRangeValid("00:00"));
             Assert.False(Preferences.IsBlackoutRangeValid("1:00"));
