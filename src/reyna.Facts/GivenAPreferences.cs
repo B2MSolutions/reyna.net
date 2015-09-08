@@ -246,6 +246,7 @@
             Assert.False(Preferences.IsBlackoutRangeValid("00:10-1"));
             Assert.False(Preferences.IsBlackoutRangeValid("00:00-02:30-15:42"));
             Assert.False(Preferences.IsBlackoutRangeValid("13:00 - 21:00"));
+            Assert.False(Preferences.IsBlackoutRangeValid("1300-21:00"));
         }
 
         private static void DeleteRegistryValue(string keyName)
