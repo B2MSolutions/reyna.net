@@ -20,9 +20,10 @@
 
         internal bool IsBatteryCharging()
         {
-            if (this.SystemPowerStatus != null)
+            var systemPowerStatus = this.SystemPowerStatus;
+            if (systemPowerStatus != null)
             {
-                if (this.SystemPowerStatus.ACLineStatus.Equals(PowerManager.Online))
+                if (systemPowerStatus.ACLineStatus.Equals(PowerManager.Online))
                 {
                     return true;
                 }
