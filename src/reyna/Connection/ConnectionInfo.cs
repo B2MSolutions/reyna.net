@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using Microsoft.Win32;
     using OpenNETCF.Net.NetworkInformation;
 
     public class ConnectionInfo : IConnectionInfo
@@ -66,19 +67,15 @@
         {
             get
             {
-                try
+                var interfaces = NetworkInterface.GetAllNetworkInterfaces();
+                foreach (var ni in interfaces)
                 {
-                    var interfaces = NetworkInterface.GetAllNetworkInterfaces();
-                    foreach (var ni in interfaces)
+                    if (LANNetwork(ni) || ActiveSyncNetwork(ni) || GPRSNetwork(ni))
                     {
-                        if (WifiNetwork(ni))
-                        {
-                            return true;
-                        }
+                        continue;
                     }
-                }
-                catch (Exception)
-                {
+
+                    return true;
                 }
 
                 return false;
@@ -135,6 +132,16 @@
         private static bool GPRSNetwork(INetworkInterface ni)
         {
             return ni.Name.ToLower(System.Globalization.CultureInfo.CurrentCulture).StartsWith("cellular line", StringComparison.CurrentCulture);
+        }
+
+        private static bool ActiveSyncNetwork(INetworkInterface ni)
+        {
+            return ni.Name.ToLower(System.Globalization.CultureInfo.CurrentCulture).StartsWith("usb", StringComparison.CurrentCulture);
+        }
+
+        private static bool LANNetwork(INetworkInterface ni)
+        {
+            return ni.Speed == 10000000 || ni.Speed == 100000000;
         }
 
         private static bool NetworkConnected(INetworkInterface networkInterface)

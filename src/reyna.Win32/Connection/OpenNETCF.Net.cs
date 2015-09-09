@@ -21,6 +21,8 @@
         {
             string Name { get; }
 
+            int Speed { get; }
+
             IPAddress CurrentIpAddress { get; set; }
         }
 
@@ -33,6 +35,8 @@
 
             public string Name { get; set; }
 
+            public int Speed { get; set; }
+
             public IPAddress CurrentIpAddress { get; set; }
 
             internal static INetworkInterface[] NetworkInterfaces { get; set; }
@@ -40,6 +44,22 @@
             internal static INetworkInterface[] GetAllNetworkInterfaces()
             {
                 return NetworkInterface.NetworkInterfaces;
+            }
+        }
+
+        internal class WirelessZeroConfigNetworkInterface : WirelessNetworkInterface
+        {
+            public WirelessZeroConfigNetworkInterface()
+                : base()
+            {
+            }
+        }
+
+        internal class WirelessNetworkInterface : NetworkInterface
+        {
+            public WirelessNetworkInterface()
+                : base()
+            {
             }
         }
     }

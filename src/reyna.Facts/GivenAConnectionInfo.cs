@@ -3,13 +3,17 @@
     using Moq;
     using OpenNETCF.Net.NetworkInformation;
     using Xunit;
+    using Xunit.Extensions;
 
     public class GivenAConnectionInfo
     {
         public GivenAConnectionInfo()
         {
             this.ConnectionInfo = new ConnectionInfo();
+            this.ConnectionInfoMock = new Mock<IConnectionInfo>();
         }
+
+        private Mock<IConnectionInfo> ConnectionInfoMock { get; set; }
 
         private ConnectionInfo ConnectionInfo { get; set; }
 
@@ -156,6 +160,102 @@
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface, roaming, wifi };
 
             Assert.True(this.ConnectionInfo.Roaming);
+        }
+
+        [Fact]
+        public void WhenCallingWifiAndWirelessZeroConfigNetworkInterfaceExistsShouldReturnTrue()
+        {
+            var wirelessInterface = new WirelessZeroConfigNetworkInterface();
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { wirelessInterface };
+
+            Assert.True(this.ConnectionInfo.Wifi);
+        }
+
+        [Fact]
+        public void WhenCallingWifiAndWirelessNetworkInterfaceExistsShouldReturnTrue()
+        {
+            var wirelessInterface = new WirelessNetworkInterface();
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { wirelessInterface };
+
+            Assert.True(this.ConnectionInfo.Wifi);
+        }
+
+        [Theory]
+        [InlineData(10000000)]
+        [InlineData(100000000)]
+        public void WhenCallingWifiAndLanNetworkInterfaceExistsShouldReturnFalse(int speed)
+        {
+            var networkInterface = new NetworkInterface();
+            networkInterface.Speed = speed;
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
+
+            Assert.False(this.ConnectionInfo.Wifi);
+        }
+
+        [Theory]
+        [InlineData("USB Cable")]
+        [InlineData("usb cable")]
+        public void WhenCallingWifiAndActiveSyncNetworkInterfaceExistsShouldReturnFalse(string name)
+        {
+            var networkInterface = new NetworkInterface();
+            networkInterface.Name = name;
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
+
+            Assert.False(this.ConnectionInfo.Wifi);
+        }
+
+        [Theory]
+        [InlineData("Cellular Line")]
+        [InlineData("cellular line")]
+        public void WhenCallingWifiAndGPRSNetworkInterfaceExistsShouldReturnFalse(string name)
+        {
+            var networkInterface = new NetworkInterface();
+            networkInterface.Name = name;
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
+
+            Assert.False(this.ConnectionInfo.Wifi);
+        }
+
+        [Fact]
+        public void WhenCallingWifiAndMoreThanOneNetworkInterfaceExistsAndFirstOneIsUSBSkipItAndUseFirstWireless()
+        {
+            var networkInterface = new NetworkInterface();
+            networkInterface.Name = "USB Cable";
+            var wirelessInterface = new WirelessNetworkInterface();
+
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface, wirelessInterface };
+
+            Assert.True(this.ConnectionInfo.Wifi);
+        }
+
+        [Fact]
+        public void WhenCallingWifiAndMoreThanOneNetworkInterfaceExistsAndNoneIsWirelessNetworkInterface()
+        {
+            var usbNetworkInterface = new NetworkInterface();
+            usbNetworkInterface.Name = "USB Cable";
+
+            var lanNetworkInterface = new NetworkInterface();
+            lanNetworkInterface.Speed = 10000000;
+
+            var wirelessInterface = new NetworkInterface();
+            wirelessInterface.Name = "WIRELESS";
+
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { usbNetworkInterface, lanNetworkInterface, wirelessInterface };
+
+            Assert.True(this.ConnectionInfo.Wifi);
+        }
+
+        [Fact]
+        public void WhenCallingWifiAndNotUsingWifiShouldReturnFalse()
+        {
+            var usbNetworkInterface = new NetworkInterface();
+            usbNetworkInterface.Name = "USB Cable";
+
+            var lanNetworkInterface = new NetworkInterface();
+            lanNetworkInterface.Speed = 10000000;
+
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { usbNetworkInterface, lanNetworkInterface };
+            Assert.False(this.ConnectionInfo.Wifi);
         }
     }
 }
