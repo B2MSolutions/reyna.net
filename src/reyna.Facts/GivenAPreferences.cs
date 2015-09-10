@@ -13,6 +13,18 @@
         public Preferences Preferences { get; set; }
 
         [Fact]
+        public void WhenGettingCellularDataBlackoutAndThrowsShouldReturnNull()
+        {
+            var registery = new Reyna.Registry();
+            registery.SetDWord(Registry.LocalMachine, @"Software\Reyna", "DataBlackout:From", -3);
+            registery.SetDWord(Registry.LocalMachine, @"Software\Reyna", "DataBlackout:To", -3);
+            var timeRange = Preferences.CellularDataBlackout;
+
+            Assert.Null(timeRange);
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
+        }
+
+        [Fact]
         public void WhenSettingCellularDataBlackoutThenGetCellularDataBlackoutShouldReturnExpected()
         {
             TimeRange range = new TimeRange(new Time(11, 00), new Time(12, 01));
@@ -96,7 +108,7 @@
         [Fact]
         public void WhenSettingWwanBlackoutRangeWithInvalidRangeShouldResetIt()
         {
-            this.Preferences.SetWlanBlackoutRange("00");
+            this.Preferences.SetWwanBlackoutRange("00");
 
             var range = this.Preferences.WwanBlackoutRange;
 
