@@ -84,6 +84,26 @@
         }
 
         [Fact]
+        public void WhenSettingWlanBlackoutRangeWithInvalidRangeShouldResetIt()
+        {
+            this.Preferences.SetWlanBlackoutRange("00");
+
+            var range = this.Preferences.WlanBlackoutRange;
+
+            Assert.Null(range);
+        }
+
+        [Fact]
+        public void WhenSettingWwanBlackoutRangeWithInvalidRangeShouldResetIt()
+        {
+            this.Preferences.SetWlanBlackoutRange("00");
+
+            var range = this.Preferences.WwanBlackoutRange;
+
+            Assert.Null(range);
+        }
+
+        [Fact]
         public void WhenNoWlanBlackoutRangeThenGetWlanBlackoutRangeShouldReturnNull()
         {
             Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);

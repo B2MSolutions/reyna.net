@@ -47,15 +47,7 @@
         {
             get
             {
-                try
-                {
-                    return GetRegistryValue(WlanBlackoutRangeKeyName, null);
-                }
-                catch (Exception)
-                {
-                }
-
-                return null;
+                return GetRegistryValue(WlanBlackoutRangeKeyName, null);
             }
         }
 
@@ -63,15 +55,7 @@
         {
             get
             {
-                try
-                {
-                    return GetRegistryValue(WwanBlackoutRangeKeyName, null);
-                }
-                catch (Exception)
-                {
-                }
-
-                return null;
+                return GetRegistryValue(WwanBlackoutRangeKeyName, null);
             }
         }
 
@@ -79,15 +63,7 @@
         {
             get
             {
-                try
-                {
-                    return GetRegistryValue(RoamingBlackoutKeyName, true);
-                }
-                catch (Exception)
-                {
-                }
-
-                return true;
+                return GetRegistryValue(RoamingBlackoutKeyName, true);
             }
         }
 
@@ -95,15 +71,7 @@
         {
             get
             {
-                try
-                {
-                    return GetRegistryValue(OnChargeBlackoutKeyName, false);
-                }
-                catch (Exception)
-                {
-                }
-
-                return false;
+                return GetRegistryValue(OnChargeBlackoutKeyName, false);
             }
         }
 
@@ -111,15 +79,7 @@
         {
             get
             {
-                try
-                {
-                    return GetRegistryValue(OffChargeBlackoutKeyName, false);
-                }
-                catch (Exception)
-                {
-                }
-
-                return false;
+                return GetRegistryValue(OffChargeBlackoutKeyName, false);
             }
         }
 
