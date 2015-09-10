@@ -11,11 +11,23 @@
         {
             this.ConnectionInfo = new ConnectionInfo();
             this.ConnectionInfoMock = new Mock<IConnectionInfo>();
+            this.Registry = new Mock<IRegistry>();
+            this.ConnectionInfo.Registry = this.Registry.Object;
         }
 
         private Mock<IConnectionInfo> ConnectionInfoMock { get; set; }
 
+        private Mock<IRegistry> Registry { get; set; }
+
         private ConnectionInfo ConnectionInfo { get; set; }
+
+        [Fact]
+        public void Construction()
+        {
+            this.ConnectionInfo = new ConnectionInfo();
+            Assert.NotNull(this.ConnectionInfo);
+            Assert.NotNull(this.ConnectionInfo.Registry);
+        }
 
         [Fact]
         public void WhenNetworkInterfaceWithIpExistsShouldReturnTrueForHasConnection()
@@ -123,41 +135,31 @@
         }
 
         [Fact]
-        public void WhenCallingRoamingAndOnWifiShouldReturnFalse()
+        public void WhenCallingRoamingAndDeviceNoSupportingPhone()
         {
-            var networkInterface = new NetworkInterface();
-            networkInterface.CurrentIpAddress = new System.Net.IPAddress(43);
-            networkInterface.Name = "cellular line";
-
-            var roaming = new NetworkInterface();
-            roaming.CurrentIpAddress = new System.Net.IPAddress(43);
-            roaming.Name = "roaming";
-
-            var wifi = new NetworkInterface();
-            wifi.CurrentIpAddress = new System.Net.IPAddress(43);
-            wifi.Name = "wifi";
-
-            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface, roaming, wifi };
+            this.Registry.Setup(r => r.GetDWord(Microsoft.Win32.Registry.LocalMachine, "System\\State\\Phone", "Status", 0))
+                .Returns(0);
 
             Assert.False(this.ConnectionInfo.Roaming);
+            this.Registry.Verify(r => r.GetDWord(Microsoft.Win32.Registry.LocalMachine, "System\\State\\Phone", "Status", 0), Times.Once());
         }
 
         [Fact]
-        public void WhenCallingRoamingAndOnMobileAndWifiNotConnectedShouldReturnTrue()
+        public void WhenCallingRoamingAndDeviceNotRoamingShouldReturnFalse()
         {
-            var networkInterface = new NetworkInterface();
-            networkInterface.CurrentIpAddress = new System.Net.IPAddress(43);
-            networkInterface.Name = "cellular line";
+            this.Registry.Setup(r => r.GetDWord(Microsoft.Win32.Registry.LocalMachine, "System\\State\\Phone", "Status", 0))
+                .Returns(0x32);
 
-            var roaming = new NetworkInterface();
-            roaming.CurrentIpAddress = new System.Net.IPAddress(43);
-            roaming.Name = "roaming";
+            Assert.False(this.ConnectionInfo.Roaming);
 
-            var wifi = new NetworkInterface();
-            wifi.CurrentIpAddress = new System.Net.IPAddress(0);
-            wifi.Name = "wifi";
+            this.Registry.Verify(r => r.GetDWord(Microsoft.Win32.Registry.LocalMachine, "System\\State\\Phone", "Status", 0), Times.Once());
+        }
 
-            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface, roaming, wifi };
+        [Fact]
+        public void WhenCallingRoamingAndDeviceIsRoamingShouldReturnTrue()
+        {
+            this.Registry.Setup(r => r.GetDWord(Microsoft.Win32.Registry.LocalMachine, "System\\State\\Phone", "Status", 0))
+                .Returns(0x32 | 0x200);
 
             Assert.True(this.ConnectionInfo.Roaming);
         }

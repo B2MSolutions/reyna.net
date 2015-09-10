@@ -10,22 +10,16 @@
     {
         public ConnectionManager()
         {
-            this.ConnectionInfo = new ConnectionInfo();
             this.Preferences = new Preferences();
             this.PowerManager = new PowerManager();
+            this.ConnectionInfo = new ConnectionInfo();
         }
 
-        public Preferences Preferences { get; set; }
+        internal Preferences Preferences { get; set; }
 
-        public PowerManager PowerManager { get; set; }
+        internal PowerManager PowerManager { get; set; }
 
-        public IConnectionInfo ConnectionInfo { get; set; }
-
-        public Result CanSend(IConnectionInfo info)
-        {
-            this.ConnectionInfo = info;
-            return this.CanSend();
-        }
+        internal IConnectionInfo ConnectionInfo { get; set; }
 
         public Result CanSend()
         {
@@ -39,29 +33,29 @@
                 HttpClient.SaveCellularDataAsWwanForBackwardsCompatibility();
             }
 
-            if (this.PowerManager.IsBatteryCharging() && this.Preferences.OnChargeBlackout)
+            if (this.Preferences.OnChargeBlackout && this.PowerManager.IsBatteryCharging())
             {
                 return Result.Blackout;
             }
 
-            if (!this.PowerManager.IsBatteryCharging() && this.Preferences.OffChargeBlackout)
+            if (this.Preferences.OffChargeBlackout && !this.PowerManager.IsBatteryCharging())
             {
                 return Result.Blackout;
             }
 
-            if (this.ConnectionInfo.Roaming && this.Preferences.RoamingBlackout)
+            if (this.Preferences.RoamingBlackout && this.ConnectionInfo.Roaming)
             {
                 return Result.Blackout;
             }
 
             BlackoutTime blackoutTime = new BlackoutTime();
 
-            if (this.ConnectionInfo.Wifi && !HttpClient.CanSendNow(blackoutTime, this.Preferences.WlanBlackoutRange))
+            if (!HttpClient.CanSendNow(blackoutTime, this.Preferences.WlanBlackoutRange) && this.ConnectionInfo.Wifi)
             {
                 return Result.Blackout;
             }
 
-            if (this.ConnectionInfo.Mobile && !HttpClient.CanSendNow(blackoutTime, this.Preferences.WwanBlackoutRange))
+            if (!HttpClient.CanSendNow(blackoutTime, this.Preferences.WwanBlackoutRange) && this.ConnectionInfo.Mobile)
             {
                 return Result.Blackout;
             }

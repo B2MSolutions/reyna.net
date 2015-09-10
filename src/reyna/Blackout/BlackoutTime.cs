@@ -28,15 +28,23 @@
 
         public TimeRange ParseTime(string range)
         {
-            string[] rangeSplit = range.Split('-');
-            string format = "HH:mm";
+            try
+            {
+                string[] rangeSplit = range.Split('-');
+                string format = "HH:mm";
 
-            DateTime from = DateTime.ParseExact(rangeSplit[0], format, CultureInfo.InvariantCulture);
-            DateTime to = DateTime.ParseExact(rangeSplit[1], format, CultureInfo.InvariantCulture);
+                DateTime from = DateTime.ParseExact(rangeSplit[0], format, CultureInfo.InvariantCulture);
+                DateTime to = DateTime.ParseExact(rangeSplit[1], format, CultureInfo.InvariantCulture);
 
-            Time timeFrom = new Time(from.Hour, from.Minute);
-            Time timeTo = new Time(to.Hour, to.Minute);
-            return new TimeRange(timeFrom, timeTo);
+                Time timeFrom = new Time(from.Hour, from.Minute);
+                Time timeTo = new Time(to.Hour, to.Minute);
+                return new TimeRange(timeFrom, timeTo);
+            }
+            catch (Exception)
+            {
+            }
+
+            return null;
         }
     }
 }

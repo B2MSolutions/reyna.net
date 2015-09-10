@@ -3,6 +3,7 @@
     using System;
     using Microsoft.Win32;
     using Xunit;
+    using Xunit.Extensions;
 
     public class GivenABlackoutTime
     {
@@ -129,6 +130,18 @@
             Assert.True(BlackoutTime.CanSendAtTime(now, string.Empty));
 
             Assert.True(BlackoutTime.CanSendAtTime(now, null));
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        [InlineData("2")]
+        [InlineData("20")]
+        [InlineData("20-")]
+        public void WhenCallingParseTimeWithInvalidShouldReturnNull(string value)
+        {
+            var actual = this.BlackoutTime.ParseTime(value);
+            Assert.Null(actual);
         }
     }
 }

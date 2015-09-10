@@ -91,6 +91,15 @@
     <Compile Include="..\reyna\Power\SystemPowerStatus.cs">
       <Link>Power\SystemPowerStatus.cs</Link>
     </Compile>
+    <Compile Include="..\reyna\Preferences\IRegistry.cs">
+      <Link>Preferences\IRegistry.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Preferences\Preferences.cs">
+      <Link>Preferences\Preferences.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Preferences\Registry.cs">
+      <Link>Preferences\Registry.cs</Link>
+    </Compile>
     <Compile Include="..\reyna\Services\ForwardService.cs">
       <Link>Services\ForwardService.cs</Link>
     </Compile>
@@ -132,9 +141,6 @@
     </Compile>
     <Compile Include="..\reyna\Store\Message.cs">
       <Link>Store\Message.cs</Link>
-    </Compile>
-    <Compile Include="..\reyna\Store\Preferences.cs">
-      <Link>Store\Preferences.cs</Link>
     </Compile>
     <Compile Include="..\reyna\Store\SQLiteRepository.cs">
       <Link>Store\SQLiteRepository.cs</Link>

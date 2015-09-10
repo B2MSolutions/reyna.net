@@ -7,6 +7,11 @@
 
     public class ConnectionInfo : IConnectionInfo
     {
+        public ConnectionInfo()
+        {
+            this.Registry = new Registry();
+        }
+        
         public bool Connected
         {
             get
@@ -67,14 +72,16 @@
         {
             get
             {
-                var interfaces = NetworkInterface.GetAllNetworkInterfaces();
-                foreach (var ni in interfaces)
+                var networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
+                var wireless = ConnectionInfo.FindWireless(networkInterfaces);
+                if (wireless != null)
                 {
-                    if (LANNetwork(ni) || ActiveSyncNetwork(ni) || GPRSNetwork(ni))
-                    {
-                        continue;
-                    }
+                    return true;
+                }
 
+                var networkInterface = FindWirelessByExclusion(networkInterfaces);
+                if (networkInterface != null)
+                {
                     return true;
                 }
 
@@ -86,47 +93,41 @@
         {
             get
             {
-                try
-                {
-                    var interfaces = NetworkInterface.GetAllNetworkInterfaces();
-                    bool roamingConnected = false;
-                    bool wifiConnected = false;
-                    foreach (var ni in interfaces)
-                    {
-                        if (RoamingNetwork(ni))
-                        {
-                            if (NetworkConnected(ni))
-                            {
-                                roamingConnected = true;
-                            }
-                        }
-                        else if (WifiNetwork(ni))
-                        {
-                            if (NetworkConnected(ni))
-                            {
-                                wifiConnected = true;
-                            }
-                        }
-                    }
-
-                    return roamingConnected && !wifiConnected;
-                }
-                catch (Exception)
-                {
-                }
-
-                return false;
+                var phoneRoamingBitMask = 0x200;
+                var status = this.Registry.GetDWord(Microsoft.Win32.Registry.LocalMachine, "System\\State\\Phone", "Status", 0);
+                return (status & phoneRoamingBitMask) == phoneRoamingBitMask;
             }
         }
 
-        private static bool RoamingNetwork(INetworkInterface ni)
+        internal IRegistry Registry { get; set; }
+
+        private static WirelessNetworkInterface FindWireless(INetworkInterface[] interfaces)
         {
-            return ni.Name.ToLower(System.Globalization.CultureInfo.CurrentCulture).StartsWith("roaming", StringComparison.CurrentCulture);
+            foreach (var ni in interfaces)
+            {
+                var wni = ni as WirelessNetworkInterface;
+                if (wni != null)
+                {
+                    return wni;
+                }
+            }
+
+            return null;
         }
 
-        private static bool WifiNetwork(INetworkInterface ni)
+        private static INetworkInterface FindWirelessByExclusion(INetworkInterface[] interfaces)
         {
-            return ni.Name.ToLower(System.Globalization.CultureInfo.CurrentCulture).StartsWith("wifi", StringComparison.CurrentCulture);
+            foreach (var ni in interfaces)
+            {
+                if (LANNetwork(ni) || ActiveSyncNetwork(ni) || GPRSNetwork(ni))
+                {
+                    continue;
+                }
+
+                return ni;
+            }
+
+            return null;
         }
 
         private static bool GPRSNetwork(INetworkInterface ni)

@@ -40,7 +40,7 @@
         {
             TimeRange range = new TimeRange(new Time(11, 00), new Time(12, 01));
             this.Preferences.SetCellularDataBlackout(range);
-            DeleteRegistryValue("DataBlackou:From");
+            DeleteRegistryValue("DataBlackout:From");
 
             TimeRange timeRange = Preferences.CellularDataBlackout;
 

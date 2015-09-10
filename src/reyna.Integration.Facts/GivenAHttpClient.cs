@@ -308,11 +308,15 @@
         {
             var networkInterface = new NetworkInterface();
             networkInterface.CurrentIpAddress = new IPAddress(42);
-            networkInterface.Name = "roaming";
+            networkInterface.Name = "cellular line";
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
+
             this.Preferences.SetRoamingBlackout(true);
+            var registry = new Registry();
+            registry.SetDWord(Microsoft.Win32.Registry.LocalMachine, "System\\State\\Phone", "Status", 0x200 | 0x32);
 
             Assert.True(HttpClient.CanSend() == Result.Blackout);
+            registry.DeleteKeyTree(Microsoft.Win32.Registry.LocalMachine, "System\\State\\Phone");
         }
 
         [Fact]
@@ -320,11 +324,15 @@
         {
             var networkInterface = new NetworkInterface();
             networkInterface.CurrentIpAddress = new IPAddress(42);
-            networkInterface.Name = "roaming";
+            networkInterface.Name = "cellular line";
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
+
             this.Preferences.SetRoamingBlackout(false);
+            var registry = new Registry();
+            registry.SetDWord(Microsoft.Win32.Registry.LocalMachine, "System\\State\\Phone", "Status", 0x200 | 0x32);
 
             Assert.True(HttpClient.CanSend() == Result.Ok);
+            registry.DeleteKeyTree(Microsoft.Win32.Registry.LocalMachine, "System\\State\\Phone");
         }
 
         [Fact]

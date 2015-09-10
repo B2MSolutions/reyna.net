@@ -13,6 +13,10 @@
         private const string RoamingBlackoutKeyName = "RoamingBlackout";
         private const string OnChargeBlackoutKeyName = "OnChargeBlackout";
         private const string OffChargeBlackoutKeyName = "OffChargeBlackout";
+        private const string DataBlackoutFromKeyName = "DataBlackout:From";
+        private const string DataBlackoutToKeyName = "DataBlackout:To";
+        private const string TemporaryErrorBackout = "TemporaryErrorBackout";
+        private const string MessageBackout = "MessageBackout";
 
         public TimeRange CellularDataBlackout
         {
@@ -20,8 +24,8 @@
             {
                 try
                 {
-                    int minuteOfDayFrom = GetRegistryValue("DataBlackou:From", -1);
-                    int minuteOfDayTo = GetRegistryValue("DataBlackout:To", -1);
+                    int minuteOfDayFrom = GetRegistryValue(DataBlackoutFromKeyName, -1);
+                    int minuteOfDayTo = GetRegistryValue(DataBlackoutToKeyName, -1);
                     if (minuteOfDayFrom == -1 || minuteOfDayTo == -1)
                     {
                         return null;
@@ -45,7 +49,7 @@
             {
                 try
                 {
-                    return (string)GetRegistryValue(WlanBlackoutRangeKeyName, null);
+                    return GetRegistryValue(WlanBlackoutRangeKeyName, null);
                 }
                 catch (Exception)
                 {
@@ -61,7 +65,7 @@
             {
                 try
                 {
-                    return (string)GetRegistryValue(WwanBlackoutRangeKeyName, null);
+                    return GetRegistryValue(WwanBlackoutRangeKeyName, null);
                 }
                 catch (Exception)
                 {
@@ -77,7 +81,7 @@
             {
                 try
                 {
-                    return GetRegistryValue(RoamingBlackoutKeyName, true);                    
+                    return GetRegistryValue(RoamingBlackoutKeyName, true);
                 }
                 catch (Exception)
                 {
@@ -123,7 +127,7 @@
         {
             get
             {
-                return GetRegistryValue("TemporaryErrorBackout", 5 * 60 * 1000);
+                return GetRegistryValue(TemporaryErrorBackout, 5 * 60 * 1000);
             }
         }
 
@@ -131,7 +135,7 @@
         {
             get
             {
-                return GetRegistryValue("MessageBackout", 1000);
+                return GetRegistryValue(MessageBackout, 1000);
             }
         }
 
@@ -139,20 +143,20 @@
         {
             get
             {
-                return GetRegistryValue(StorageSizeLimitKeyName, -1);
+                return GetRegistryValue(StorageSizeLimitKeyName, (long)-1);
             }
         }
 
         public void SetCellularDataBlackout(TimeRange range)
         {
-            SetRegistryValue("DataBlackou:From", range.From.MinuteOfDay);
-            SetRegistryValue("DataBlackout:To", range.To.MinuteOfDay);
+            SetRegistryValue(DataBlackoutFromKeyName, range.From.MinuteOfDay);
+            SetRegistryValue(DataBlackoutToKeyName, range.To.MinuteOfDay);
         }
 
         public void ResetCellularDataBlackout()
         {
-            DeleteRegistryValue("DataBlackou:From");
-            DeleteRegistryValue("DataBlackout:To");
+            DeleteRegistryValue(DataBlackoutFromKeyName);
+            DeleteRegistryValue(DataBlackoutToKeyName);
         }
 
         public void SetWlanBlackoutRange(string range)
@@ -249,76 +253,49 @@
             DeleteRegistryValue(StorageSizeLimitKeyName);
         }
 
-        private static int GetRegistryValue(string keyName, int defaultValue)
+        private static long GetRegistryValue(string keyName, long defaultValue)
         {
-            using (var key = Registry.LocalMachine.OpenSubKey(SubKey, false))
-            {
-                if (key == null)
-                {
-                    return defaultValue;
-                }
-
-                return Convert.ToInt32(key.GetValue(keyName, defaultValue));
-            }
+            return new Registry().GetQWord(Microsoft.Win32.Registry.LocalMachine, SubKey, keyName, defaultValue);
         }
 
-        private static object GetRegistryValue(string keyName, object defaultValue)
+        private static int GetRegistryValue(string keyName, int defaultValue)
         {
-            using (var key = Registry.LocalMachine.OpenSubKey(SubKey, false))
-            {
-                if (key == null)
-                {
-                    return defaultValue;
-                }
-
-                return key.GetValue(keyName, defaultValue);
-            }
+            return new Registry().GetDWord(Microsoft.Win32.Registry.LocalMachine, SubKey, keyName, defaultValue);
         }
 
         private static bool GetRegistryValue(string keyName, bool defaultValue)
         {
-            using (var key = Registry.LocalMachine.OpenSubKey(SubKey, false))
-            {
-                if (key == null)
-                {
-                    return defaultValue;
-                }
+            return new Registry().GetDWord(Microsoft.Win32.Registry.LocalMachine, SubKey, keyName, defaultValue ? 1 : 0) == 1;
+        }
 
-                return bool.Parse((string)key.GetValue(keyName, defaultValue));
-            }
+        private static string GetRegistryValue(string keyName, string defaultValue)
+        {
+            return new Registry().GetString(Microsoft.Win32.Registry.LocalMachine, SubKey, keyName, defaultValue);
         }
 
         private static void SetRegistryValue(string keyName, long value)
         {
-            using (var key = Registry.LocalMachine.CreateSubKey(SubKey))
-            {
-                if (key != null)
-                {
-                    key.SetValue(keyName, value);
-                }
-            }
+            new Registry().SetQWord(Microsoft.Win32.Registry.LocalMachine, SubKey, keyName, value);
         }
 
-        private static void SetRegistryValue(string keyName, object value)
+        private static void SetRegistryValue(string keyName, string value)
         {
-            using (var key = Registry.LocalMachine.CreateSubKey(SubKey))
-            {
-                if (key != null)
-                {
-                    key.SetValue(keyName, value);
-                }
-            }
+            new Registry().SetString(Microsoft.Win32.Registry.LocalMachine, SubKey, keyName, value);
+        }
+
+        private static void SetRegistryValue(string keyName, bool value)
+        {
+            new Registry().SetDWord(Microsoft.Win32.Registry.LocalMachine, SubKey, keyName, value ? 1 : 0);
+        }
+
+        private static void SetRegistryValue(string keyName, int value)
+        {
+            new Registry().SetDWord(Microsoft.Win32.Registry.LocalMachine, SubKey, keyName, value);
         }
 
         private static void DeleteRegistryValue(string keyName)
         {
-            using (var key = Registry.LocalMachine.OpenSubKey(SubKey, true))
-            {
-                if (key != null)
-                {
-                    key.DeleteValue(keyName, false);
-                }
-            }
+            new Registry().DeleteValue(Microsoft.Win32.Registry.LocalMachine, SubKey, keyName);
         }
     }
 }

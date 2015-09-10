@@ -22,7 +22,6 @@
 
         public static Result CanSend()
         {
-            ConnectionInfo info = new ConnectionInfo();
             return new ConnectionManager().CanSend();
         }
 
