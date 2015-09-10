@@ -80,18 +80,5 @@
                 subKey.DeleteValue(valueName, false);
             }
         }
-
-        public bool KeyExists(RegistryKey hive, string key)
-        {
-            using (var subKey = hive.OpenSubKey(key))
-            {
-                return subKey != null;
-            }
-        }
-
-        public void DeleteKeyTree(RegistryKey hive, string key)
-        {
-            hive.DeleteSubKeyTree(key);
-        }
     }
 }

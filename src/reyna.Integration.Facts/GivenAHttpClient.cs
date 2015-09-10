@@ -316,7 +316,7 @@
             registry.SetDWord(Microsoft.Win32.Registry.LocalMachine, "System\\State\\Phone", "Status", 0x200 | 0x32);
 
             Assert.True(HttpClient.CanSend() == Result.Blackout);
-            registry.DeleteKeyTree(Microsoft.Win32.Registry.LocalMachine, "System\\State\\Phone");
+            Microsoft.Win32.Registry.LocalMachine.DeleteSubKeyTree("System\\State\\Phone");
         }
 
         [Fact]
@@ -332,7 +332,7 @@
             registry.SetDWord(Microsoft.Win32.Registry.LocalMachine, "System\\State\\Phone", "Status", 0x200 | 0x32);
 
             Assert.True(HttpClient.CanSend() == Result.Ok);
-            registry.DeleteKeyTree(Microsoft.Win32.Registry.LocalMachine, "System\\State\\Phone");
+            Microsoft.Win32.Registry.LocalMachine.DeleteSubKeyTree("System\\State\\Phone");
         }
 
         [Fact]

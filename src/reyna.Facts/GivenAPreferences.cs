@@ -84,6 +84,26 @@
         }
 
         [Fact]
+        public void WhenNoWlanBlackoutRangeThenGetWlanBlackoutRangeShouldReturnNull()
+        {
+            Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
+
+            var range = this.Preferences.WlanBlackoutRange;
+
+            Assert.Null(range);
+        }
+
+        [Fact]
+        public void WhenNoWwanBlackoutRangeThenGetWlanBlackoutRangeShouldReturnNull()
+        {
+            Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
+
+            var range = this.Preferences.WwanBlackoutRange;
+
+            Assert.Null(range);
+        }
+
+        [Fact]
         public void WhenGetWlanBlackoutRangeAndNotCorrectlySavedShouldReturnNull()
         {
             this.Preferences.SetWlanBlackoutRange("00:00-00:01");
@@ -159,6 +179,36 @@
             bool roamingBlackout = this.Preferences.RoamingBlackout;
 
             Assert.True(roamingBlackout);
+        }
+
+        [Fact]
+        public void WhenGetRoamingBlackoutAndNeverSetRoamingBeforeShouldReturnFalse()
+        {
+            Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
+
+            var actual = this.Preferences.RoamingBlackout;
+
+            Assert.True(actual);
+        }
+
+        [Fact]
+        public void WhenGetOnChargeBlackoutAndNeverSetRoamingBeforeShouldReturnFalse()
+        {
+            Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
+
+            var actual = this.Preferences.OnChargeBlackout;
+
+            Assert.False(actual);
+        }
+
+        [Fact]
+        public void WhenGetOffChargeBlackoutAndNeverSetRoamingBeforeShouldReturnFalse()
+        {
+            Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
+
+            var actual = this.Preferences.OffChargeBlackout;
+
+            Assert.False(actual);
         }
 
         [Fact]

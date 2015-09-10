@@ -17,7 +17,5 @@
         void SetDWord(RegistryKey hive, string key, string valueName, int value);
 
         void DeleteValue(RegistryKey hive, string key, string valueName);
-
-        bool KeyExists(RegistryKey hive, string key);
     }
 }
