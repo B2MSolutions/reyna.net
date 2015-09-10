@@ -52,12 +52,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\reyna\AcceptAllCertificatePolicy.cs">
-      <Link>AcceptAllCertificatePolicy.cs</Link>
-    </Compile>
-    <Compile Include="..\reyna\AutoResetEventAdapter.cs">
-      <Link>AutoResetEventAdapter.cs</Link>
-    </Compile>
     <Compile Include="..\reyna\Blackout\BlackoutTime.cs">
       <Link>Blackout\BlackoutTime.cs</Link>
     </Compile>
@@ -76,56 +70,20 @@
     <Compile Include="..\reyna\Connection\IConnectionInfo.cs">
       <Link>Connection\IConnectionInfo.cs</Link>
     </Compile>
-    <Compile Include="..\reyna\EncryptionChecker.cs">
-      <Link>EncryptionChecker.cs</Link>
-    </Compile>
     <Compile Include="..\reyna\Extensions\HttpStatusCodeExtensions.cs">
       <Link>Extensions\HttpStatusCodeExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\reyna\ForwardService.cs">
-      <Link>ForwardService.cs</Link>
+    <Compile Include="..\reyna\Http\AcceptAllCertificatePolicy.cs">
+      <Link>Http\AcceptAllCertificatePolicy.cs</Link>
     </Compile>
-    <Compile Include="..\reyna\HttpClient.cs">
-      <Link>HttpClient.cs</Link>
+    <Compile Include="..\reyna\Http\HttpClient.cs">
+      <Link>Http\HttpClient.cs</Link>
     </Compile>
-    <Compile Include="..\reyna\InMemoryQueue.cs">
-      <Link>InMemoryQueue.cs</Link>
+    <Compile Include="..\reyna\Http\IHttpClient.cs">
+      <Link>Http\IHttpClient.cs</Link>
     </Compile>
-    <Compile Include="..\reyna\Interfaces\IEncryptionChecker.cs">
-      <Link>Interfaces\IEncryptionChecker.cs</Link>
-    </Compile>
-    <Compile Include="..\reyna\Interfaces\IHttpClient.cs">
-      <Link>Interfaces\IHttpClient.cs</Link>
-    </Compile>
-    <Compile Include="..\reyna\Interfaces\IMessage.cs">
-      <Link>Interfaces\IMessage.cs</Link>
-    </Compile>
-    <Compile Include="..\reyna\Interfaces\INetworkStateService.cs">
-      <Link>Interfaces\INetworkStateService.cs</Link>
-    </Compile>
-    <Compile Include="..\reyna\Interfaces\IRepository.cs">
-      <Link>Interfaces\IRepository.cs</Link>
-    </Compile>
-    <Compile Include="..\reyna\Interfaces\IReyna.cs">
-      <Link>Interfaces\IReyna.cs</Link>
-    </Compile>
-    <Compile Include="..\reyna\Interfaces\IService.cs">
-      <Link>Interfaces\IService.cs</Link>
-    </Compile>
-    <Compile Include="..\reyna\Interfaces\ISystemNotifier.cs">
-      <Link>Interfaces\ISystemNotifier.cs</Link>
-    </Compile>
-    <Compile Include="..\reyna\Interfaces\IWaitHandle.cs">
-      <Link>Interfaces\IWaitHandle.cs</Link>
-    </Compile>
-    <Compile Include="..\reyna\Interfaces\Result.cs">
-      <Link>Interfaces\Result.cs</Link>
-    </Compile>
-    <Compile Include="..\reyna\Message.cs">
-      <Link>Message.cs</Link>
-    </Compile>
-    <Compile Include="..\reyna\NetworkStateService.cs">
-      <Link>NetworkStateService.cs</Link>
+    <Compile Include="..\reyna\Http\Result.cs">
+      <Link>Http\Result.cs</Link>
     </Compile>
     <Compile Include="..\reyna\Power\PowerManager.cs">
       <Link>Power\PowerManager.cs</Link>
@@ -133,32 +91,74 @@
     <Compile Include="..\reyna\Power\SystemPowerStatus.cs">
       <Link>Power\SystemPowerStatus.cs</Link>
     </Compile>
-    <Compile Include="..\reyna\Preferences.cs">
-      <Link>Preferences.cs</Link>
+    <Compile Include="..\reyna\Services\ForwardService.cs">
+      <Link>Services\ForwardService.cs</Link>
     </Compile>
-    <Compile Include="..\reyna\ReynaService.cs">
-      <Link>ReynaService.cs</Link>
+    <Compile Include="..\reyna\Services\INetworkStateService.cs">
+      <Link>Services\INetworkStateService.cs</Link>
     </Compile>
-    <Compile Include="..\reyna\ServiceBase.cs">
-      <Link>ServiceBase.cs</Link>
+    <Compile Include="..\reyna\Services\IReyna.cs">
+      <Link>Services\IReyna.cs</Link>
     </Compile>
-    <Compile Include="..\reyna\SQLiteRepository.cs">
-      <Link>SQLiteRepository.cs</Link>
+    <Compile Include="..\reyna\Services\IService.cs">
+      <Link>Services\IService.cs</Link>
     </Compile>
-    <Compile Include="..\reyna\StoreService.cs">
-      <Link>StoreService.cs</Link>
+    <Compile Include="..\reyna\Services\NetworkStateService.cs">
+      <Link>Services\NetworkStateService.cs</Link>
     </Compile>
-    <Compile Include="..\reyna\ThreadWorker.cs">
-      <Link>ThreadWorker.cs</Link>
+    <Compile Include="..\reyna\Services\ReynaService.cs">
+      <Link>Services\ReynaService.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Services\ServiceBase.cs">
+      <Link>Services\ServiceBase.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Services\StoreService.cs">
+      <Link>Services\StoreService.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Store\EncryptionChecker.cs">
+      <Link>Store\EncryptionChecker.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Store\IEncryptionChecker.cs">
+      <Link>Store\IEncryptionChecker.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Store\IMessage.cs">
+      <Link>Store\IMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Store\InMemoryQueue.cs">
+      <Link>Store\InMemoryQueue.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Store\IRepository.cs">
+      <Link>Store\IRepository.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Store\Message.cs">
+      <Link>Store\Message.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Store\Preferences.cs">
+      <Link>Store\Preferences.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Store\SQLiteRepository.cs">
+      <Link>Store\SQLiteRepository.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\System\ISystemNotifier.cs">
+      <Link>System\ISystemNotifier.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Threading\AutoResetEventAdapter.cs">
+      <Link>Threading\AutoResetEventAdapter.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Threading\IWaitHandle.cs">
+      <Link>Threading\IWaitHandle.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Threading\ThreadWorker.cs">
+      <Link>Threading\ThreadWorker.cs</Link>
     </Compile>
     <Compile Include="Connection\OpenNETCF.Net.cs">
       <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>
-    <Compile Include="NamedWaitHandle.cs" />
+    <Compile Include="Threading\NamedWaitHandle.cs" />
     <Compile Include="NativeMethods\NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sleep.cs" />
-    <Compile Include="SystemNotifier.cs" />
+    <Compile Include="Threading\Sleep.cs" />
+    <Compile Include="System\SystemNotifier.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="sqlite3.dll">
