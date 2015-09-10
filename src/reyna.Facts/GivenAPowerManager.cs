@@ -13,6 +13,7 @@
         public void WhenCallingIsBatteryChargingAndBatteryIsChargingShouldReturnTrue()
         {
             NativeMethods.ACLineStatus = 1;
+            NativeMethods.SystemPowerStatusExResult = 1;
             Assert.True(new PowerManager().IsBatteryCharging());
         }
 
@@ -20,6 +21,14 @@
         public void WhenCallingIsBatteryChargingAndBatteryIsNotChargingShouldReturnFalse()
         {
             NativeMethods.ACLineStatus = 0;
+            NativeMethods.SystemPowerStatusExResult = 1;
+            Assert.False(new PowerManager().IsBatteryCharging());
+        }
+
+        [Fact]
+        public void WhenCallingIsBatteryChargingAndBatteryFailedToGetPowerStatusShouldReturnFalse()
+        {
+            NativeMethods.SystemPowerStatusExResult = 0;
             Assert.False(new PowerManager().IsBatteryCharging());
         }
     }
