@@ -23,7 +23,6 @@
             systemPowerStatus.BatteryLifePercent = 1;
             systemPowerStatus.BatteryLifetime = 1;
             systemPowerStatus.BatteryStatus = 1;
-            systemPowerStatus.NumLevels = 1;
 
             return SystemPowerStatusExResult;
         }
