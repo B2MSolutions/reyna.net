@@ -9,7 +9,7 @@
             get
             {
                 var systemPowerStatus = new SystemPowerStatus();
-                if (NativeMethods.GetSystemPowerStatusEx(systemPowerStatus, 1) == 1)
+                if (NativeMethods.GetSystemPowerStatusEx(systemPowerStatus, 0) == 1)
                 {
                     return systemPowerStatus;
                 }
