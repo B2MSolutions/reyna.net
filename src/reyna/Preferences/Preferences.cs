@@ -203,6 +203,24 @@
             return true;
         }
 
+        internal static void SaveCellularDataAsWwanForBackwardsCompatibility()
+        {
+            Preferences preferences = new Preferences();
+            TimeRange timeRange = preferences.CellularDataBlackout;
+            if (timeRange != null)
+            {
+                int hourFrom = (int)Math.Floor((double)timeRange.From.MinuteOfDay / 60);
+                int minuteFrom = timeRange.From.MinuteOfDay % 60;
+                string blackoutFrom = ZeroPad(hourFrom) + ":" + ZeroPad(minuteFrom);
+
+                int hourTo = (int)Math.Floor((double)timeRange.To.MinuteOfDay / 60);
+                int minuteTo = timeRange.To.MinuteOfDay % 60;
+                string blackoutTo = ZeroPad(hourTo) + ":" + ZeroPad(minuteTo);
+
+                preferences.SetWwanBlackoutRange(blackoutFrom + "-" + blackoutTo);
+            }
+        }
+
         internal void SetStorageSizeLimit(long limit)
         {
             SetRegistryValue(StorageSizeLimitKeyName, limit);
@@ -256,6 +274,11 @@
         private static void DeleteRegistryValue(string keyName)
         {
             new Registry().DeleteValue(Microsoft.Win32.Registry.LocalMachine, SubKey, keyName);
+        }
+
+        private static object ZeroPad(int numToPad)
+        {
+            return numToPad.ToString("D2");
         }
     }
 }

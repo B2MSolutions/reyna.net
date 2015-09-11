@@ -69,34 +69,6 @@
             return response.StatusCode;
         }
 
-        internal static void SaveCellularDataAsWwanForBackwardsCompatibility()
-        {
-            Preferences preferences = new Preferences();
-            TimeRange timeRange = preferences.CellularDataBlackout;
-            if (timeRange != null)
-            {
-                int hourFrom = (int)Math.Floor((double)timeRange.From.MinuteOfDay / 60);
-                int minuteFrom = timeRange.From.MinuteOfDay % 60;
-                string blackoutFrom = ZeroPad(hourFrom) + ":" + ZeroPad(minuteFrom);
-
-                int hourTo = (int)Math.Floor((double)timeRange.To.MinuteOfDay / 60);
-                int minuteTo = timeRange.To.MinuteOfDay % 60;
-                string blackoutTo = ZeroPad(hourTo) + ":" + ZeroPad(minuteTo);
-
-                preferences.SetWwanBlackoutRange(blackoutFrom + "-" + blackoutTo);
-            }
-        }
-
-        internal static bool CanSendNow(BlackoutTime blackoutTime, string range)
-        {
-            return blackoutTime.CanSendAtTime(System.DateTime.Now, range);
-        }
-
-        private static object ZeroPad(int numToPad)
-        {
-            return numToPad.ToString("D2");
-        }
-
         private Result RequestAndRespond(HttpWebRequest request, string content)
         {
             HttpStatusCode statusCode = HttpStatusCode.NotFound;

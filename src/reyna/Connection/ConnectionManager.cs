@@ -30,7 +30,7 @@
 
             if (Preferences.WwanBlackoutRange == null)
             {
-                HttpClient.SaveCellularDataAsWwanForBackwardsCompatibility();
+                Preferences.SaveCellularDataAsWwanForBackwardsCompatibility();
             }
 
             if (this.Preferences.OnChargeBlackout && this.PowerManager.IsBatteryCharging())
@@ -50,17 +50,22 @@
 
             BlackoutTime blackoutTime = new BlackoutTime();
 
-            if (!HttpClient.CanSendNow(blackoutTime, this.Preferences.WlanBlackoutRange) && this.ConnectionInfo.Wifi)
+            if (!ConnectionManager.CanSendNow(blackoutTime, this.Preferences.WlanBlackoutRange) && this.ConnectionInfo.Wifi)
             {
                 return Result.Blackout;
             }
 
-            if (!HttpClient.CanSendNow(blackoutTime, this.Preferences.WwanBlackoutRange) && this.ConnectionInfo.Mobile)
+            if (!ConnectionManager.CanSendNow(blackoutTime, this.Preferences.WwanBlackoutRange) && this.ConnectionInfo.Mobile)
             {
                 return Result.Blackout;
             }
 
             return Result.Ok;
+        }
+
+        internal static bool CanSendNow(BlackoutTime blackoutTime, string range)
+        {
+            return blackoutTime.CanSendAtTime(System.DateTime.Now, range);
         }
     }
 }
