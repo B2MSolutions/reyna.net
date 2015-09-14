@@ -22,7 +22,7 @@
 
         public static Result CanSend()
         {
-            return new ConnectionManager().CanSend();
+            return new ConnectionManager().CanSend;
         }
 
         public Result Post(IMessage message)

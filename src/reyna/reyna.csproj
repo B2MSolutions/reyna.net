@@ -74,6 +74,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Connection\IConnectionManager.cs" />
     <Compile Include="Http\AcceptAllCertificatePolicy.cs" />
     <Compile Include="Preferences\IRegistry.cs" />
     <Compile Include="Preferences\Registry.cs" />
