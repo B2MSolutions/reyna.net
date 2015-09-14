@@ -55,5 +55,17 @@
             Assert.Null(actual.Url);
             Assert.Null(actual.Body);
         }
+
+        [Fact]
+        public void WhenCallingAddMessageWithSizeThenRemoveAndIsNotEmptyShouldRemove()
+        {
+            var queue = new InMemoryQueue();
+            queue.Add(new Message(null, null), 1);
+
+            var actual = queue.Remove();
+            Assert.NotNull(actual);
+            Assert.Null(actual.Url);
+            Assert.Null(actual.Body);
+        }
     }
 }

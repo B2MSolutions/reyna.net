@@ -389,6 +389,28 @@
             store.Verify(s => s.Remove(), Times.Never());
         }
 
+        [Fact]
+        public void WhenReceivingTemporaryErrorMessageFromServerAndSleepFor5MinutesThenTerminateSignaledShouldExit()
+        {
+            this.HttpClient.Setup(c => c.Post(It.IsAny<IMessage>()))
+                .Returns(Result.TemporaryError);
+
+            var waitHandle = new Mock<IWaitHandle>();
+            var store = new Mock<IRepository>();
+            store.Setup(s => s.Get()).Returns(this.CreateMessage());
+            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle.Object, 5 * 60 * 1000, 0);
+            new Thread(this.StopForwardService).Start(forwardService);
+            forwardService.Start();
+            Thread.Sleep(1000);
+            store.Verify(s => s.Get(), Times.Once());
+        }
+
+        private void StopForwardService(object forwardService)
+        {
+            Thread.Sleep(100);
+            ((ForwardService)forwardService).Stop();
+        }
+
         private IMessage CreateMessage()
         {
             return new Message(new Uri("http://test.com"), "BODY");

@@ -2,11 +2,13 @@
 {
     using System;
     using System.Net;
-    using System.Text;
+    using System.Runtime.InteropServices;
+    using System.Text;    
     using Extensions;
     using Reyna.Interfaces;
+    using Reyna.Power;
 
-    internal sealed class HttpClient : IHttpClient
+    public sealed class HttpClient : IHttpClient
     {
         public HttpClient(ICertificatePolicy certificatePolicy)
         {
@@ -16,6 +18,11 @@
                 ServicePointManager.CertificatePolicy = certificatePolicy;
 #pragma warning restore 0618
             }
+        }
+
+        public static Result CanSend()
+        {
+            return new ConnectionManager().CanSend();
         }
 
         public Result Post(IMessage message)
@@ -50,28 +57,6 @@
             {
                 return Result.PermanentError;
             }
-        }
-
-        internal static Result CanSend()
-        {
-            ConnectionInfo connectionInfo = new ConnectionInfo();
-            if (!connectionInfo.Connected)
-            {
-                return Result.NotConnected;
-            }
-
-            TimeRange range = Preferences.CellularDataBlackout;
-            if (range == null)
-            {
-                return Result.Ok;
-            }
-
-            if (!connectionInfo.Mobile)
-            {
-                return Result.Ok;
-            }
-
-            return range.Contains(new Time()) ? Result.Blackout : Result.Ok;
         }
 
         internal static HttpStatusCode GetStatusCode(HttpWebResponse response)

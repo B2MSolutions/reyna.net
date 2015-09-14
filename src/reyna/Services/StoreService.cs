@@ -27,7 +27,7 @@
 
                 while ((message = this.SourceStore.Get()) != null)
                 {
-                    long storageSizeLimit = Preferences.StorageSizeLimit;
+                    long storageSizeLimit = new Preferences().StorageSizeLimit;
                     if (storageSizeLimit == -1)
                     {
                         this.TargetStore.Add(message);

@@ -14,12 +14,12 @@ rmdir /S /Q %COVERAGE_DIRECTORY%
 mkdir %COVERAGE_DIRECTORY%
 
 @ECHO Running unit tests
-"%~dp0..\tools\opencover\%OPENCOVER_VERSION%\opencover.console.exe" -target:"%~dp0..\tools\xUnit\%XUNIT_VERSION%\xunit.console.x86.exe" -targetargs:"%~dp0..\src\reyna.Facts\bin\%CONFIGURATION%\reyna.Facts.dll /xml ""%COVERAGE_DIRECTORY%/unit-output.xml"" /html ""%COVERAGE_DIRECTORY%/unit-output.html"" /nunit ""%COVERAGE_DIRECTORY%/unit-output.nunit.xml"" /noshadow" -filter:"+[Reyna*]* -[*.Facts]*" -showunvisited -output:"%COVERAGE_DIRECTORY%\coverage-unit.xml" -returntargetcode
+"%~dp0..\tools\opencover\%OPENCOVER_VERSION%\opencover.console.exe" -target:"%~dp0..\tools\xUnit\%XUNIT_VERSION%\xunit.console.x86.exe" -targetargs:"%~dp0..\src\reyna.Facts\bin\%CONFIGURATION%\reyna.Facts.dll /xml ""%COVERAGE_DIRECTORY%/unit-output.xml"" /html ""%COVERAGE_DIRECTORY%/unit-output.html"" /nunit ""%COVERAGE_DIRECTORY%/unit-output.nunit.xml"" /noshadow" -filter:"+[Reyna*]* -[*.Facts]* -[Reyna.Win32]Reyna.EncryptionChecker -[Reyna.Win32]Reyna.ReynaService -[Reyna.Win32]Reyna.SQLiteRepository" -showunvisited -output:"%COVERAGE_DIRECTORY%\coverage-unit.xml" -returntargetcode
 @SET EXITCODE=%ERRORLEVEL%
 @IF %ERRORLEVEL% NEQ 0 GOTO error
 
 @ECHO Running integration tests
-"%~dp0..\tools\opencover\%OPENCOVER_VERSION%\opencover.console.exe" -target:"%~dp0..\tools\xUnit\%XUNIT_VERSION%\xunit.console.x86.exe" -targetargs:"%~dp0..\src\reyna.Integration.Facts\bin\%CONFIGURATION%\reyna.Integration.Facts.dll /xml ""%COVERAGE_DIRECTORY%/integration-output.xml"" /html ""%COVERAGE_DIRECTORY%/integration-output.html"" /nunit ""%COVERAGE_DIRECTORY%/integration-output.nunit.xml"" /noshadow" -filter:"+[Reyna*]* -[*.Facts]*" -showunvisited -output:"%COVERAGE_DIRECTORY%\coverage-integration.xml" -returntargetcode
+"%~dp0..\tools\opencover\%OPENCOVER_VERSION%\opencover.console.exe" -target:"%~dp0..\tools\xUnit\%XUNIT_VERSION%\xunit.console.x86.exe" -targetargs:"%~dp0..\src\reyna.Integration.Facts\bin\%CONFIGURATION%\reyna.Integration.Facts.dll /xml ""%COVERAGE_DIRECTORY%/integration-output.xml"" /html ""%COVERAGE_DIRECTORY%/integration-output.html"" /nunit ""%COVERAGE_DIRECTORY%/integration-output.nunit.xml"" /noshadow" -filter:"+[Reyna*]* -[*.Facts]* -[Reyna.Win32]Reyna.EncryptionChecker -[Reyna.Win32]Reyna.ReynaService -[Reyna.Win32]Reyna.SQLiteRepository" -showunvisited -output:"%COVERAGE_DIRECTORY%\coverage-integration.xml" -returntargetcode
 @SET EXITCODE=%ERRORLEVEL%
 @IF %ERRORLEVEL% NEQ 0 GOTO error
 
@@ -50,4 +50,4 @@ findstr.exe /L "<Coverage>100%%</Coverage>" "%COVERAGE_DIRECTORY%\summary.xml"
 
 :coverageNotMet
 @ECHO Coverage requirements not met, to view coverage result click on %COVERAGE_DIRECTORY%\index.htm
-@EXIT /B %EXITCODE%
+@EXIT /B -1
