@@ -344,6 +344,7 @@
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
 
             NativeMethods.ACLineStatus = 1;
+            NativeMethods.SystemPowerStatusExResult = 1;
             this.Preferences.SetOnChargeBlackout(true);
 
             Assert.True(HttpClient.CanSend() == Result.Blackout);
@@ -358,6 +359,7 @@
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
 
             NativeMethods.ACLineStatus = 0;
+            NativeMethods.SystemPowerStatusExResult = 1;
             this.Preferences.SetOnChargeBlackout(true);
 
             Assert.True(HttpClient.CanSend() == Result.Ok);
