@@ -78,6 +78,7 @@
     <Compile Include="Http\AcceptAllCertificatePolicy.cs" />
     <Compile Include="Preferences\IRegistry.cs" />
     <Compile Include="Preferences\Registry.cs" />
+    <Compile Include="Services\IForward.cs" />
     <Compile Include="Threading\AutoResetEventAdapter.cs" />
     <Compile Include="Blackout\BlackoutTime.cs" />
     <Compile Include="Blackout\Time.cs" />

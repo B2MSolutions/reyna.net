@@ -106,6 +106,9 @@
     <Compile Include="..\reyna\Services\ForwardService.cs">
       <Link>Services\ForwardService.cs</Link>
     </Compile>
+    <Compile Include="..\reyna\Services\IForward.cs">
+      <Link>Services\IForward.cs</Link>
+    </Compile>
     <Compile Include="..\reyna\Services\INetworkStateService.cs">
       <Link>Services\INetworkStateService.cs</Link>
     </Compile>
