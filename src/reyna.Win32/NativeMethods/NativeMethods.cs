@@ -24,6 +24,10 @@
             systemPowerStatus.BatteryLifetime = 1;
             systemPowerStatus.BatteryStatus = 1;
 
+            systemPowerStatus.Reserved1 = 1;
+            systemPowerStatus.Reserved2 = 1;
+            systemPowerStatus.Reserved3 = 1;
+
             return SystemPowerStatusExResult;
         }
     }
