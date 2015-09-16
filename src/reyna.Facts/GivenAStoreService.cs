@@ -34,7 +34,8 @@
             this.StoreService.Start();
 
             this.VolatileStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
-            Thread.Sleep(200);
+            Thread.Sleep(500);
+            this.StoreService.Stop();
 
             Assert.Null(this.VolatileStore.Get());
             this.PersistentStore.Verify(r => r.Add(It.IsAny<IMessage>()), Times.Once());
@@ -56,53 +57,6 @@
             }
 
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna");
-        }
-
-        [Fact]
-        public void WhenCallingStartAndMessageAddedThenImmediatelyStopShouldNotCallPutOnRepository()
-        {
-            this.StoreService.Start();
-            Thread.Sleep(50);
-
-            this.VolatileStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
-            this.StoreService.Stop();
-            Thread.Sleep(200);
-
-            this.VolatileStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
-            Thread.Sleep(200);
-
-            Assert.NotNull(this.VolatileStore.Get());
-            this.PersistentStore.Verify(r => r.Add(It.IsAny<IMessage>()), Times.Once());
-        }
-
-        [Fact(Skip = "true")]
-        public void WhenCallingStartAndStopRapidlyWhilstAddingMessagesShouldNotCallPutOnRepository()
-        {
-            var messageAddingThread = new Thread(new ThreadStart(() =>
-                {
-                    for (int j = 0; j < 10; j++)
-                    {
-                        this.VolatileStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
-                        Thread.Sleep(100);
-                    }
-                }));
-
-            messageAddingThread.Start();
-            Thread.Sleep(100);
-
-            for (int k = 0; k < 10; k++)
-            {
-                this.StoreService.Start();
-                Thread.Sleep(50);
-
-                this.StoreService.Stop();
-                Thread.Sleep(200);
-            }
-
-            Thread.Sleep(1000);
-
-            Assert.Null(this.VolatileStore.Get());
-            this.PersistentStore.Verify(r => r.Add(It.IsAny<IMessage>()), Times.Exactly(10));
         }
 
         [Fact]

@@ -4,9 +4,9 @@
     using System.Threading;
     using Reyna.Interfaces;
 
-    internal sealed class ForwardService : ServiceBase
+    internal sealed class ForwardService : ServiceBase, IForward
     {
-        public ForwardService(IRepository sourceStore, IHttpClient httpClient, INetworkStateService networkState, IWaitHandle waitHandle, int temporaryErrorMilliseconds, int sleepMilliseconds)
+        public ForwardService(IRepository sourceStore, IHttpClient httpClient, INetworkStateService networkStateService, IWaitHandle waitHandle, int temporaryErrorMilliseconds, int sleepMilliseconds)
             : base(sourceStore, waitHandle, true)
         {
             if (httpClient == null)
@@ -14,18 +14,15 @@
                 throw new ArgumentNullException("httpClient");
             }
 
-            if (networkState == null)
+            if (networkStateService != null)
             {
-                throw new ArgumentNullException("networkState");
+                this.NetworkStateService = networkStateService;
+                this.NetworkStateService.NetworkConnected += this.OnNetworkConnected;
             }
 
-            this.HttpClient = httpClient;
-            this.NetworkState = networkState;
-
+            this.HttpClient = httpClient;            
             this.TemporaryErrorMilliseconds = temporaryErrorMilliseconds;
             this.SleepMilliseconds = sleepMilliseconds;
-
-            this.NetworkState.NetworkConnected += this.OnNetworkConnected;
         }
 
         internal int TemporaryErrorMilliseconds { get; set; }
@@ -34,7 +31,12 @@
 
         private IHttpClient HttpClient { get; set; }
 
-        private INetworkStateService NetworkState { get; set; }
+        private INetworkStateService NetworkStateService { get; set; }
+
+        public void Resume()
+        {
+            this.SignalWorkToDo();
+        }
         
         protected override void ThreadStart()
         {
@@ -49,13 +51,12 @@
                     if (result == Result.TemporaryError)
                     {
                         this.Sleep(this.TemporaryErrorMilliseconds);
-                        this.WaitHandle.Reset();
                         break;
                     }
 
                     if (result == Result.Blackout || result == Result.NotConnected)
                     {
-                        return;
+                        break;
                     }
 
                     this.SourceStore.Remove();
@@ -63,6 +64,14 @@
                 }
 
                 this.WaitHandle.Reset();
+            }
+        }
+
+        protected override void OnDispose()
+        {
+            if (this.NetworkStateService != null)
+            {
+                this.NetworkStateService.NetworkConnected -= this.OnNetworkConnected;
             }
         }
 

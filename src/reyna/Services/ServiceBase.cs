@@ -25,6 +25,8 @@
         {
             base.Dispose();
 
+            this.OnDispose();
+
             if (this.SourceStore != null)
             {
                 this.SourceStore.MessageAdded -= this.OnMessageAdded;
@@ -39,6 +41,10 @@
             }
 
             this.SignalWorkToDo();
+        }
+
+        protected virtual void OnDispose()
+        {
         }
     }
 }

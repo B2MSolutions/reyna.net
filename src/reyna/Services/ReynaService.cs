@@ -13,7 +13,15 @@
         {
         }
 
-        public ReynaService(byte[] password, ICertificatePolicy certificatePolicy)
+        public ReynaService(bool useNetworkState) : this(null, null, useNetworkState)
+        {
+        }
+
+        public ReynaService(byte[] password, ICertificatePolicy certificatePolicy) : this(password, certificatePolicy, true)
+        {
+        }
+
+        public ReynaService(byte[] password, ICertificatePolicy certificatePolicy, bool useNetworkState)
         {
             this.Password = password;
             this.VolatileStore = new InMemoryQueue();
@@ -23,14 +31,16 @@
 
             this.StoreWaitHandle = new AutoResetEventAdapter(false);
             this.ForwardWaitHandle = new AutoResetEventAdapter(false);
-            this.NetworkWaitHandle = new NamedWaitHandle(false, Reyna.NetworkStateService.NetworkConnectedNamedEvent);
 
-            this.SystemNotifier = new SystemNotifier();
-
-            this.NetworkStateService = new NetworkStateService(this.SystemNotifier, this.NetworkWaitHandle);                       
+            if (useNetworkState)
+            {
+                this.SystemNotifier = new SystemNotifier();
+                this.NetworkWaitHandle = new NamedWaitHandle(false, Reyna.NetworkStateService.NetworkConnectedNamedEvent);
+                this.NetworkStateService = new NetworkStateService(this.SystemNotifier, this.NetworkWaitHandle);
+            }     
 
             this.StoreService = new StoreService(this.VolatileStore, this.PersistentStore, this.StoreWaitHandle);
-            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient, this.NetworkStateService, this.ForwardWaitHandle, Preferences.ForwardServiceTemporaryErrorBackout, Preferences.ForwardServiceMessageBackout);            
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient, this.NetworkStateService, this.ForwardWaitHandle, Preferences.ForwardServiceTemporaryErrorBackout, Preferences.ForwardServiceMessageBackout);
         }
 
         public static long StorageSizeLimit
@@ -51,7 +61,7 @@
 
         internal IService StoreService { get; set; }
 
-        internal IService ForwardService { get; set; }
+        internal IForward ForwardService { get; set; }
 
         internal INetworkStateService NetworkStateService { get; set; }
 
@@ -126,13 +136,22 @@
             }
 
             this.StoreService.Start();
+            
             this.ForwardService.Start();
-            this.NetworkStateService.Start();
+
+            if (this.NetworkStateService != null)
+            {
+                this.NetworkStateService.Start();
+            }
         }
 
         public void Stop()
         {
-            this.NetworkStateService.Stop();
+            if (this.NetworkStateService != null)
+            {
+                this.NetworkStateService.Stop();
+            }
+
             this.ForwardService.Stop();
             this.StoreService.Stop();
         }
@@ -157,6 +176,22 @@
             if (this.StoreService != null)
             {
                 this.StoreService.Dispose();
+            }
+
+            if (this.NetworkWaitHandle != null)
+            {
+                this.NetworkWaitHandle.Close();
+            }
+
+            this.StoreWaitHandle.Close();
+            this.ForwardWaitHandle.Close();
+        }
+
+        public void ResumeForwardService()
+        {
+            if (this.ForwardService != null)
+            {
+                this.ForwardService.Resume();
             }
         }
     }

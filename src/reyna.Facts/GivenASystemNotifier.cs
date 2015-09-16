@@ -14,15 +14,15 @@
         private ISystemNotifier SystemNotifier { get; set; }
 
         [Fact]
-        public void WhenCallingNotifyOnNetworkConnectShouldThrow()
+        public void WhenCallingNotifyOnNetworkConnectShouldNotThrow()
         {
-            Assert.Throws<NotImplementedException>(() => this.SystemNotifier.NotifyOnNetworkConnect(string.Empty));
+            Assert.DoesNotThrow(() => this.SystemNotifier.NotifyOnNetworkConnect(string.Empty));
         }
 
         [Fact]
-        public void WhenCallingClearNotificationShouldThrow()
+        public void WhenCallingClearNotificationShouldNotThrow()
         {
-            Assert.Throws<NotImplementedException>(() => this.SystemNotifier.ClearNotification(string.Empty));
+            Assert.DoesNotThrow(() => this.SystemNotifier.ClearNotification(string.Empty));
         }
     }
 }

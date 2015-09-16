@@ -13,7 +13,7 @@
         {
             this.VolatileStore = new Mock<IRepository>();
             this.StoreService = new Mock<IService>();
-            this.ForwardService = new Mock<IService>();
+            this.ForwardService = new Mock<IForward>();
             this.NetworkStateService = new Mock<INetworkStateService>();
 
             this.ReynaService = new ReynaService();
@@ -27,7 +27,7 @@
 
         private Mock<IService> StoreService { get; set; }
 
-        private Mock<IService> ForwardService { get; set; }
+        private Mock<IForward> ForwardService { get; set; }
         
         private Mock<INetworkStateService> NetworkStateService { get; set; }
 
@@ -54,6 +54,32 @@
             var reynaService = new ReynaService();
 
             Assert.Null(((SQLiteRepository)reynaService.PersistentStore).Password);
+        }
+
+        [Fact]
+        public void WhenConstructingWithUseNetworkStateIsFalseShouldNotUseNetworkStateService()
+        {
+            var reynaService = new ReynaService(false);
+            Assert.Null(reynaService.NetworkStateService);
+            reynaService.Dispose();
+        }
+
+        [Fact]
+        public void WhenConstructingWithUseNetworkStateIsFalseAndHasOtherArgsShouldNotUseNetworkStateService()
+        {
+            var password = new byte[] { 0xFF, 0xAA, 0xCC, 0xCC };
+            var reynaService = new ReynaService(password, null, false);
+            Assert.Null(reynaService.NetworkStateService);
+            Assert.Equal(password, ((SQLiteRepository)reynaService.PersistentStore).Password);
+            reynaService.Dispose();
+        }
+
+        [Fact]
+        public void WhenConstructingWithUseNetworkStateIsTrueShouldUseNetworkStateService()
+        {
+            var reynaService = new ReynaService(null, null, true);
+            Assert.NotNull(reynaService.NetworkStateService);
+            reynaService.Dispose();
         }
 
         [Fact]
@@ -274,6 +300,16 @@
             bool actual = new Preferences().OffChargeBlackout;
 
             Assert.False(actual);
+        }
+
+        [Fact]
+        public void WhenCallingResumeForwardServiceShouldCallResume()
+        {
+            this.ForwardService.Setup(f => f.Resume());
+
+            this.ReynaService.ResumeForwardService();
+
+            this.ForwardService.Verify(f => f.Resume(), Times.Once());
         }
     }
 }
