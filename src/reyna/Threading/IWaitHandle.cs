@@ -7,7 +7,5 @@
         bool WaitOne();
 
         bool Reset();
-
-        void Close();
     }
 }

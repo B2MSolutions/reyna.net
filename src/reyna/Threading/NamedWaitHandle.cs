@@ -26,10 +26,5 @@
         {
             return this.EventWaitHandle.Reset();
         }
-
-        public void Close()
-        {
-            this.EventWaitHandle.Close();
-        }
     }
 }

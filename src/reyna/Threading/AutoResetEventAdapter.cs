@@ -26,10 +26,5 @@
         {
             return this.AutoResetEvent.Reset();
         }
-
-        public void Close()
-        {
-            this.AutoResetEvent.Close();
-        }
     }
 }

@@ -65,6 +65,21 @@
         }
 
         [Fact]
+        public void StartStopDisposeShouldWork()
+        {
+            var reynaService = new ReynaService(false);
+            Assert.Null(reynaService.NetworkStateService);
+            reynaService.Start();
+            System.Threading.Thread.Sleep(1000);
+            reynaService.Stop();
+            reynaService.Stop();
+            reynaService.Stop();
+            reynaService.Dispose();
+            reynaService.Dispose();
+            reynaService.Dispose();
+        }
+
+        [Fact]
         public void WhenConstructingWithUseNetworkStateIsFalseAndHasOtherArgsShouldNotUseNetworkStateService()
         {
             var password = new byte[] { 0xFF, 0xAA, 0xCC, 0xCC };

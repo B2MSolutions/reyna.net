@@ -135,6 +135,9 @@
                 }
             }
 
+            this.StoreWaitHandle.Reset();
+            this.ForwardWaitHandle.Reset();
+
             this.StoreService.Start();
             
             this.ForwardService.Start();
@@ -160,38 +163,39 @@
         {
             this.VolatileStore.Add(message);
         }
-
-        public void Dispose()
-        {
-            if (this.NetworkStateService != null)
-            {
-                this.NetworkStateService.Dispose();
-            }
-
-            if (this.ForwardService != null)
-            {
-                this.ForwardService.Dispose();
-            }
-
-            if (this.StoreService != null)
-            {
-                this.StoreService.Dispose();
-            }
-
-            if (this.NetworkWaitHandle != null)
-            {
-                this.NetworkWaitHandle.Close();
-            }
-
-            this.StoreWaitHandle.Close();
-            this.ForwardWaitHandle.Close();
-        }
-
+       
         public void ResumeForwardService()
         {
             if (this.ForwardService != null)
             {
                 this.ForwardService.Resume();
+            }
+        }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (this.NetworkStateService != null)
+                {
+                    this.NetworkStateService.Dispose();
+                }
+
+                if (this.ForwardService != null)
+                {
+                    this.ForwardService.Dispose();
+                }
+
+                if (this.StoreService != null)
+                {
+                    this.StoreService.Dispose();
+                }
             }
         }
     }
