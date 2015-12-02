@@ -1,7 +1,5 @@
-﻿namespace Reyna.MessageProvider
+﻿namespace Reyna.Interfaces
 {
-    using Reyna.Interfaces;
-
     internal interface IMessageProvider
     {
         bool CanSend { get; }

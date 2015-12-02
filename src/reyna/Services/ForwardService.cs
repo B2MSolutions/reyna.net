@@ -23,7 +23,17 @@
             this.HttpClient = httpClient;            
             this.TemporaryErrorMilliseconds = temporaryErrorMilliseconds;
             this.SleepMilliseconds = sleepMilliseconds;
+            if (batchUpload)
+            {
+                this.MessageProvider = new BatchProvider(sourceStore);
+            }
+            else
+            {
+                this.MessageProvider = new MessageProvider(sourceStore);
+            }
         }
+
+        internal IMessageProvider MessageProvider { get; set; }
 
         internal int TemporaryErrorMilliseconds { get; set; }
 
@@ -45,22 +55,25 @@
                 this.WaitHandle.WaitOne();
                 IMessage message = null;
 
-                while (!this.Terminate && (message = this.SourceStore.Get()) != null)
+                if (this.MessageProvider.CanSend)
                 {
-                    var result = this.HttpClient.Post(message);
-                    if (result == Result.TemporaryError)
+                    while (!this.Terminate && (message = this.MessageProvider.GetNext()) != null)
                     {
-                        this.Sleep(this.TemporaryErrorMilliseconds);
-                        break;
-                    }
+                        var result = this.HttpClient.Post(message);
+                        if (result == Result.TemporaryError)
+                        {
+                            this.Sleep(this.TemporaryErrorMilliseconds);
+                            break;
+                        }
 
-                    if (result == Result.Blackout || result == Result.NotConnected)
-                    {
-                        break;
-                    }
+                        if (result == Result.Blackout || result == Result.NotConnected)
+                        {
+                            break;
+                        }
 
-                    this.SourceStore.Remove();
-                    this.Sleep(this.SleepMilliseconds);
+                        this.MessageProvider.Delete(message);
+                        this.Sleep(this.SleepMilliseconds);
+                    }
                 }
 
                 this.WaitHandle.Reset();

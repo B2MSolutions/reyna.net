@@ -2,9 +2,9 @@
 {
     using Reyna.Interfaces;
 
-    internal class MessageProvider : IMessageProvider
+    internal class BatchProvider : IMessageProvider
     {
-        public MessageProvider(IRepository repository)
+        public BatchProvider(IRepository repository)
         {
             this.Repository = repository;
         }
@@ -13,7 +13,7 @@
         {
             get
             {
-                return true;
+                return false;
             }
         }
 

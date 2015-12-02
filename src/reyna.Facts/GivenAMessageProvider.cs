@@ -3,7 +3,6 @@
     using System;
     using Moq;
     using Reyna.Interfaces;
-    using Reyna.MessageProvider;
     using Xunit;
 
     public class GivenAMessageProvider

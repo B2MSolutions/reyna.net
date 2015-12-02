@@ -49,6 +49,7 @@
         public void WhenConstructingShouldNotThrow()
         {
             Assert.NotNull(this.ForwardService);
+            Assert.NotNull(this.ForwardService.MessageProvider);
         }
 
         [Fact]
@@ -167,7 +168,7 @@
 
             this.ForwardService.Stop();
             
-            Thread.Sleep(1000);
+            Thread.Sleep(200);
 
             Assert.NotNull(this.PersistentStore.Get());
         }
@@ -417,10 +418,12 @@
             var waitHandle = new AutoResetEventAdapter(false);
             var store = new Mock<IRepository>();
             store.Setup(s => s.Get()).Returns(this.CreateMessage());
+            
             var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 5 * 60 * 1000, 0, false);
             new Thread(this.StopForwardService).Start(forwardService);
             forwardService.Start();
             Thread.Sleep(1000);
+
             store.Verify(s => s.Get(), Times.Once());
         }
 
@@ -472,6 +475,24 @@
             Thread.Sleep(500);
 
             Assert.NotNull(this.PersistentStore.Get());
+        }
+
+        [Fact]
+        public void WhenConstructingWithBatchModeEnabledShouldUseBatchProvider()
+        {
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 100, 0, true);
+            Assert.NotNull(this.ForwardService);
+            Assert.NotNull(this.ForwardService.MessageProvider);
+            Assert.Equal(typeof(BatchProvider), this.ForwardService.MessageProvider.GetType());
+        }
+
+        [Fact]
+        public void WhenConstructingWithBatchModeDisabledShouldUseMessageProvider()
+        {
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 100, 0, false);
+            Assert.NotNull(this.ForwardService);
+            Assert.NotNull(this.ForwardService.MessageProvider);
+            Assert.Equal(typeof(MessageProvider), this.ForwardService.MessageProvider.GetType());
         }
 
         private void StopForwardService(object forwardService)
