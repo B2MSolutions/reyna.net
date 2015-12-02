@@ -76,6 +76,8 @@
   <ItemGroup>
     <Compile Include="Connection\IConnectionManager.cs" />
     <Compile Include="Http\AcceptAllCertificatePolicy.cs" />
+    <Compile Include="MessageProvider\IMessageProvider.cs" />
+    <Compile Include="MessageProvider\MessageProvider.cs" />
     <Compile Include="Preferences\IRegistry.cs" />
     <Compile Include="Preferences\Registry.cs" />
     <Compile Include="Services\IForward.cs" />

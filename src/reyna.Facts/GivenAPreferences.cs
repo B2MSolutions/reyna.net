@@ -1,5 +1,6 @@
 ﻿namespace Reyna.Facts
 {
+    using System;
     using Microsoft.Win32;
     using Xunit;
 
@@ -331,13 +332,73 @@
             Assert.False(Preferences.IsBlackoutRangeValid("1300-21:00"));
         }
 
+        [Fact]
+        public void WhenSettingBatchUploadThenBatchUploadShouldReturnExpected()
+        {
+            this.Preferences.SaveBatchUpload(true);
+            var batchUpload = this.Preferences.BatchUpload;
+
+            Assert.True(batchUpload);
+
+            this.Preferences.SaveBatchUpload(false);
+            batchUpload = this.Preferences.BatchUpload;
+
+            Assert.False(batchUpload);
+        }
+
+        [Fact]
+        public void WhenGettingBatchUploadAndBatchUploadNeverSavedShouldReturnDefaults()
+        {
+            DeleteRegistryValue("BatchUpload");
+            var batchUpload = this.Preferences.BatchUpload;
+
+            Assert.True(batchUpload);
+        }
+
+        [Fact]
+        public void WhenSettingBatchUploadUrlThenBatchUploadUrlShouldReturnExpected()
+        {
+            this.Preferences.SaveBatchUploadUrl(new Uri("http://post.net"));
+            var batchUploadUrl = this.Preferences.BatchUploadUrl;
+
+            Assert.Equal("http://post.net/", batchUploadUrl.ToString());
+        }
+
+        [Fact]
+        public void WhenGettingBatchUploadUrlAndBatchUploadNeverSavedShouldReturnDefaults()
+        {
+            DeleteRegistryValue("BatchUploadUri");
+            var batchUploadUrl = this.Preferences.BatchUploadUrl;
+
+            Assert.Null(batchUploadUrl);
+        }
+
+        [Fact]
+        public void WhenSettingBatchUploadCheckIntervalThenBatchUploadCheckIntervalShouldReturnExpected()
+        {
+            this.Preferences.SaveBatchUploadCheckInterval(100);
+            var batchUploadCheckInterval = this.Preferences.BatchUploadCheckInterval;
+
+            Assert.Equal(100, batchUploadCheckInterval);
+        }
+
+        [Fact]
+        public void WhenGettingBatchUploadCheckIntervalAndBatchUploadNeverSavedShouldReturnDefaults()
+        {
+            DeleteRegistryValue("BatchUploadInterval");
+
+            var batchUploadCheckInterval = this.Preferences.BatchUploadCheckInterval;
+
+            Assert.Equal(21600000, batchUploadCheckInterval);
+        }
+
         private static void DeleteRegistryValue(string keyName)
         {
             using (var key = Registry.LocalMachine.OpenSubKey(@"Software\Reyna", true))
             {
                 if (key != null)
                 {
-                    key.DeleteValue(keyName);
+                    key.DeleteValue(keyName, false);
                 }
             }
         }

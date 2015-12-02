@@ -125,6 +125,14 @@
             new Preferences().SetOffChargeBlackout(value);
         }
 
+        public static void SetBatchUploadConfiguration(bool value, Uri url, long checkInterval)
+        {
+            var preferences = new Preferences();
+            preferences.SaveBatchUpload(value);
+            preferences.SaveBatchUploadUrl(url);
+            preferences.SaveBatchUploadCheckInterval(checkInterval);
+        }
+
         public void Start()
         {
             if (this.Password != null && this.Password.Length > 0)

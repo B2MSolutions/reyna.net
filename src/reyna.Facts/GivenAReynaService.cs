@@ -1,5 +1,6 @@
 ﻿namespace Reyna.Facts
 {
+    using System;
     using System.IO;
     using Microsoft.Win32;
     using Moq;
@@ -325,6 +326,30 @@
             this.ReynaService.ResumeForwardService();
 
             this.ForwardService.Verify(f => f.Resume(), Times.Once());
+        }
+
+        [Fact]
+        public void WhenSetBatchUploadConfigurationShouldSaveBatchUploadValues()
+        {
+            ReynaService.SetBatchUploadConfiguration(true, new Uri("http://www.post.com"), 74);
+
+            var preferences = new Preferences();
+            Assert.True(preferences.BatchUpload);
+            Assert.Equal("http://www.post.com/", preferences.BatchUploadUrl.ToString());
+            Assert.Equal(74, preferences.BatchUploadCheckInterval);
+
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
+        }
+
+        [Fact]
+        public void WhenSetBatchUploadConfigurationAndNotSavedShouldReturnDefaults()
+        {
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
+
+            var preferences = new Preferences();
+            Assert.True(preferences.BatchUpload);
+            Assert.Null(preferences.BatchUploadUrl);
+            Assert.Equal(21600000, preferences.BatchUploadCheckInterval);
         }
     }
 }

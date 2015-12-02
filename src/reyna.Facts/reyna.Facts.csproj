@@ -59,6 +59,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GivenAMessageProvider.cs" />
     <Compile Include="GivenABlackoutTime.cs" />
     <Compile Include="GivenAConnectionInfo.cs" />
     <Compile Include="GivenAPowerManager.cs" />
