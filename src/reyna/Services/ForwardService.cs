@@ -6,8 +6,8 @@
 
     internal sealed class ForwardService : ServiceBase, IForward
     {
-        public ForwardService(IRepository sourceStore, IHttpClient httpClient, INetworkStateService networkStateService, IWaitHandle waitHandle, int temporaryErrorMilliseconds, int sleepMilliseconds)
-            : base(sourceStore, waitHandle, true)
+        public ForwardService(IRepository sourceStore, IHttpClient httpClient, INetworkStateService networkStateService, IWaitHandle waitHandle, int temporaryErrorMilliseconds, int sleepMilliseconds, bool batchUpload)
+            : base(sourceStore, waitHandle, true, !batchUpload)
         {
             if (httpClient == null)
             {

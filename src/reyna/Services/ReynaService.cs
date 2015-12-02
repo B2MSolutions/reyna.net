@@ -37,10 +37,11 @@
                 this.SystemNotifier = new SystemNotifier();
                 this.NetworkWaitHandle = new NamedWaitHandle(false, Reyna.NetworkStateService.NetworkConnectedNamedEvent);
                 this.NetworkStateService = new NetworkStateService(this.SystemNotifier, this.NetworkWaitHandle);
-            }     
+            }
 
+            var preferences = new Preferences();
             this.StoreService = new StoreService(this.VolatileStore, this.PersistentStore, this.StoreWaitHandle);
-            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient, this.NetworkStateService, this.ForwardWaitHandle, Preferences.ForwardServiceTemporaryErrorBackout, Preferences.ForwardServiceMessageBackout);
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient, this.NetworkStateService, this.ForwardWaitHandle, Preferences.ForwardServiceTemporaryErrorBackout, Preferences.ForwardServiceMessageBackout, preferences.BatchUpload);
         }
 
         public static long StorageSizeLimit

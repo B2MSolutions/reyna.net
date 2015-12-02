@@ -23,7 +23,7 @@
 
             this.PersistentStore.Initialise();
 
-            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 100, 0);
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 100, 0, false);
         }
 
         private IRepository PersistentStore { get; set; }
@@ -106,6 +106,25 @@
         }
 
         [Fact]
+        public void WhenCallingStartWithBatchModeEnabledShouldNotUploadMessagesWhenAdded()
+        {
+            this.PersistentStore = new SQLiteRepository();
+            this.PersistentStore.Initialise();
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 100, 0, true);
+            var message = this.CreateMessage();
+
+            this.ForwardService.Start();
+            Thread.Sleep(50);
+            this.PersistentStore.Add(message);
+            this.PersistentStore.Add(message);
+            this.PersistentStore.Add(message);
+            Thread.Sleep(200);
+
+           Assert.NotNull(this.PersistentStore.Get());
+           this.HttpClient.Verify(c => c.Post(It.IsAny<IMessage>()), Times.Never());
+        }
+
+        [Fact]
         public void WhenCallingStartAndStopRapidlyWhilstAddingMessagesShouldPostAllMessages()
         {
             var messageAddingThread = new Thread(new ThreadStart(() =>
@@ -154,7 +173,7 @@
         }
 
         [Fact]
-        public void WhenCallingStopOnForwareServiceThatHasntStartedShouldNotThrow()
+        public void WhenCallingStopOnForwareServiceThatHasNotStartedShouldNotThrow()
         {
             this.ForwardService.Stop();
         }
@@ -168,35 +187,35 @@
         [Fact]
         public void WhenConstructingWithAllNullParametersShouldThrow()
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(null, null, null, this.WaitHandle, 0, 0));
+            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(null, null, null, this.WaitHandle, 0, 0, false));
             Assert.Equal("sourceStore", exception.ParamName);
         }
 
         [Fact]
         public void WhenConstructingWithNullSourceStoreParameterShouldThrow()
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(null, new Mock<IHttpClient>().Object, new Mock<INetworkStateService>().Object, this.WaitHandle, 0, 0));
+            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(null, new Mock<IHttpClient>().Object, new Mock<INetworkStateService>().Object, this.WaitHandle, 0, 0, false));
             Assert.Equal("sourceStore", exception.ParamName);
         }
 
         [Fact]
         public void WhenConstructingWithNullHttpClientParameterShouldThrow()
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(new Mock<IRepository>().Object, null, new Mock<INetworkStateService>().Object, this.WaitHandle, 0, 0));
+            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(new Mock<IRepository>().Object, null, new Mock<INetworkStateService>().Object, this.WaitHandle, 0, 0, false));
             Assert.Equal("httpClient", exception.ParamName);
         }
 
         [Fact]
         public void WhenConstructingWithNullNetworkStateParameterShouldNotThrow()
         {
-            var forwardService = new ForwardService(new Mock<IRepository>().Object, new Mock<IHttpClient>().Object, null, this.WaitHandle, 0, 0);
+            var forwardService = new ForwardService(new Mock<IRepository>().Object, new Mock<IHttpClient>().Object, null, this.WaitHandle, 0, 0, false);
             Assert.NotNull(forwardService);
         }
 
         [Fact]
         public void WhenConstructingWithNullWaitHandleStateParameterShouldThrow()
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(new Mock<IRepository>().Object, new Mock<IHttpClient>().Object, new Mock<INetworkStateService>().Object, null, 0, 0));
+            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(new Mock<IRepository>().Object, new Mock<IHttpClient>().Object, new Mock<INetworkStateService>().Object, null, 0, 0, false));
             Assert.Equal("waitHandle", exception.ParamName);
         }
 
@@ -248,7 +267,7 @@
             var networkStateWaitHandle = new AutoResetEventAdapter(false);
             var networkState = new NetworkStateService(new Mock<ISystemNotifier>().Object, networkStateWaitHandle);
 
-            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, networkState, this.WaitHandle, 100, 0);
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, networkState, this.WaitHandle, 100, 0, false);
 
             var returnResult = Result.TemporaryError;
             this.HttpClient.Setup(c => c.Post(It.IsAny<IMessage>()))
@@ -278,7 +297,7 @@
             var networkStateWaitHandle = new AutoResetEventAdapter(false);
             var networkState = new NetworkStateService(new Mock<ISystemNotifier>().Object, networkStateWaitHandle);
 
-            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, networkState, this.WaitHandle, 100, 0);
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, networkState, this.WaitHandle, 100, 0, false);
 
             var returnResult = Result.TemporaryError;
             this.HttpClient.Setup(c => c.Post(It.IsAny<IMessage>()))
@@ -311,7 +330,7 @@
             var store = new Mock<IRepository>();
             store.Setup(s => s.Get()).Returns(this.CreateMessage());
 
-            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 0);
+            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 0, false);
             forwardService.Start();
             Thread.Sleep(500);
             forwardService.Stop();
@@ -329,25 +348,25 @@
             var store = new Mock<IRepository>();
             store.Setup(s => s.Get()).Returns(this.CreateMessage());
 
-            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 1000);
+            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 1000, false);
             forwardService.Start();
             Thread.Sleep(3000);
             forwardService.Stop();
 
-            store.Verify(s => s.Get(), Times.AtMost(3));
+            store.Verify(s => s.Get(), Times.AtLeast(3));
         }
 
         [Fact]
         public void ShouldSetTemporaryErrorMillisecondsTo5Minutes()
         {
-            var forwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 300000, 0);
+            var forwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 300000, 0, false);
             Assert.Equal(300000, forwardService.TemporaryErrorMilliseconds);
         }
 
         [Fact]
         public void ShouldSetSleepMillisecondsTo1Second()
         {
-            var forwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 300000, 1000);
+            var forwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 300000, 1000, false);
             Assert.Equal(1000, forwardService.SleepMilliseconds);
         }
 
@@ -361,7 +380,7 @@
             var store = new Mock<IRepository>();
             store.Setup(s => s.Get()).Returns(this.CreateMessage());
 
-            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 0);
+            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 0, false);
             forwardService.Start();
             Thread.Sleep(500);
             forwardService.Stop();
@@ -380,7 +399,7 @@
             var store = new Mock<IRepository>();
             store.Setup(s => s.Get()).Returns(this.CreateMessage());
 
-            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 0);
+            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 0, false);
             forwardService.Start();
             Thread.Sleep(500);
             forwardService.Stop();
@@ -398,7 +417,7 @@
             var waitHandle = new AutoResetEventAdapter(false);
             var store = new Mock<IRepository>();
             store.Setup(s => s.Get()).Returns(this.CreateMessage());
-            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 5 * 60 * 1000, 0);
+            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 5 * 60 * 1000, 0, false);
             new Thread(this.StopForwardService).Start(forwardService);
             forwardService.Start();
             Thread.Sleep(1000);
@@ -408,7 +427,7 @@
         [Fact]
         public void WhenCallingResumeShouldPostAllMessages()
         {
-            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, null, this.WaitHandle, 100, 0);
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, null, this.WaitHandle, 100, 0, false);
 
             var returnResult = Result.TemporaryError;
             this.HttpClient.Setup(c => c.Post(It.IsAny<IMessage>()))
@@ -433,7 +452,7 @@
         [Fact]
         public void WhenCallingResumeAndServiceStopedShouldNotPostAllMessages()
         {
-            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, null, this.WaitHandle, 100, 0);
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, null, this.WaitHandle, 100, 0, false);
 
             var returnResult = Result.TemporaryError;
             this.HttpClient.Setup(c => c.Post(It.IsAny<IMessage>()))

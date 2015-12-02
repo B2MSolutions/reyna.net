@@ -6,7 +6,7 @@
 
     internal abstract class ServiceBase : ThreadWorker
     {
-        public ServiceBase(IRepository sourceStore, IWaitHandle waitHandle, bool runOnStart) : base(waitHandle, runOnStart)
+        public ServiceBase(IRepository sourceStore, IWaitHandle waitHandle, bool runOnStart, bool notifyWhenNewMessageAdded) : base(waitHandle, runOnStart)
         {
             if (sourceStore == null)
             {
@@ -16,7 +16,10 @@
             this.SourceStore = sourceStore;
             this.SourceStore.Initialise();
 
-            this.SourceStore.MessageAdded += this.OnMessageAdded;
+            if (notifyWhenNewMessageAdded)
+            {
+                this.SourceStore.MessageAdded += this.OnMessageAdded;
+            }
         }
 
         protected IRepository SourceStore { get; set; }
