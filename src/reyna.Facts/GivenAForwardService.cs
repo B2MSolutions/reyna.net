@@ -495,6 +495,28 @@
             Assert.Equal(typeof(MessageProvider), this.ForwardService.MessageProvider.GetType());
         }
 
+        [Fact]
+        public void WhenMessageProviderCannotSendShouldNotSleepAndNotDeletingMessages()
+        {
+            var waitHandle = new AutoResetEventAdapter(false);
+            var store = new Mock<IRepository>();
+            store.Setup(s => s.Get()).Returns(this.CreateMessage());
+
+            var messageProvider = new Mock<IMessageProvider>();
+            messageProvider.SetupGet(m => m.CanSend).Returns(false);
+            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 0, false);
+            forwardService.MessageProvider = messageProvider.Object;
+            forwardService.Start();
+
+            Thread.Sleep(500);
+            forwardService.Stop();
+
+            this.HttpClient.Verify(c => c.Post(It.IsAny<IMessage>()), Times.Never());
+            messageProvider.Verify(m => m.CanSend, Times.AtLeast(1));
+            messageProvider.Verify(m => m.GetNext(), Times.Never());
+            messageProvider.Verify(m => m.Delete(It.IsAny<IMessage>()), Times.Never());
+        }
+
         private void StopForwardService(object forwardService)
         {
             Thread.Sleep(100);
