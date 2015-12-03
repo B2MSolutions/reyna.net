@@ -88,6 +88,9 @@
     <Compile Include="..\reyna\Http\Result.cs">
       <Link>Http\Result.cs</Link>
     </Compile>
+    <Compile Include="..\reyna\MessageProvider\Batch.cs">
+      <Link>MessageProvider\Batch.cs</Link>
+    </Compile>
     <Compile Include="..\reyna\MessageProvider\BatchConfiguration.cs">
       <Link>MessageProvider\BatchConfiguration.cs</Link>
     </Compile>
