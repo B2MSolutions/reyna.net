@@ -59,6 +59,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GivenABatchMessage.cs" />
     <Compile Include="GivenABatchConfiguration.cs" />
     <Compile Include="GivenAMessageProvider.cs" />
     <Compile Include="GivenABlackoutTime.cs" />
