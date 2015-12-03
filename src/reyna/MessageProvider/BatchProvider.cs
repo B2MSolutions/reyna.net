@@ -1,5 +1,7 @@
 ﻿namespace Reyna
 {
+    using System;
+    using System.Net;
     using Reyna.Interfaces;
 
     internal class BatchProvider : IMessageProvider
@@ -7,6 +9,7 @@
         public BatchProvider(IRepository repository)
         {
             this.Repository = repository;
+            this.BatchConfiguration = new BatchConfiguration();
         }
 
         public bool CanSend
@@ -17,16 +20,75 @@
             }
         }
 
+        internal IBatchConfiguration BatchConfiguration { get; set; }
+
         private IRepository Repository { get; set; }
 
         public IMessage GetNext()
         {
-            return this.Repository.Get();
+            var message = this.Repository.Get();
+            var batch = new Batch();
+
+            WebHeaderCollection headers = null;
+            while (message != null)
+            {
+                headers = message.Headers;
+                batch.Add(message);
+
+                message = this.Repository.GetNextMessageAfter(message.Id);
+            }
+
+            if (batch.Events.Count > 0)
+            {
+                var lastMessage = batch.Events[batch.Events.Count - 1];
+                var batchMessage = new Message(this.GetBatchUploadUrl(lastMessage.Url), batch.ToJson());
+                batchMessage.Id = lastMessage.ReynaId;
+                for (int index = 0; index < headers.Count; index++)
+                {
+                    batchMessage.Headers.Add(headers.Keys[index], headers[index]);
+                }
+
+                return batchMessage;
+            }
+
+            return null;
         }
 
         public void Delete(IMessage message)
         {
-            this.Repository.Remove();
+            this.Repository.Delete(message);
+        }
+
+        private Uri GetBatchUploadUrl(Uri uri)
+        {
+            if (this.BatchConfiguration.BatchUrl != null)
+            {
+                return this.BatchConfiguration.BatchUrl;
+            }
+
+            return this.GetUploadUrlFromMessageUrl(uri);
+        }
+
+        private Uri GetUploadUrlFromMessageUrl(Uri uri)
+        {
+            var path = uri.AbsolutePath;
+            string batchPath = null;
+            int index = path.LastIndexOf("/");
+            if (index != -1)
+            {
+                batchPath = path.Substring(0, index) + "/batch";
+            }
+            else
+            {
+                batchPath = path + "/batch";
+            }
+
+            return new Uri(batchPath);
+        }
+
+        private long GetSize(Batch batch)
+        {
+            return System.Text.Encoding.UTF8.GetByteCount(batch.ToJson());
         }
     }
 }

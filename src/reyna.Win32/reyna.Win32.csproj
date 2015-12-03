@@ -100,6 +100,9 @@
     <Compile Include="..\reyna\MessageProvider\BatchProvider.cs">
       <Link>MessageProvider\BatchProvider.cs</Link>
     </Compile>
+    <Compile Include="..\reyna\MessageProvider\IBatchConfiguration.cs">
+      <Link>MessageProvider\IBatchConfiguration.cs</Link>
+    </Compile>
     <Compile Include="..\reyna\MessageProvider\IMessageProvider.cs">
       <Link>MessageProvider\IMessageProvider.cs</Link>
     </Compile>

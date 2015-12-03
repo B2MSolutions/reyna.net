@@ -1,19 +1,20 @@
 ﻿namespace Reyna
 {
+    using System;
     using System.Text;
 
     internal class BatchMessage
     {
-        public BatchMessage(long reynaId, string url, string payload)
+        public BatchMessage(int reynaId, Uri url, string payload)
         {
             this.ReynaId = reynaId;
             this.Url = url;
             this.Payload = payload;
         }
 
-        public long ReynaId { get; set; }
+        public int ReynaId { get; set; }
 
-        public string Url { get; set; }
+        public Uri Url { get; set; }
 
         public string Payload { get; set; }
 

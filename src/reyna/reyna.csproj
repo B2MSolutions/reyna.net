@@ -80,6 +80,7 @@
     <Compile Include="MessageProvider\BatchConfiguration.cs" />
     <Compile Include="MessageProvider\BatchMessage.cs" />
     <Compile Include="MessageProvider\BatchProvider.cs" />
+    <Compile Include="MessageProvider\IBatchConfiguration.cs" />
     <Compile Include="MessageProvider\IMessageProvider.cs" />
     <Compile Include="MessageProvider\MessageProvider.cs" />
     <Compile Include="Preferences\IRegistry.cs" />

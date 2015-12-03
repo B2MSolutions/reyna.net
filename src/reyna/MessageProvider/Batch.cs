@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Text;
+    using Reyna.Interfaces;
 
     internal class Batch
     {
@@ -12,9 +13,9 @@
 
         internal List<BatchMessage> Events { get; set; }
 
-        public void Add(BatchMessage message)
+        public void Add(IMessage message)
         {
-            this.Events.Add(message);
+            this.Events.Add(new BatchMessage(message.Id, message.Url, message.Body));
         }
 
         public void RemoveLastMessage()

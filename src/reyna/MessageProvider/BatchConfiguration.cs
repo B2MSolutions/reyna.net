@@ -2,7 +2,7 @@
 {
     using System;
 
-    internal class BatchConfiguration
+    internal class BatchConfiguration : IBatchConfiguration
     {
         public int BatchMessageCount
         {
