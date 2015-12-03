@@ -68,6 +68,16 @@
             }
         }
 
+        public IMessage GetNextMessageAfter(long messageId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Delete(IMessage message)
+        {
+            throw new NotImplementedException();
+        }
+
         private void FireMessageAdded()
         {
             if (this.MessageAdded == null)

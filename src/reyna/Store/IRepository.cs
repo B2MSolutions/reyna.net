@@ -14,6 +14,10 @@
 
         IMessage Get();
 
+        IMessage GetNextMessageAfter(long messageId);
+
         IMessage Remove();
+
+        void Delete(IMessage message);
     }
 }
