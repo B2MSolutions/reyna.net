@@ -30,11 +30,17 @@
             var batch = new Batch();
 
             WebHeaderCollection headers = null;
-            while (message != null)
+            var count = 0;
+            long size = 0;
+            long maxMessagesCount = this.BatchConfiguration.BatchMessageCount;
+            long maxBatchSize = this.BatchConfiguration.BatchMessagesSize;
+            while (message != null && count < maxMessagesCount && size < maxBatchSize)
             {
                 headers = message.Headers;
                 batch.Add(message);
-
+                
+                size = this.GetSize(batch);
+                count++;
                 message = this.Repository.GetNextMessageAfter(message.Id);
             }
 
@@ -71,7 +77,7 @@
 
         private Uri GetUploadUrlFromMessageUrl(Uri uri)
         {
-            var path = uri.AbsolutePath;
+            var path = uri.AbsoluteUri;
             string batchPath = null;
             int index = path.LastIndexOf("/");
             if (index != -1)

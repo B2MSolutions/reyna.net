@@ -18,7 +18,7 @@
 
         public string Body { get; private set; }
 
-        public Uri Url { get; private set; }
+        public Uri Url { get; internal set; }
 
         public WebHeaderCollection Headers { get; private set; }
     }

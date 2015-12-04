@@ -90,14 +90,14 @@
             Assert.Equal(3, actual.Id);
         }
 
-         [Fact]
-    public void WhenCallingGetNextAndThereIsCorruptedMessageShouldPostIt()
-         {
-             Message message = new Message(new Uri("http://google2.com"), "{\"body\":\"{\\\"key11\\\":\"}");
-             message.Id = 2;
-             this.AddHeaders(message);
+        [Fact]
+        public void WhenCallingGetNextAndThereIsCorruptedMessageShouldPostIt()
+        {
+            Message message = new Message(new Uri("http://google2.com"), "{\"body\":\"{\\\"key11\\\":\"}");
+            message.Id = 2;
+            this.AddHeaders(message);
 
-             var messages = this.GetTestMessages();
+            var messages = this.GetTestMessages();
             this.Repository.Setup(r => r.Get()).Returns(messages[0]);
             this.Repository.Setup(r => r.GetNextMessageAfter(1))
                 .Returns(message);
@@ -106,7 +106,7 @@
             this.Repository.Setup(r => r.GetNextMessageAfter(3))
                 .Returns((IMessage)null);
 
-             var actual = this.Provider.GetNext();
+            var actual = this.Provider.GetNext();
 
             Assert.NotNull(actual);
 
@@ -122,6 +122,109 @@
             this.AssertHeaders(actual);
             Assert.Equal(3, actual.Id);
         }
+
+        [Fact]
+        public void WhenCallingGetNextShouldReturnMessagesRelatedToMaximumLimit()
+        {
+            this.BatchConfiguration.SetupGet(b => b.BatchMessageCount).Returns(2);
+
+            var messages = this.GetTestMessages();
+            this.Repository.Setup(r => r.Get()).Returns(messages[0]);
+            this.Repository.Setup(r => r.GetNextMessageAfter(1))
+                .Returns(messages[1]);
+            this.Repository.Setup(r => r.GetNextMessageAfter(2))
+                .Returns(messages[2]);
+            this.Repository.Setup(r => r.GetNextMessageAfter(3))
+                .Returns((IMessage)null);
+
+            var actual = this.Provider.GetNext();
+
+            Assert.NotNull(actual);
+
+            Assert.Equal("http://post.com/api/batch", actual.Url.AbsoluteUri);
+            Assert.Equal(
+                "{\"events\":[" +
+                    "{\"url\":\"http://google.com/\", \"reynaId\":1, \"payload\":{\"key01\":\"value01\",\"key02\":11}}, " +
+                    "{\"url\":\"http://google2.com/\", \"reynaId\":2, \"payload\":{\"key11\":\"value11\",\"key12\":12}}" +
+                    "]}",
+                    actual.Body);
+
+            this.AssertHeaders(actual);
+            Assert.Equal(2, actual.Id);
+        }
+
+        [Fact]
+        public void WhenCallingGetNextShouldReturnMessagesRelatedToMaximumSize()
+        {
+            this.BatchConfiguration.SetupGet(b => b.BatchMessagesSize).Returns(95);
+            var messages = this.GetTestMessages();
+            this.Repository.Setup(r => r.Get()).Returns(messages[0]);
+            this.Repository.Setup(r => r.GetNextMessageAfter(1))
+                .Returns(messages[1]);
+            this.Repository.Setup(r => r.GetNextMessageAfter(2))
+                .Returns(messages[2]);
+            this.Repository.Setup(r => r.GetNextMessageAfter(3))
+                .Returns((IMessage)null);
+
+            var actual = this.Provider.GetNext();
+
+            Assert.NotNull(actual);
+
+            Assert.Equal("http://post.com/api/batch", actual.Url.AbsoluteUri);
+            Assert.Equal(
+                "{\"events\":[" +
+                    "{\"url\":\"http://google.com/\", \"reynaId\":1, \"payload\":{\"key01\":\"value01\",\"key02\":11}}" +
+                    "]}",
+                    actual.Body);
+
+            this.AssertHeaders(actual);
+            Assert.Equal(1, actual.Id);
+        }
+
+        [Fact]
+        public void WhenCallingGetNextAndNoUrlConfiguredShouldReturnUrlWithBatchAppended()
+        {
+            this.BatchConfiguration.SetupGet(b => b.BatchMessagesSize).Returns(95);
+            this.BatchConfiguration.SetupGet(b => b.BatchUrl).Returns((Uri)null);
+            var messages = this.GetTestMessages();
+            this.Repository.Setup(r => r.Get()).Returns(messages[0]);
+            this.Repository.Setup(r => r.GetNextMessageAfter(1))
+                .Returns(messages[1]);
+            this.Repository.Setup(r => r.GetNextMessageAfter(2))
+                .Returns(messages[2]);
+            this.Repository.Setup(r => r.GetNextMessageAfter(3))
+                .Returns((IMessage)null);
+
+            var actual = this.Provider.GetNext();
+
+            Assert.NotNull(actual);
+            Assert.Equal("http://google.com/batch", actual.Url.ToString());
+        }
+
+        [Fact]
+    public void WhenCallingGetNextAndNoUrlConfiguredAndHTTPSShouldReturnUrlWithBatchAppended()
+        {
+            this.BatchConfiguration.SetupGet(b => b.BatchMessagesSize).Returns(95);
+            this.BatchConfiguration.SetupGet(b => b.BatchUrl).Returns((Uri)null);
+
+            var messages = this.GetTestMessages();
+            this.Repository.Setup(r => r.Get()).Returns(messages[0]);
+            this.Repository.Setup(r => r.GetNextMessageAfter(1))
+                .Returns(messages[1]);
+            this.Repository.Setup(r => r.GetNextMessageAfter(2))
+                .Returns(messages[2]);
+            this.Repository.Setup(r => r.GetNextMessageAfter(3))
+                .Returns((IMessage)null);
+
+            ((Message)messages[0]).Url = new Uri("https://www.post.com/1/2/req");
+            ((Message)messages[1]).Url = new Uri("https://www.post.com/1/2/req");
+            ((Message)messages[2]).Url = new Uri("https://www.post.com/1/2/req");
+
+        var actual = this.Provider.GetNext();
+
+        Assert.NotNull(actual);
+        Assert.Equal("https://www.post.com/1/2/batch", actual.Url.ToString());
+    }
 
         private List<IMessage> GetTestMessages()
         {
