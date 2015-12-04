@@ -6,21 +6,32 @@
 
     internal class BatchProvider : IMessageProvider
     {
+        private const string PeriodicBackoutCheckTAG = "BatchProvider";
+
         public BatchProvider(IRepository repository)
         {
             this.Repository = repository;
             this.BatchConfiguration = new BatchConfiguration();
+            this.PeriodicBackoutCheck = new RegistryPeriodicBackoutCheck(new Registry(), @"Software\Reyna\PeriodicBackoutCheck");
         }
 
         public bool CanSend
         {
             get
             {
-                return false;
+                long interval = (long)((this.BatchConfiguration.SubmitInterval * 0.9) / 1000);
+                if (this.PeriodicBackoutCheck.IsTimeElapsed(PeriodicBackoutCheckTAG, interval))
+                {
+                    return true;
+                }
+
+                return this.Repository.AvailableMessagesCount >= this.BatchConfiguration.BatchMessageCount;
             }
         }
 
         internal IBatchConfiguration BatchConfiguration { get; set; }
+
+        internal IPeriodicBackoutCheck PeriodicBackoutCheck { get; set; }
 
         private IRepository Repository { get; set; }
 

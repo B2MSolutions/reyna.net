@@ -16,6 +16,14 @@
 
         public event EventHandler<EventArgs> MessageAdded;
 
+        public long AvailableMessagesCount 
+        {
+            get
+            {
+                return this.queue.Count;
+            }
+        }
+
         private object SyncRoot
         {
             get

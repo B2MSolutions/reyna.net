@@ -172,8 +172,14 @@
     <Compile Include="..\reyna\Store\SQLiteRepository.cs">
       <Link>Store\SQLiteRepository.cs</Link>
     </Compile>
+    <Compile Include="..\reyna\System\IPeriodicBackoutCheck.cs">
+      <Link>System\IPeriodicBackoutCheck.cs</Link>
+    </Compile>
     <Compile Include="..\reyna\System\ISystemNotifier.cs">
       <Link>System\ISystemNotifier.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\System\RegistryPeriodicBackoutCheck.cs">
+      <Link>System\RegistryPeriodicBackoutCheck.cs</Link>
     </Compile>
     <Compile Include="..\reyna\Threading\AutoResetEventAdapter.cs">
       <Link>Threading\AutoResetEventAdapter.cs</Link>

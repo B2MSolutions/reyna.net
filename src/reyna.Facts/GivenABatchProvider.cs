@@ -8,10 +8,13 @@
 
     public class GivenABatchProvider
     {
+        private const long IntervalDay = 24 * 60 * 60 * 1000;
+
         public GivenABatchProvider()
         {
             this.Repository = new Mock<IRepository>();
             this.BatchConfiguration = new Mock<IBatchConfiguration>();
+            this.PeriodicBackoutCheck = new Mock<IPeriodicBackoutCheck>();
 
             this.BatchConfiguration.SetupGet(b => b.BatchMessageCount).Returns(3);
             this.BatchConfiguration.SetupGet(b => b.BatchMessagesSize).Returns(1000);
@@ -20,11 +23,14 @@
 
             this.Provider = new BatchProvider(this.Repository.Object);
             this.Provider.BatchConfiguration = this.BatchConfiguration.Object;
+            this.Provider.PeriodicBackoutCheck = this.PeriodicBackoutCheck.Object;
         }
 
         private Mock<IRepository> Repository { get; set; }
 
         private Mock<IBatchConfiguration> BatchConfiguration { get; set; }
+
+        private Mock<IPeriodicBackoutCheck> PeriodicBackoutCheck { get; set; }
 
         private BatchProvider Provider { get; set; }
 
@@ -34,6 +40,7 @@
             this.Provider = new BatchProvider(this.Repository.Object);
             Assert.NotNull(this.Provider);
             Assert.NotNull(this.BatchConfiguration);
+            Assert.NotNull(this.PeriodicBackoutCheck);
         }
 
         [Fact]
@@ -202,7 +209,7 @@
         }
 
         [Fact]
-    public void WhenCallingGetNextAndNoUrlConfiguredAndHTTPSShouldReturnUrlWithBatchAppended()
+        public void WhenCallingGetNextAndNoUrlConfiguredAndHTTPSShouldReturnUrlWithBatchAppended()
         {
             this.BatchConfiguration.SetupGet(b => b.BatchMessagesSize).Returns(95);
             this.BatchConfiguration.SetupGet(b => b.BatchUrl).Returns((Uri)null);
@@ -220,11 +227,67 @@
             ((Message)messages[1]).Url = new Uri("https://www.post.com/1/2/req");
             ((Message)messages[2]).Url = new Uri("https://www.post.com/1/2/req");
 
-        var actual = this.Provider.GetNext();
+            var actual = this.Provider.GetNext();
 
-        Assert.NotNull(actual);
-        Assert.Equal("https://www.post.com/1/2/batch", actual.Url.ToString());
-    }
+            Assert.NotNull(actual);
+            Assert.Equal("https://www.post.com/1/2/batch", actual.Url.ToString());
+        }
+
+        [Fact]
+        public void WhenCallingCanSendAndTimeNotElapsedShouldReturnFalse()
+        {
+            long interval = (long)((IntervalDay * 0.9) / 1000);
+            this.PeriodicBackoutCheck.Setup(p => p.IsTimeElapsed("BatchProvider", interval)).Returns(false);
+
+            var actual = this.Provider.CanSend;
+
+            Assert.False(actual);
+            this.PeriodicBackoutCheck.Verify(p => p.IsTimeElapsed("BatchProvider", interval), Times.Once());
+        }
+
+        [Fact]
+        public void WhenCallingCanSendAndTimeElapsedShouldReturnTrue()
+        {
+            long interval = (long)((IntervalDay * 0.9) / 1000);
+            this.PeriodicBackoutCheck.Setup(p => p.IsTimeElapsed("BatchProvider", interval)).Returns(true);
+
+            var actual = this.Provider.CanSend;
+
+            Assert.True(actual);
+            this.PeriodicBackoutCheck.Verify(p => p.IsTimeElapsed("BatchProvider", interval), Times.Once());
+        }
+
+        [Fact]
+        public void WhenCallingCanSendThereAreMoreMessagesThanMaxMessagesCountShouldSend()
+        {
+            long interval = (long)((IntervalDay * 0.9) / 1000);
+            this.PeriodicBackoutCheck.Setup(p => p.IsTimeElapsed("BatchProvider", interval)).Returns(false);
+            this.BatchConfiguration.SetupGet(b => b.BatchMessageCount).Returns(100);
+            this.Repository.SetupGet(r => r.AvailableMessagesCount).Returns(100);
+
+            var actual = this.Provider.CanSend;
+
+            Assert.True(actual);
+            this.PeriodicBackoutCheck.Verify(p => p.IsTimeElapsed("BatchProvider", interval), Times.Once());
+            this.BatchConfiguration.Verify(p => p.BatchMessageCount, Times.Once());
+            this.Repository.Verify(p => p.AvailableMessagesCount, Times.Once());
+        }
+
+        [Fact]
+        public void WhenCallingCanSendThereAreLessMessagesThanMaxMessagesCountShouldSend()
+        {
+            long interval = (long)((IntervalDay * 0.9) / 1000);
+            this.PeriodicBackoutCheck.Setup(p => p.IsTimeElapsed("BatchProvider", interval)).Returns(false);
+            this.BatchConfiguration.SetupGet(b => b.BatchMessageCount).Returns(100);
+            this.Repository.SetupGet(r => r.AvailableMessagesCount).Returns(99);
+
+            var actual = this.Provider.CanSend;
+
+            Assert.False(actual);
+            this.PeriodicBackoutCheck.Verify(p => p.IsTimeElapsed("BatchProvider", interval), Times.Once());
+            this.BatchConfiguration.Verify(p => p.BatchMessageCount, Times.Once());
+            this.Repository.Verify(p => p.AvailableMessagesCount, Times.Once());
+        }
 
         private List<IMessage> GetTestMessages()
         {

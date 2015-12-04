@@ -6,6 +6,8 @@
     {
         event EventHandler<EventArgs> MessageAdded;
 
+        long AvailableMessagesCount { get; }
+
         void Initialise();
 
         void Add(IMessage message);

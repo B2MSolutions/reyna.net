@@ -43,6 +43,14 @@
 
         public event EventHandler<EventArgs> MessageAdded;
 
+        public long AvailableMessagesCount
+        {
+            get
+            {
+                return 0;
+            }
+        }
+
         internal long SizeDifferenceToStartCleaning { get; set; }
 
         internal bool Exists
