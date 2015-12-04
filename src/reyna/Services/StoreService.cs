@@ -5,7 +5,7 @@
 
     internal sealed class StoreService : ServiceBase
     {
-        public StoreService(IRepository sourceStore, IRepository targetStore, IWaitHandle waitHandle) : base(sourceStore, waitHandle, false, true)
+        public StoreService(IRepository sourceStore, IRepository targetStore, IWaitHandle waitHandle) : base(sourceStore, waitHandle, false)
         {
             if (targetStore == null)
             {

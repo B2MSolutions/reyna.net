@@ -47,7 +47,13 @@
         {
             get
             {
-                return 0;
+                long count = 0;
+                this.Execute(connection =>
+                {
+                    count = this.GetNumberOfMessages(connection);
+                });
+
+                return count;
             }
         }
 

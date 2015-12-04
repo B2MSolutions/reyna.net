@@ -363,6 +363,28 @@
             Assert.True(received);
         }
 
+        [Fact]
+        public void WhenCallingAvailableMessagesCountShouldReturnExpected()
+        {
+            var message1 = this.GetMessage("http://HOST.com:9080/home1", "{\"body\": body}");
+            var message2 = this.GetMessage("http://HOST.com:9080/home2", "body");
+            var message3 = this.GetMessage("http://HOST.com:9080/home3", string.Empty);
+
+            this.Repository.Create();
+            this.Repository.Add(message1);
+            this.Repository.Add(message2);
+            this.Repository.Add(message3);
+
+            Assert.Equal(3, this.Repository.AvailableMessagesCount);
+
+            var actualMessage1 = this.Repository.Remove();
+            var actualMessage2 = this.Repository.Remove();
+            var actualMessage3 = this.Repository.Remove();
+            var actualMessage4 = this.Repository.Remove();
+
+            Assert.Equal(0, this.Repository.AvailableMessagesCount);
+        }
+
         private IMessage GetMessage(string url, string body)
         {
             var message = new Message(new Uri(url), body);

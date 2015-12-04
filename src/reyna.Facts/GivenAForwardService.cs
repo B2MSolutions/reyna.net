@@ -107,25 +107,6 @@
         }
 
         [Fact]
-        public void WhenCallingStartWithBatchModeEnabledShouldNotUploadMessagesWhenAdded()
-        {
-            this.PersistentStore = new SQLiteRepository();
-            this.PersistentStore.Initialise();
-            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 100, 0, true);
-            var message = this.CreateMessage();
-
-            this.ForwardService.Start();
-            Thread.Sleep(50);
-            this.PersistentStore.Add(message);
-            this.PersistentStore.Add(message);
-            this.PersistentStore.Add(message);
-            Thread.Sleep(200);
-
-           Assert.NotNull(this.PersistentStore.Get());
-           this.HttpClient.Verify(c => c.Post(It.IsAny<IMessage>()), Times.Never());
-        }
-
-        [Fact]
         public void WhenCallingStartAndStopRapidlyWhilstAddingMessagesShouldPostAllMessages()
         {
             var messageAddingThread = new Thread(new ThreadStart(() =>
