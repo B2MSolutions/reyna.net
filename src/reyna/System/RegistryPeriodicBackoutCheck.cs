@@ -27,6 +27,12 @@
 
             long elapsedPeriodInSeconds = (epocInMilliseconds - lastCheckedTime) / 1000;
 
+            if (lastCheckedTime > epocInMilliseconds)
+            {
+                this.Record(task);
+                return true;
+            }
+
             return elapsedPeriodInSeconds >= periodInSeconds;
         }
 
