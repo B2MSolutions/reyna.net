@@ -55,7 +55,7 @@
             var messge = new Mock<IMessage>();
             this.Provider.Delete(messge.Object);
 
-            this.Repository.Verify(r => r.Delete(messge.Object));
+            this.Repository.Verify(r => r.DeleteMessagesFrom(messge.Object));
         }
 
         [Fact]

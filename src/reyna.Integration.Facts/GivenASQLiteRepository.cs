@@ -338,16 +338,16 @@
             Assert.Equal("VALUE", actualMessage2.Headers["PARAM"]);
             Assert.Equal("application/josn", actualMessage2.Headers["Content_Type"]);
 
-            this.Repository.Delete(actualMessage2);
+            this.Repository.DeleteMessagesFrom(actualMessage2);
 
-            actualMessage2 = this.Repository.GetNextMessageAfter(1);
+            actualMessage2 = this.Repository.Get();
 
             Assert.Equal(new Uri("http://HOST.com:9080/home3"), actualMessage2.Url);
             Assert.Equal(string.Empty, actualMessage2.Body);
             Assert.Equal("VALUE", actualMessage2.Headers["PARAM"]);
             Assert.Equal("application/josn", actualMessage2.Headers["Content_Type"]);
 
-            this.Repository.Delete(actualMessage2);
+            this.Repository.DeleteMessagesFrom(actualMessage2);
             actualMessage2 = this.Repository.GetNextMessageAfter(1);
             Assert.Null(actualMessage2);
         }
@@ -382,6 +382,25 @@
             var actualMessage3 = this.Repository.Remove();
             var actualMessage4 = this.Repository.Remove();
 
+            Assert.Equal(0, this.Repository.AvailableMessagesCount);
+        }
+
+        [Fact]
+        public void WhenCallingAvailableMessagesCountAfterDeleteAllMessagesShouldReturn0()
+        {
+            var message1 = this.GetMessage("http://HOST.com:9080/home1", "{\"body\": body}");
+            var message2 = this.GetMessage("http://HOST.com:9080/home2", "body");
+            var message3 = this.GetMessage("http://HOST.com:9080/home3", string.Empty);
+
+            this.Repository.Create();
+            this.Repository.Add(message1);
+            this.Repository.Add(message2);
+            this.Repository.Add(message3);
+
+            Assert.Equal(3, this.Repository.AvailableMessagesCount);
+
+            message3 = this.Repository.GetNextMessageAfter(2);
+            this.Repository.DeleteMessagesFrom(message3);
             Assert.Equal(0, this.Repository.AvailableMessagesCount);
         }
 

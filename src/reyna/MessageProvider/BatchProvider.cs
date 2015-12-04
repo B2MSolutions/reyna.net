@@ -73,7 +73,7 @@
 
         public void Delete(IMessage message)
         {
-            this.Repository.Delete(message);
+            this.Repository.DeleteMessagesFrom(message);
         }
 
         private Uri GetBatchUploadUrl(Uri uri)

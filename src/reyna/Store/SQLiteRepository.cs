@@ -15,6 +15,7 @@
         private const string InsertMessageSql = "INSERT INTO Message(url, body) VALUES(@url, @body); SELECT last_insert_rowid();";
         private const string InsertHeaderSql = "INSERT INTO Header(messageid, key, value) VALUES(@messageId, @key, @value);";
         private const string DeleteMessageSql = "DELETE FROM Header WHERE messageid = @messageId;DELETE FROM Message WHERE id = @messageId";
+        private const string DeleteMessagesFromSql = "DELETE FROM Header WHERE messageid <= @messageId;DELETE FROM Message WHERE id <= @messageId";
         private const string SelectTop1MessageSql = "SELECT id, url, body FROM Message ORDER BY id ASC LIMIT 1";
         private const string SelectTop1MessageSqlFrom = "SELECT id, url, body FROM Message WHERE id > @messageId ORDER BY id ASC LIMIT 1";
         private const string SelectHeaderSql = "SELECT key, value FROM Header WHERE messageid = @messageId";
@@ -120,14 +121,51 @@
 
         public IMessage Get()
         {
-            return this.GetNextMessageAfter(0);
+            return this.GetFirstInQueue();
         }
 
         public IMessage Remove()
         {
-            var message = this.GetFirstInQueue();
-            this.Delete(message);
-            return message;
+            return this.GetFirstInQueue((message, t) =>
+            {
+                var sql = SQLiteRepository.DeleteMessageSql;
+                var messageId = this.CreateParameter("@messageId", message.Id);
+                this.ExecuteNonQuery(sql, t, messageId);
+            });
+        }
+
+        public IMessage GetNextMessageAfter(long messageId)
+        {
+            return this.ExecuteInTransaction((t) =>
+            {
+                IMessage message = null;
+                var messageIdParameter = this.CreateParameter("@messageId", messageId);
+                using (var reader = this.ExecuteReader(SelectTop1MessageSqlFrom, t, messageIdParameter))
+                {
+                    reader.Read();
+                    message = this.CreateFromDataReader(reader);
+                }
+
+                if (message == null)
+                {
+                    return null;
+                }
+
+                this.FillHeaders(message, t);
+
+                return message;
+            });
+        }
+
+        public void DeleteMessagesFrom(IMessage message)
+        {
+            if (message == null)
+            {
+                return;
+            }
+
+            var messageId = this.CreateParameter("@messageId", message.Id);
+            this.ExecuteInTransaction((t) => this.ExecuteNonQuery(SQLiteRepository.DeleteMessagesFromSql, t, messageId));
         }
 
         public void ShrinkDb(long limit)
@@ -153,24 +191,6 @@
                     while (size > limit);
                 });
             }
-        }
-
-        public IMessage GetNextMessageAfter(long messageId)
-        {
-            var messageIdParameter = this.CreateParameter("@messageId", messageId);
-            return this.GetMessage(SQLiteRepository.SelectTop1MessageSqlFrom, messageIdParameter);
-        }
-
-        public void Delete(IMessage message)
-        {
-            if (message == null)
-            {
-                return;
-            }
-
-            var sql = SQLiteRepository.DeleteMessageSql;
-            var messageId = this.CreateParameter("@messageId", message.Id);
-            this.ExecuteInTransaction((t) => this.ExecuteNonQuery(sql, t, messageId));
         }
 
         internal void Create()
@@ -295,18 +315,14 @@
             this.ExecuteNonQuery("vacuum", connection);
         }
 
-        private IMessage GetFirstInQueue()
-        {
-            return this.GetMessage(SQLiteRepository.SelectTop1MessageSql, null);
-        }
-
-        private IMessage GetMessage(string sql, DbParameter parameter)
+        private IMessage GetFirstInQueue(params ExecuteActionInTransaction[] postActions)
         {
             return this.ExecuteInTransaction((t) =>
             {
                 IMessage message = null;
 
-                using (var reader = this.ExecuteReader(sql, t, parameter))
+                var sql = SQLiteRepository.SelectTop1MessageSql;
+                using (var reader = this.ExecuteReader(sql, t))
                 {
                     reader.Read();
                     message = this.CreateFromDataReader(reader);
@@ -317,19 +333,29 @@
                     return null;
                 }
 
-                var messageParameter = this.CreateParameter("@messageid", message.Id);
-                using (var reader = this.ExecuteReader(SQLiteRepository.SelectHeaderSql, t, messageParameter))
-                {
-                    while (reader.Read())
-                    {
-                        this.AddHeader(message, reader);
-                    }
+                this.FillHeaders(message, t);
 
-                    this.AddReynaHeader(message);
+                foreach (var postAction in postActions)
+                {
+                    postAction(message, t);
                 }
 
                 return message;
             });
+        }
+
+        private void FillHeaders(IMessage message, DbTransaction t)
+        {
+            var messageId = this.CreateParameter("@messageId", message.Id);
+            using (var reader = this.ExecuteReader(SQLiteRepository.SelectHeaderSql, t, messageId))
+            {
+                while (reader.Read())
+                {
+                    this.AddHeader(message, reader);
+                }
+
+                this.AddReynaHeader(message);
+            }
         }
 
         private void AddHeader(IMessage message, DbDataReader reader)

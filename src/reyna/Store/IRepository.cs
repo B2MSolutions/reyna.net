@@ -20,6 +20,6 @@
 
         IMessage Remove();
 
-        void Delete(IMessage message);
+        void DeleteMessagesFrom(IMessage message);
     }
 }

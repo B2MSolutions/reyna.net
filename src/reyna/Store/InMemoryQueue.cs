@@ -81,7 +81,7 @@
             throw new NotImplementedException();
         }
 
-        public void Delete(IMessage message)
+        public void DeleteMessagesFrom(IMessage message)
         {
             throw new NotImplementedException();
         }

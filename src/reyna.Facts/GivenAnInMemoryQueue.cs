@@ -79,7 +79,7 @@
         public void WhenCallingDeleteShouldThrow()
         {
             var queue = new InMemoryQueue();
-            Assert.Throws<NotImplementedException>(() => queue.Delete(new Message(null, null)));
+            Assert.Throws<NotImplementedException>(() => queue.DeleteMessagesFrom(new Message(null, null)));
         }
 
         [Fact]
