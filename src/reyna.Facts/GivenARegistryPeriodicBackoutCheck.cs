@@ -42,7 +42,7 @@
             this.Registry.Setup(r => r.GetQWord(It.IsAny<Microsoft.Win32.RegistryKey>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<long>()))
                 .Returns(GetEpocInMilliSeconds(DateTime.Now.AddMinutes(-16)));
 
-            var actual = this.PeriodicBackoutCheck.IsTimeElapsed("task", 60 * 60);
+            var actual = this.PeriodicBackoutCheck.IsTimeElapsed("task", 60 * 60 * 1000);
 
             Assert.False(actual);
         }

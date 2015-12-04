@@ -6,6 +6,8 @@
 
     internal sealed class ForwardService : ServiceBase, IForward
     {
+        private const string PeriodicBackoutCheckTAG = "ForwardService";
+
         public ForwardService(IRepository sourceStore, IHttpClient httpClient, INetworkStateService networkStateService, IWaitHandle waitHandle, int temporaryErrorMilliseconds, int sleepMilliseconds, bool batchUpload)
             : base(sourceStore, waitHandle, true)
         {
@@ -23,9 +25,11 @@
             this.HttpClient = httpClient;            
             this.TemporaryErrorMilliseconds = temporaryErrorMilliseconds;
             this.SleepMilliseconds = sleepMilliseconds;
+            this.PeriodicBackoutCheck = new RegistryPeriodicBackoutCheck(new Registry(), @"Software\Reyna\PeriodicBackoutCheck");
+
             if (batchUpload)
             {
-                this.MessageProvider = new BatchProvider(sourceStore);
+                this.MessageProvider = new BatchProvider(sourceStore, this.PeriodicBackoutCheck);
             }
             else
             {
@@ -35,6 +39,8 @@
 
         internal IMessageProvider MessageProvider { get; set; }
 
+        internal IPeriodicBackoutCheck PeriodicBackoutCheck { get; set; }
+
         internal int TemporaryErrorMilliseconds { get; set; }
 
         internal int SleepMilliseconds { get; set; }
@@ -42,6 +48,14 @@
         private IHttpClient HttpClient { get; set; }
 
         private INetworkStateService NetworkStateService { get; set; }
+
+        private bool CanSend
+        {
+            get
+            {
+                return this.MessageProvider.CanSend && this.PeriodicBackoutCheck.IsTimeElapsed(PeriodicBackoutCheckTAG, this.TemporaryErrorMilliseconds);
+            }
+        }
 
         public void Resume()
         {
@@ -55,14 +69,14 @@
                 this.WaitHandle.WaitOne();
                 IMessage message = null;
 
-                if (this.MessageProvider.CanSend)
+                if (this.CanSend)
                 {
                     while (!this.Terminate && (message = this.MessageProvider.GetNext()) != null)
                     {
                         var result = this.HttpClient.Post(message);
                         if (result == Result.TemporaryError)
                         {
-                            this.Sleep(this.TemporaryErrorMilliseconds);
+                            this.PeriodicBackoutCheck.Record(ForwardService.PeriodicBackoutCheckTAG);
                             break;
                         }
 
@@ -102,19 +116,7 @@
 
         private void Sleep(int millisecondsTimeout)
         {
-            int timeoutInFiveSecondsPeriod = millisecondsTimeout / (1000 * 5);
-            if (timeoutInFiveSecondsPeriod > 1)
-            {
-                while (!this.Terminate && timeoutInFiveSecondsPeriod > 0)
-                {
-                    Reyna.Sleep.Wait(5);
-                    timeoutInFiveSecondsPeriod--;
-                }
-            }
-            else
-            {
-                Reyna.Sleep.Wait(millisecondsTimeout / 1000);
-            }
+            Reyna.Sleep.Wait(millisecondsTimeout / 1000);
         }
     }
 }

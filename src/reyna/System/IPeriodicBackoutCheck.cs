@@ -4,6 +4,6 @@
     {
         void Record(string task);
 
-        bool IsTimeElapsed(string task, long periodInSeconds);
+        bool IsTimeElapsed(string task, long periodInMilliseconds);
     }
 }

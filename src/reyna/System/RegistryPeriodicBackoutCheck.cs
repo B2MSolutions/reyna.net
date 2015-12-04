@@ -20,12 +20,12 @@
             this.Registry.SetQWord(Microsoft.Win32.Registry.LocalMachine, this.PeriodicalTasksKeyName, task, epocInMilliseconds);
         }
 
-        public bool IsTimeElapsed(string task, long periodInSeconds)
+        public bool IsTimeElapsed(string task, long periodInMilliseconds)
         {
             long lastCheckedTime = this.Registry.GetQWord(Microsoft.Win32.Registry.LocalMachine, this.PeriodicalTasksKeyName, task, 0);
             long epocInMilliseconds = this.GetEpocInMilliSeconds();
 
-            long elapsedPeriodInSeconds = (epocInMilliseconds - lastCheckedTime) / 1000;
+            long elapsedPeriodInSeconds = epocInMilliseconds - lastCheckedTime;
 
             if (lastCheckedTime > epocInMilliseconds)
             {
@@ -33,7 +33,7 @@
                 return true;
             }
 
-            return elapsedPeriodInSeconds >= periodInSeconds;
+            return elapsedPeriodInSeconds >= periodInMilliseconds;
         }
 
         private long GetEpocInMilliSeconds()

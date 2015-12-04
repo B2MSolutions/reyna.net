@@ -8,18 +8,18 @@
     {
         private const string PeriodicBackoutCheckTAG = "BatchProvider";
 
-        public BatchProvider(IRepository repository)
+        public BatchProvider(IRepository repository, IPeriodicBackoutCheck periodicBackoutCheck)
         {
             this.Repository = repository;
             this.BatchConfiguration = new BatchConfiguration();
-            this.PeriodicBackoutCheck = new RegistryPeriodicBackoutCheck(new Registry(), @"Software\Reyna\PeriodicBackoutCheck");
+            this.PeriodicBackoutCheck = periodicBackoutCheck;
         }
 
         public bool CanSend
         {
             get
             {
-                long interval = (long)((this.BatchConfiguration.SubmitInterval * 0.9) / 1000);
+                long interval = (long)(this.BatchConfiguration.SubmitInterval * 0.9);
                 if (this.PeriodicBackoutCheck.IsTimeElapsed(PeriodicBackoutCheckTAG, interval))
                 {
                     return true;
