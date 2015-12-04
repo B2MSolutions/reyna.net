@@ -48,5 +48,11 @@
             this.Repository.Verify(r => r.Get());
             Assert.Same(message.Object, actual);
         }
+
+        [Fact]
+        public void WhenCallingCloseShouldDoNothing()
+        {
+            this.MessageProvider.Close();
+        }
     }
 }

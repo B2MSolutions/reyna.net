@@ -289,6 +289,37 @@
             this.Repository.Verify(p => p.AvailableMessagesCount, Times.Once());
         }
 
+        [Fact]
+        public void WhenCallingCloseAndNeverSendSuccessfulBatchShouldNotRecord()
+        {
+            this.Provider.Close();
+
+            this.PeriodicBackoutCheck.Verify(p => p.Record("BatchProvider"), Times.Never());
+        }
+
+        [Fact]
+        public void WhenCallingCloseAndSuccessfullySentBatchShouldRecord()
+        {
+            var message = new Message(new Uri("http://google.com"), "{\"key01\":\"value01\",\"key02\":11}");
+            message.Id = 1;
+
+            this.Provider.Delete(message);
+            this.Provider.Close();
+
+            this.PeriodicBackoutCheck.Verify(p => p.Record("BatchProvider"), Times.Once());
+        }
+
+        [Fact]
+        public void WhenCallingDeleteShouldDeleteFromRepository()
+        {
+            var message = new Message(new Uri("http://google.com"), "{\"key01\":\"value01\",\"key02\":11}");
+            message.Id = 100;
+
+            this.Provider.Delete(message);
+
+            this.Repository.Verify(p => p.DeleteMessagesFrom(message), Times.Once());
+        }
+
         private List<IMessage> GetTestMessages()
         {
             var message1 = new Message(new Uri("http://google.com"), "{\"key01\":\"value01\",\"key02\":11}");

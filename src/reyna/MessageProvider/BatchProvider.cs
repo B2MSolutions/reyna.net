@@ -35,6 +35,8 @@
 
         private IRepository Repository { get; set; }
 
+        private bool BatchDeleted { get; set; }
+
         public IMessage GetNext()
         {
             var message = this.Repository.Get();
@@ -74,6 +76,17 @@
         public void Delete(IMessage message)
         {
             this.Repository.DeleteMessagesFrom(message);
+            this.BatchDeleted = true;
+        }
+
+        public void Close()
+        {
+            if (this.BatchDeleted)
+            {
+                this.PeriodicBackoutCheck.Record(PeriodicBackoutCheckTAG);
+            }
+
+            this.BatchDeleted = false;
         }
 
         private Uri GetBatchUploadUrl(Uri uri)

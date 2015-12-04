@@ -74,6 +74,8 @@
                         this.MessageProvider.Delete(message);
                         this.Sleep(this.SleepMilliseconds);
                     }
+
+                    this.MessageProvider.Close();
                 }
 
                 this.WaitHandle.Reset();

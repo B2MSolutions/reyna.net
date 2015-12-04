@@ -496,6 +496,32 @@
             messageProvider.Verify(m => m.CanSend, Times.AtLeast(1));
             messageProvider.Verify(m => m.GetNext(), Times.Never());
             messageProvider.Verify(m => m.Delete(It.IsAny<IMessage>()), Times.Never());
+            messageProvider.Verify(m => m.Close(), Times.Never());
+        }
+
+        [Fact]
+        public void WhenMessageProviderCanSendShouldCallClose()
+        {
+            this.HttpClient.Setup(c => c.Post(It.IsAny<IMessage>()))
+               .Returns(Result.Ok);
+
+            var store = new Mock<IRepository>();
+            var waitHandle = new AutoResetEventAdapter(false);
+            var messageProvider = new Mock<IMessageProvider>();
+            messageProvider.SetupGet(m => m.CanSend).Returns(true);
+            messageProvider.Setup(s => s.GetNext()).Returns(this.CreateMessage());
+            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 0, false);
+            forwardService.MessageProvider = messageProvider.Object;
+
+            forwardService.Start();
+
+            Thread.Sleep(500);
+            forwardService.Stop();
+
+            messageProvider.Verify(m => m.CanSend, Times.AtLeast(1));
+            messageProvider.Verify(m => m.GetNext(), Times.AtLeast(1));
+            messageProvider.Verify(m => m.Delete(It.IsAny<IMessage>()), Times.AtLeast(1));
+            messageProvider.Verify(m => m.Close(), Times.AtLeast(1));
         }
 
         private void StopForwardService(object forwardService)

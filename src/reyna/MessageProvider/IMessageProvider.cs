@@ -7,5 +7,7 @@
         IMessage GetNext();
 
         void Delete(IMessage message);
+
+        void Close();
     }
 }

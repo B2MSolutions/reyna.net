@@ -28,5 +28,9 @@
         {
             this.Repository.Remove();
         }
+
+        public void Close()
+        {
+        }
     }
 }
