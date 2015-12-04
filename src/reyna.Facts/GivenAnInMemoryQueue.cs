@@ -81,5 +81,12 @@
             var queue = new InMemoryQueue();
             Assert.Throws<NotImplementedException>(() => queue.Delete(new Message(null, null)));
         }
+
+        [Fact]
+        public void WhenCallingAvailableMessagesCountShouldReturnLength()
+        {
+            var queue = new InMemoryQueue();
+            Assert.Equal(0, queue.AvailableMessagesCount);
+        }
     }
 }

@@ -91,15 +91,7 @@
             var path = uri.AbsoluteUri;
             string batchPath = null;
             int index = path.LastIndexOf("/");
-            if (index != -1)
-            {
-                batchPath = path.Substring(0, index) + "/batch";
-            }
-            else
-            {
-                batchPath = path + "/batch";
-            }
-
+            batchPath = path.Substring(0, index) + "/batch";
             return new Uri(batchPath);
         }
 
