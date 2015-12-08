@@ -22,6 +22,9 @@
             this.ReynaService.StoreService = this.StoreService.Object;
             this.ReynaService.ForwardService = this.ForwardService.Object;
             this.ReynaService.NetworkStateService = this.NetworkStateService.Object;
+
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
         }
 
         private Mock<IRepository> VolatileStore { get; set; }
