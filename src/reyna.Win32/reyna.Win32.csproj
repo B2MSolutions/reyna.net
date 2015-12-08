@@ -88,6 +88,27 @@
     <Compile Include="..\reyna\Http\Result.cs">
       <Link>Http\Result.cs</Link>
     </Compile>
+    <Compile Include="..\reyna\MessageProvider\Batch.cs">
+      <Link>MessageProvider\Batch.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\MessageProvider\BatchConfiguration.cs">
+      <Link>MessageProvider\BatchConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\MessageProvider\BatchMessage.cs">
+      <Link>MessageProvider\BatchMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\MessageProvider\BatchProvider.cs">
+      <Link>MessageProvider\BatchProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\MessageProvider\IBatchConfiguration.cs">
+      <Link>MessageProvider\IBatchConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\MessageProvider\IMessageProvider.cs">
+      <Link>MessageProvider\IMessageProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\MessageProvider\MessageProvider.cs">
+      <Link>MessageProvider\MessageProvider.cs</Link>
+    </Compile>
     <Compile Include="..\reyna\Power\PowerManager.cs">
       <Link>Power\PowerManager.cs</Link>
     </Compile>
@@ -151,8 +172,14 @@
     <Compile Include="..\reyna\Store\SQLiteRepository.cs">
       <Link>Store\SQLiteRepository.cs</Link>
     </Compile>
+    <Compile Include="..\reyna\System\IPeriodicBackoutCheck.cs">
+      <Link>System\IPeriodicBackoutCheck.cs</Link>
+    </Compile>
     <Compile Include="..\reyna\System\ISystemNotifier.cs">
       <Link>System\ISystemNotifier.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\System\RegistryPeriodicBackoutCheck.cs">
+      <Link>System\RegistryPeriodicBackoutCheck.cs</Link>
     </Compile>
     <Compile Include="..\reyna\Threading\AutoResetEventAdapter.cs">
       <Link>Threading\AutoResetEventAdapter.cs</Link>

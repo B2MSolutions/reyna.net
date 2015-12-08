@@ -15,7 +15,9 @@
         private const string InsertMessageSql = "INSERT INTO Message(url, body) VALUES(@url, @body); SELECT last_insert_rowid();";
         private const string InsertHeaderSql = "INSERT INTO Header(messageid, key, value) VALUES(@messageId, @key, @value);";
         private const string DeleteMessageSql = "DELETE FROM Header WHERE messageid = @messageId;DELETE FROM Message WHERE id = @messageId";
+        private const string DeleteMessagesFromSql = "DELETE FROM Header WHERE messageid <= @messageId;DELETE FROM Message WHERE id <= @messageId";
         private const string SelectTop1MessageSql = "SELECT id, url, body FROM Message ORDER BY id ASC LIMIT 1";
+        private const string SelectTop1MessageSqlFrom = "SELECT id, url, body FROM Message WHERE id > @messageId ORDER BY id ASC LIMIT 1";
         private const string SelectHeaderSql = "SELECT key, value FROM Header WHERE messageid = @messageId";
         private const string SelectMinIdWithTypeSql = "SELECT min(id) FROM Message WHERE url = @type";
         private const string SelectNumberOfMessagesSql = "SELECT count(*) from Message";
@@ -41,6 +43,20 @@
         private delegate void ExecuteActionInTransaction(IMessage message, DbTransaction transaction);
 
         public event EventHandler<EventArgs> MessageAdded;
+
+        public long AvailableMessagesCount
+        {
+            get
+            {
+                long count = 0;
+                this.Execute(connection =>
+                {
+                    count = this.GetNumberOfMessages(connection);
+                });
+
+                return count;
+            }
+        }
 
         internal long SizeDifferenceToStartCleaning { get; set; }
 
@@ -116,6 +132,40 @@
                 var messageId = this.CreateParameter("@messageId", message.Id);
                 this.ExecuteNonQuery(sql, t, messageId);
             });
+        }
+
+        public IMessage GetNextMessageAfter(long messageId)
+        {
+            return this.ExecuteInTransaction((t) =>
+            {
+                IMessage message = null;
+                var messageIdParameter = this.CreateParameter("@messageId", messageId);
+                using (var reader = this.ExecuteReader(SelectTop1MessageSqlFrom, t, messageIdParameter))
+                {
+                    reader.Read();
+                    message = this.CreateFromDataReader(reader);
+                }
+
+                if (message == null)
+                {
+                    return null;
+                }
+
+                this.FillHeaders(message, t);
+
+                return message;
+            });
+        }
+
+        public void DeleteMessagesFrom(IMessage message)
+        {
+            if (message == null)
+            {
+                return;
+            }
+
+            var messageId = this.CreateParameter("@messageId", message.Id);
+            this.ExecuteInTransaction((t) => this.ExecuteNonQuery(SQLiteRepository.DeleteMessagesFromSql, t, messageId));
         }
 
         public void ShrinkDb(long limit)
@@ -265,6 +315,80 @@
             this.ExecuteNonQuery("vacuum", connection);
         }
 
+        private IMessage GetFirstInQueue(params ExecuteActionInTransaction[] postActions)
+        {
+            return this.ExecuteInTransaction((t) =>
+            {
+                IMessage message = null;
+
+                var sql = SQLiteRepository.SelectTop1MessageSql;
+                using (var reader = this.ExecuteReader(sql, t))
+                {
+                    reader.Read();
+                    message = this.CreateFromDataReader(reader);
+                }
+
+                if (message == null)
+                {
+                    return null;
+                }
+
+                this.FillHeaders(message, t);
+
+                foreach (var postAction in postActions)
+                {
+                    postAction(message, t);
+                }
+
+                return message;
+            });
+        }
+
+        private void FillHeaders(IMessage message, DbTransaction t)
+        {
+            var messageId = this.CreateParameter("@messageId", message.Id);
+            using (var reader = this.ExecuteReader(SQLiteRepository.SelectHeaderSql, t, messageId))
+            {
+                while (reader.Read())
+                {
+                    this.AddHeader(message, reader);
+                }
+
+                this.AddReynaHeader(message);
+            }
+        }
+
+        private void AddHeader(IMessage message, DbDataReader reader)
+        {
+            var key = reader["key"] as string;
+            var value = reader["value"] as string;
+            message.Headers.Add(key, value);
+        }
+
+        private void AddReynaHeader(IMessage message)
+        {
+            message.Headers.Add("reyna-id", message.Id.ToString());
+        }
+
+        private IMessage CreateFromDataReader(DbDataReader reader)
+        {
+            if (!reader.HasRows)
+            {
+                return null;
+            }
+
+            var id = Convert.ToInt32(reader["id"]);
+            var url = new Uri(reader["url"] as string);
+            var body = reader["body"] as string;
+
+            var message = new Message(url, body)
+            {
+                Id = id
+            };
+
+            return message;
+        }
+
         private DbConnection CreateConnection()
         {
             var connectionString = string.Format("Data Source={0}", this.DatabasePath);
@@ -293,7 +417,10 @@
 
             foreach (var parameter in parameters)
             {
-                command.Parameters.Add(parameter);
+                if (parameter != null)
+                {
+                    command.Parameters.Add(parameter);
+                }
             }
 
             return command;
@@ -307,7 +434,10 @@
 
             foreach (var parameter in parameters)
             {
-                command.Parameters.Add(parameter);
+                if (parameter != null)
+                {
+                    command.Parameters.Add(parameter);
+                }
             }
 
             return command;
@@ -380,76 +510,6 @@
             {
                 action(connection);
             }
-        }
-
-        private IMessage GetFirstInQueue(params ExecuteActionInTransaction[] postActions)
-        {
-            return this.ExecuteInTransaction((t) =>
-            {
-                IMessage message = null;
-
-                var sql = SQLiteRepository.SelectTop1MessageSql;
-                using (var reader = this.ExecuteReader(sql, t))
-                {
-                    reader.Read();
-                    message = this.CreateFromDataReader(reader);
-                }
-
-                if (message == null)
-                {
-                    return null;
-                }
-
-                sql = SQLiteRepository.SelectHeaderSql;
-                var messageId = this.CreateParameter("@messageId", message.Id);
-                using (var reader = this.ExecuteReader(sql, t, messageId))
-                {
-                    while (reader.Read())
-                    {
-                        this.AddHeader(message, reader);
-                    }
-
-                    this.AddReynaHeader(message);
-                }
-
-                foreach (var postAction in postActions)
-                {
-                    postAction(message, t);
-                }
-
-                return message;
-            });
-        }
-
-        private IMessage CreateFromDataReader(DbDataReader reader)
-        {
-            if (!reader.HasRows)
-            {
-                return null;
-            }
-            
-            var id = Convert.ToInt32(reader["id"]);
-            var url = new Uri(reader["url"] as string);
-            var body = reader["body"] as string;
-
-            var message = new Message(url, body)
-            {
-                Id = id
-            };
-
-            return message;
-        }
-
-        private void AddHeader(IMessage message, DbDataReader reader)
-        {
-            var key = reader["key"] as string;
-            var value = reader["value"] as string;
-            message.Headers.Add(key, value);
-        }
-
-        private void AddReynaHeader(IMessage message)
-        {
-            message.Headers.Add("reyna-id", message.Id.ToString());
         }
     }
 }

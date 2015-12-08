@@ -6,7 +6,9 @@
 
     internal sealed class ForwardService : ServiceBase, IForward
     {
-        public ForwardService(IRepository sourceStore, IHttpClient httpClient, INetworkStateService networkStateService, IWaitHandle waitHandle, int temporaryErrorMilliseconds, int sleepMilliseconds)
+        private const string PeriodicBackoutCheckTAG = "ForwardService";
+
+        public ForwardService(IRepository sourceStore, IHttpClient httpClient, INetworkStateService networkStateService, IWaitHandle waitHandle, int temporaryErrorMilliseconds, int sleepMilliseconds, bool batchUpload)
             : base(sourceStore, waitHandle, true)
         {
             if (httpClient == null)
@@ -23,7 +25,21 @@
             this.HttpClient = httpClient;            
             this.TemporaryErrorMilliseconds = temporaryErrorMilliseconds;
             this.SleepMilliseconds = sleepMilliseconds;
+            this.PeriodicBackoutCheck = new RegistryPeriodicBackoutCheck(new Registry(), @"Software\Reyna\PeriodicBackoutCheck");
+
+            if (batchUpload)
+            {
+                this.MessageProvider = new BatchProvider(sourceStore, this.PeriodicBackoutCheck);
+            }
+            else
+            {
+                this.MessageProvider = new MessageProvider(sourceStore);
+            }
         }
+
+        internal IMessageProvider MessageProvider { get; set; }
+
+        internal IPeriodicBackoutCheck PeriodicBackoutCheck { get; set; }
 
         internal int TemporaryErrorMilliseconds { get; set; }
 
@@ -32,6 +48,14 @@
         private IHttpClient HttpClient { get; set; }
 
         private INetworkStateService NetworkStateService { get; set; }
+
+        private bool CanSend
+        {
+            get
+            {
+                return this.MessageProvider.CanSend && this.PeriodicBackoutCheck.IsTimeElapsed(PeriodicBackoutCheckTAG, this.TemporaryErrorMilliseconds);
+            }
+        }
 
         public void Resume()
         {
@@ -45,22 +69,27 @@
                 this.WaitHandle.WaitOne();
                 IMessage message = null;
 
-                while (!this.Terminate && (message = this.SourceStore.Get()) != null)
+                if (this.CanSend)
                 {
-                    var result = this.HttpClient.Post(message);
-                    if (result == Result.TemporaryError)
+                    while (!this.Terminate && (message = this.MessageProvider.GetNext()) != null)
                     {
-                        this.Sleep(this.TemporaryErrorMilliseconds);
-                        break;
+                        var result = this.HttpClient.Post(message);
+                        if (result == Result.TemporaryError)
+                        {
+                            this.PeriodicBackoutCheck.Record(ForwardService.PeriodicBackoutCheckTAG);
+                            break;
+                        }
+
+                        if (result == Result.Blackout || result == Result.NotConnected)
+                        {
+                            break;
+                        }
+
+                        this.MessageProvider.Delete(message);
+                        this.Sleep(this.SleepMilliseconds);
                     }
 
-                    if (result == Result.Blackout || result == Result.NotConnected)
-                    {
-                        break;
-                    }
-
-                    this.SourceStore.Remove();
-                    this.Sleep(this.SleepMilliseconds);
+                    this.MessageProvider.Close();
                 }
 
                 this.WaitHandle.Reset();
@@ -87,19 +116,7 @@
 
         private void Sleep(int millisecondsTimeout)
         {
-            int timeoutInFiveSecondsPeriod = millisecondsTimeout / (1000 * 5);
-            if (timeoutInFiveSecondsPeriod > 1)
-            {
-                while (!this.Terminate && timeoutInFiveSecondsPeriod > 0)
-                {
-                    Reyna.Sleep.Wait(5);
-                    timeoutInFiveSecondsPeriod--;
-                }
-            }
-            else
-            {
-                Reyna.Sleep.Wait(millisecondsTimeout / 1000);
-            }
+            Reyna.Sleep.Wait(millisecondsTimeout / 1000);
         }
     }
 }

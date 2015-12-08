@@ -16,6 +16,14 @@
 
         public event EventHandler<EventArgs> MessageAdded;
 
+        public long AvailableMessagesCount 
+        {
+            get
+            {
+                return this.queue.Count;
+            }
+        }
+
         private object SyncRoot
         {
             get
@@ -66,6 +74,16 @@
 
                 return this.queue.Dequeue();
             }
+        }
+
+        public IMessage GetNextMessageAfter(long messageId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteMessagesFrom(IMessage message)
+        {
+            throw new NotImplementedException();
         }
 
         private void FireMessageAdded()

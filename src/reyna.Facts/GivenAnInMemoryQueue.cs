@@ -67,5 +67,26 @@
             Assert.Null(actual.Url);
             Assert.Null(actual.Body);
         }
+
+        [Fact]
+        public void WhenCallingGetNextMessageAfterShouldThrow()
+        {
+            var queue = new InMemoryQueue();
+            Assert.Throws<NotImplementedException>(() => queue.GetNextMessageAfter(1));
+        }
+
+        [Fact]
+        public void WhenCallingDeleteShouldThrow()
+        {
+            var queue = new InMemoryQueue();
+            Assert.Throws<NotImplementedException>(() => queue.DeleteMessagesFrom(new Message(null, null)));
+        }
+
+        [Fact]
+        public void WhenCallingAvailableMessagesCountShouldReturnLength()
+        {
+            var queue = new InMemoryQueue();
+            Assert.Equal(0, queue.AvailableMessagesCount);
+        }
     }
 }

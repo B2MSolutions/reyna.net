@@ -60,7 +60,8 @@
 
         public virtual void Dispose()
         {
-            this.Stop();
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         protected void SignalWorkToDo()
@@ -92,6 +93,14 @@
         {
             this.WorkingThread = new Thread(this.ThreadStart);
             this.WorkingThread.Start();
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.Stop();
+            }
         }
     }
 }

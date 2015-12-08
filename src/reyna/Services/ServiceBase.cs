@@ -23,14 +23,8 @@
 
         public override void Dispose()
         {
-            base.Dispose();
-
-            this.OnDispose();
-
-            if (this.SourceStore != null)
-            {
-                this.SourceStore.MessageAdded -= this.OnMessageAdded;
-            }
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         protected void OnMessageAdded(object sender, EventArgs e)
@@ -45,6 +39,21 @@
 
         protected virtual void OnDispose()
         {
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                base.Dispose();
+
+                this.OnDispose();
+
+                if (this.SourceStore != null)
+                {
+                    this.SourceStore.MessageAdded -= this.OnMessageAdded;
+                }
+            }
         }
     }
 }

@@ -18,6 +18,8 @@
             this.PersistentStore.Setup(r => r.Add(It.IsAny<IMessage>()));
 
             this.StoreService = new StoreService(this.VolatileStore, this.PersistentStore.Object, this.WaitHandle);
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
         }
 
         private IRepository VolatileStore { get; set; }
@@ -56,7 +58,8 @@
                 this.PersistentStore.Verify(r => r.Add(It.IsAny<IMessage>(), 2000000), Times.Once());
             }
 
-            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna");
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
         }
 
         [Fact]
