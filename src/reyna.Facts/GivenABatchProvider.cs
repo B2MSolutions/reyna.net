@@ -161,7 +161,7 @@
         [Fact]
         public void WhenCallingGetNextShouldReturnMessagesRelatedToMaximumSize()
         {
-            this.BatchConfiguration.SetupGet(b => b.BatchMessagesSize).Returns(95);
+            this.BatchConfiguration.SetupGet(b => b.BatchMessagesSize).Returns(100);
             var messages = this.GetTestMessages();
             this.Repository.Setup(r => r.Get()).Returns(messages[0]);
             this.Repository.Setup(r => r.GetNextMessageAfter(1))

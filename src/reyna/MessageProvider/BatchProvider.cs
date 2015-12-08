@@ -57,6 +57,11 @@
                 message = this.Repository.GetNextMessageAfter(message.Id);
             }
 
+            if (size > maxBatchSize)
+            {
+                batch.RemoveLastMessage();
+            }
+
             if (batch.Events.Count > 0)
             {
                 var lastMessage = batch.Events[batch.Events.Count - 1];

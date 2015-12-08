@@ -167,6 +167,7 @@
 
             Assert.Equal(100, Preferences.ForwardServiceTemporaryErrorBackout);
 
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
         }
 
@@ -186,6 +187,7 @@
 
             Assert.Equal(10, Preferences.ForwardServiceMessageBackout);
 
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
         }
 
@@ -195,6 +197,7 @@
             ReynaService.SetStorageSizeLimit(null, 3145728);
             Assert.Equal(3145728, ReynaService.StorageSizeLimit);
 
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
         }
 
@@ -204,6 +207,7 @@
             ReynaService.SetStorageSizeLimit(null, 3145728);
             Assert.Equal(3145728, ReynaService.StorageSizeLimit);
 
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
         }
 
@@ -224,6 +228,7 @@
             ReynaService.SetStorageSizeLimit(null, value);
             Assert.Equal(1867776, ReynaService.StorageSizeLimit); // 1867776 - min value, 1.8 Mb
 
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
         }
         
@@ -238,6 +243,7 @@
         [Fact]
         public void WhenResettingsStorageLimitAndRegistryKeyNotExistsShouldNotThrows()
         {
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
             
             ReynaService.ResetStorageSizeLimit();
@@ -338,12 +344,14 @@
             Assert.Equal("http://www.post.com/", preferences.BatchUploadUrl.ToString());
             Assert.Equal(74, preferences.BatchUploadCheckInterval);
 
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
         }
 
         [Fact]
         public void WhenSetBatchUploadConfigurationAndNotSavedShouldReturnDefaults()
         {
+            Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
 
             var preferences = new Preferences();
