@@ -41,7 +41,7 @@ Reyna is a standard .net class library and can be referenced through add referen
 	secureReyna.Put(reynaMessage);
 	
 ```
-## Latest version is 1.0.39
+## Latest version is 2.10.0.48
 
 ## Contributors
 Pair programmed by [Youhana Hana] (https://github.com/youhana-hana) and [Steve Wood](https://github.com/swood).
