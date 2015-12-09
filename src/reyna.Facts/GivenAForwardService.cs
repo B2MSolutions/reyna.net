@@ -30,6 +30,9 @@
 
             this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 100, 0, false);
             this.ForwardService.PeriodicBackoutCheck = this.PeriodicBackoutCheck.Object;
+
+            Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
+            Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
         }
 
         private IRepository PersistentStore { get; set; }
@@ -289,7 +292,7 @@
 
             Assert.Null(this.PersistentStore.Get());
 
-            this.PeriodicBackoutCheck.Verify(p => p.Record("ForwardService"), Times.Once());
+            this.PeriodicBackoutCheck.Verify(p => p.Record("ForwardService"), Times.AtLeast(1));
         }
 
         [Fact]
@@ -355,7 +358,9 @@
             var store = new Mock<IRepository>();
             store.Setup(s => s.Get()).Returns(this.CreateMessage());
 
-            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 1000, false);
+            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 100, 1000, false);
+            forwardService.PeriodicBackoutCheck = this.PeriodicBackoutCheck.Object;
+
             forwardService.Start();
             Thread.Sleep(3000);
             forwardService.Stop();
@@ -559,6 +564,7 @@
             messageProvider.Setup(s => s.GetNext()).Returns(this.CreateMessage());
             var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 0, false);
             forwardService.MessageProvider = messageProvider.Object;
+            this.ForwardService.PeriodicBackoutCheck = this.PeriodicBackoutCheck.Object;
 
             forwardService.Start();
 
