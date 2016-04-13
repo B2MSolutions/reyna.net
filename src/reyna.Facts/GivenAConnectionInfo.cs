@@ -259,5 +259,18 @@
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { usbNetworkInterface, lanNetworkInterface };
             Assert.False(this.ConnectionInfo.Wifi);
         }
+
+        [Fact]
+        public void WhenCallingWifiAndUsingBluetoothShouldReturnFalse()
+        {
+            var usbNetworkInterface = new NetworkInterface();
+            usbNetworkInterface.Name = "SS1VNDIS1";
+
+            var lanNetworkInterface = new NetworkInterface();
+            lanNetworkInterface.Speed = 10000000;
+
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { usbNetworkInterface, lanNetworkInterface };
+            Assert.False(this.ConnectionInfo.Wifi);
+        }
     }
 }

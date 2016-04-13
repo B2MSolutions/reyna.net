@@ -119,7 +119,7 @@
         {
             foreach (var ni in interfaces)
             {
-                if (LANNetwork(ni) || ActiveSyncNetwork(ni) || GPRSNetwork(ni))
+                if (LANNetwork(ni) || ActiveSyncNetwork(ni) || GPRSNetwork(ni) || BluetoothNetwork(ni))
                 {
                     continue;
                 }
@@ -143,6 +143,11 @@
         private static bool LANNetwork(INetworkInterface ni)
         {
             return ni.Speed == 10000000 || ni.Speed == 100000000;
+        }
+
+        private static bool BluetoothNetwork(INetworkInterface ni)
+        {
+            return ni.Name.ToLower(System.Globalization.CultureInfo.CurrentCulture).StartsWith("ss1vndis", StringComparison.CurrentCulture);
         }
 
         private static bool NetworkConnected(INetworkInterface networkInterface)
