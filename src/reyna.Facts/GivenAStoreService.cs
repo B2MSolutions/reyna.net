@@ -116,5 +116,27 @@
             var exception = Assert.Throws<ArgumentNullException>(() => new StoreService(new Mock<IRepository>().Object, new Mock<IRepository>().Object, null, this.Logger.Object));
             Assert.Equal("waitHandle", exception.ParamName);
         }
+
+        [Fact]
+        public void WhenAddingMessageAndThrowsShouldSucceedNextTime()
+        {
+            this.StoreService.Start();
+
+            var exception = new InvalidOperationException("Error");
+            
+            this.PersistentStore.Setup(s => s.Add(It.IsAny<IMessage>())).Throws(exception);
+            this.VolatileStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
+            
+            Thread.Sleep(500);
+            this.PersistentStore.Setup(s => s.Add(It.IsAny<IMessage>()));
+            this.VolatileStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
+            
+            Thread.Sleep(500);
+            this.StoreService.Stop();
+
+            Assert.Null(this.VolatileStore.Get());
+            this.PersistentStore.Verify(r => r.Add(It.IsAny<IMessage>()), Times.AtLeast(2));
+            this.Logger.Verify(l => l.Err("StoreService.ThreadStart. Error {0}", exception.ToString()), Times.AtLeast(1));
+        }
     }
 }

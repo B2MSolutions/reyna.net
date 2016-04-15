@@ -593,6 +593,7 @@
             messageProvider.SetupGet(m => m.CanSend).Returns(true);
             messageProvider.Setup(s => s.GetNext()).Returns(this.CreateMessage());
 
+            var exception = new InvalidOperationException("Error");
             var callCount = 0;
             messageProvider.Setup(s => s.Delete(It.IsAny<IMessage>()))
                  .Callback(() => 
@@ -600,7 +601,7 @@
                          callCount++;
                          if (callCount % 2 == 0)
                          {
-                             throw new InvalidOperationException("Error");
+                             throw exception;
                          }
                      });
 
@@ -617,6 +618,7 @@
             messageProvider.Verify(m => m.GetNext(), Times.AtLeast(1));
             messageProvider.Verify(m => m.Delete(It.IsAny<IMessage>()), Times.AtLeast(1));
             messageProvider.Verify(m => m.Close(), Times.AtLeast(1));
+            this.Logger.Verify(l => l.Err("ForwardService.ThreadStart. Error {0}", exception.ToString()), Times.AtLeast(1));
         }
 
         [Fact]
