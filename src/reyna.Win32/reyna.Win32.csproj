@@ -88,6 +88,12 @@
     <Compile Include="..\reyna\Http\Result.cs">
       <Link>Http\Result.cs</Link>
     </Compile>
+    <Compile Include="..\reyna\Logging\ILogger.cs">
+      <Link>Logging\ILogger.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Logging\NullLogger.cs">
+      <Link>Logging\NullLogger.cs</Link>
+    </Compile>
     <Compile Include="..\reyna\MessageProvider\Batch.cs">
       <Link>MessageProvider\Batch.cs</Link>
     </Compile>

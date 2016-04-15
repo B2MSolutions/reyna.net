@@ -7,7 +7,7 @@
     {
         public static void Main(string[] args)
         {
-            var store = new ReynaService();
+            var store = new ReynaService(new NullLogger());
 
             store.Start();
             Time from = new Time(10, 00);

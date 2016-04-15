@@ -16,8 +16,9 @@
             this.StoreService = new Mock<IService>();
             this.ForwardService = new Mock<IForward>();
             this.NetworkStateService = new Mock<INetworkStateService>();
+            this.Logger = new Mock<ILogger>();
 
-            this.ReynaService = new ReynaService();
+            this.ReynaService = new ReynaService(this.Logger.Object);
             this.ReynaService.VolatileStore = this.VolatileStore.Object;
             this.ReynaService.StoreService = this.StoreService.Object;
             this.ReynaService.ForwardService = this.ForwardService.Object;
@@ -34,6 +35,8 @@
         private Mock<IForward> ForwardService { get; set; }
         
         private Mock<INetworkStateService> NetworkStateService { get; set; }
+        
+        private Mock<ILogger> Logger { get; set; }
 
         private ReynaService ReynaService { get; set; }
 
@@ -47,7 +50,7 @@
         public void WhenConstructingAndReceivedPasswordShouldPassPasswordToSQLiteRepository()
         {
             var password = new byte[] { 0xFF, 0xAA, 0xCC, 0xCC };
-            var reynaService = new ReynaService(password, null);
+            var reynaService = new ReynaService(password, null, this.Logger.Object);
 
             Assert.Equal(password, ((SQLiteRepository)reynaService.PersistentStore).Password); 
         }
@@ -55,7 +58,7 @@
         [Fact]
         public void WhenConstructingWithoutPasswordShouldNotPassAnyPasswordToSQLiteRepository()
         {
-            var reynaService = new ReynaService();
+            var reynaService = new ReynaService(this.Logger.Object);
 
             Assert.Null(((SQLiteRepository)reynaService.PersistentStore).Password);
         }
@@ -63,7 +66,7 @@
         [Fact]
         public void WhenConstructingWithUseNetworkStateIsFalseShouldNotUseNetworkStateService()
         {
-            var reynaService = new ReynaService(false);
+            var reynaService = new ReynaService(false, this.Logger.Object);
             Assert.Null(reynaService.NetworkStateService);
             reynaService.Dispose();
         }
@@ -71,7 +74,7 @@
         [Fact]
         public void StartStopDisposeShouldWork()
         {
-            var reynaService = new ReynaService(false);
+            var reynaService = new ReynaService(false, this.Logger.Object);
             Assert.Null(reynaService.NetworkStateService);
             reynaService.Start();
             System.Threading.Thread.Sleep(1000);
@@ -87,7 +90,7 @@
         public void WhenConstructingWithUseNetworkStateIsFalseAndHasOtherArgsShouldNotUseNetworkStateService()
         {
             var password = new byte[] { 0xFF, 0xAA, 0xCC, 0xCC };
-            var reynaService = new ReynaService(password, null, false);
+            var reynaService = new ReynaService(password, null, false, this.Logger.Object);
             Assert.Null(reynaService.NetworkStateService);
             Assert.Equal(password, ((SQLiteRepository)reynaService.PersistentStore).Password);
             reynaService.Dispose();
@@ -96,7 +99,7 @@
         [Fact]
         public void WhenConstructingWithUseNetworkStateIsTrueShouldUseNetworkStateService()
         {
-            var reynaService = new ReynaService(null, null, true);
+            var reynaService = new ReynaService(null, null, true, this.Logger.Object);
             Assert.NotNull(reynaService.NetworkStateService);
             reynaService.Dispose();
         }

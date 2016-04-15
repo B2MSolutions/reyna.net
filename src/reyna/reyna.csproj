@@ -76,6 +76,8 @@
   <ItemGroup>
     <Compile Include="Connection\IConnectionManager.cs" />
     <Compile Include="Http\AcceptAllCertificatePolicy.cs" />
+    <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logging\NullLogger.cs" />
     <Compile Include="MessageProvider\Batch.cs" />
     <Compile Include="MessageProvider\BatchConfiguration.cs" />
     <Compile Include="MessageProvider\BatchMessage.cs" />
