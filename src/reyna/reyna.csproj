@@ -53,17 +53,17 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
-    <Reference Include="OpenNETCF, Version=2.3.12004.0, Culture=neutral, PublicKeyToken=e60dbea84bb431b7, processorArchitecture=MSIL">
+    <Reference Include="OpenNETCF, Version=2.3.12317.0, Culture=neutral, PublicKeyToken=e60dbea84bb431b7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\tools\Open.NetCF\2.3.12004\OpenNETCF.dll</HintPath>
+      <HintPath>..\..\tools\Open.NetCF\2.3.12317.0\OpenNETCF.dll</HintPath>
     </Reference>
-    <Reference Include="OpenNETCF.Net, Version=2.3.12004.0, Culture=neutral, PublicKeyToken=e60dbea84bb431b7, processorArchitecture=MSIL">
+    <Reference Include="OpenNETCF.Net, Version=2.3.12317.0, Culture=neutral, PublicKeyToken=e60dbea84bb431b7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\tools\Open.NetCF\2.3.12004\OpenNETCF.Net.dll</HintPath>
+      <HintPath>..\..\tools\Open.NetCF\2.3.12317.0\OpenNETCF.Net.dll</HintPath>
     </Reference>
-    <Reference Include="OpenNETCF.WindowsCE, Version=2.3.12004.0, Culture=neutral, PublicKeyToken=e60dbea84bb431b7, processorArchitecture=MSIL">
+    <Reference Include="OpenNETCF.WindowsCE, Version=2.3.12317.0, Culture=neutral, PublicKeyToken=e60dbea84bb431b7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\tools\Open.NetCF\2.3.12004\OpenNETCF.WindowsCE.dll</HintPath>
+      <HintPath>..\..\tools\Open.NetCF\2.3.12317.0\OpenNETCF.WindowsCE.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
