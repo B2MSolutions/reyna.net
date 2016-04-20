@@ -16,6 +16,7 @@
             this.HttpClient = new Mock<IHttpClient>();
             this.NetworkStateService = new Mock<INetworkStateService>();
             this.PeriodicBackoutCheck = new Mock<IPeriodicBackoutCheck>();
+            this.Logger = new Mock<ILogger>();
 
             this.WaitHandle = new AutoResetEventAdapter(false);
 
@@ -28,7 +29,7 @@
             this.PeriodicBackoutCheck.Setup(p => p.IsTimeElapsed("ForwardService", 100))
                 .Returns(true);
 
-            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 100, 0, false);
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 100, 0, false, this.Logger.Object);
             this.ForwardService.PeriodicBackoutCheck = this.PeriodicBackoutCheck.Object;
 
             Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
@@ -42,6 +43,8 @@
         private Mock<IPeriodicBackoutCheck> PeriodicBackoutCheck { get; set; }
 
         private Mock<INetworkStateService> NetworkStateService { get; set; }
+
+        private Mock<ILogger> Logger { get; set; }
 
         private IWaitHandle WaitHandle { get; set; }
 
@@ -59,7 +62,7 @@
         [Fact]
         public void WhenConstructingShouldNotThrow()
         {
-            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 100, 0, false);
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 100, 0, false, this.Logger.Object);
             
             Assert.NotNull(this.ForwardService);
             Assert.NotNull(this.ForwardService.MessageProvider);
@@ -183,35 +186,35 @@
         [Fact]
         public void WhenConstructingWithAllNullParametersShouldThrow()
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(null, null, null, this.WaitHandle, 0, 0, false));
+            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(null, null, null, this.WaitHandle, 0, 0, false, this.Logger.Object));
             Assert.Equal("sourceStore", exception.ParamName);
         }
 
         [Fact]
         public void WhenConstructingWithNullSourceStoreParameterShouldThrow()
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(null, new Mock<IHttpClient>().Object, new Mock<INetworkStateService>().Object, this.WaitHandle, 0, 0, false));
+            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(null, new Mock<IHttpClient>().Object, new Mock<INetworkStateService>().Object, this.WaitHandle, 0, 0, false, this.Logger.Object));
             Assert.Equal("sourceStore", exception.ParamName);
         }
 
         [Fact]
         public void WhenConstructingWithNullHttpClientParameterShouldThrow()
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(new Mock<IRepository>().Object, null, new Mock<INetworkStateService>().Object, this.WaitHandle, 0, 0, false));
+            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(new Mock<IRepository>().Object, null, new Mock<INetworkStateService>().Object, this.WaitHandle, 0, 0, false, this.Logger.Object));
             Assert.Equal("httpClient", exception.ParamName);
         }
 
         [Fact]
         public void WhenConstructingWithNullNetworkStateParameterShouldNotThrow()
         {
-            var forwardService = new ForwardService(new Mock<IRepository>().Object, new Mock<IHttpClient>().Object, null, this.WaitHandle, 0, 0, false);
+            var forwardService = new ForwardService(new Mock<IRepository>().Object, new Mock<IHttpClient>().Object, null, this.WaitHandle, 0, 0, false, this.Logger.Object);
             Assert.NotNull(forwardService);
         }
 
         [Fact]
         public void WhenConstructingWithNullWaitHandleStateParameterShouldThrow()
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(new Mock<IRepository>().Object, new Mock<IHttpClient>().Object, new Mock<INetworkStateService>().Object, null, 0, 0, false));
+            var exception = Assert.Throws<ArgumentNullException>(() => new ForwardService(new Mock<IRepository>().Object, new Mock<IHttpClient>().Object, new Mock<INetworkStateService>().Object, null, 0, 0, false, this.Logger.Object));
             Assert.Equal("waitHandle", exception.ParamName);
         }
 
@@ -268,7 +271,7 @@
             this.PeriodicBackoutCheck.Setup(p => p.IsTimeElapsed("ForwardService", 100))
                .Returns(true);
 
-            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, networkState, this.WaitHandle, 100, 0, false);
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, networkState, this.WaitHandle, 100, 0, false, this.Logger.Object);
             this.ForwardService.PeriodicBackoutCheck = this.PeriodicBackoutCheck.Object;
 
             var returnResult = Result.TemporaryError;
@@ -301,7 +304,7 @@
             var networkStateWaitHandle = new AutoResetEventAdapter(false);
             var networkState = new NetworkStateService(new Mock<ISystemNotifier>().Object, networkStateWaitHandle);
 
-            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, networkState, this.WaitHandle, 100, 0, false);
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, networkState, this.WaitHandle, 100, 0, false, this.Logger.Object);
 
             var returnResult = Result.TemporaryError;
             this.HttpClient.Setup(c => c.Post(It.IsAny<IMessage>()))
@@ -337,7 +340,7 @@
             this.PeriodicBackoutCheck.Setup(p => p.IsTimeElapsed("ForwardService", 1000))
                 .Returns(true);
 
-            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 0, false);
+            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 0, false, this.Logger.Object);
             forwardService.PeriodicBackoutCheck = this.PeriodicBackoutCheck.Object;
 
             forwardService.Start();
@@ -358,7 +361,7 @@
             var store = new Mock<IRepository>();
             store.Setup(s => s.Get()).Returns(this.CreateMessage());
 
-            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 100, 1000, false);
+            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 100, 1000, false, this.Logger.Object);
             forwardService.PeriodicBackoutCheck = this.PeriodicBackoutCheck.Object;
 
             forwardService.Start();
@@ -371,14 +374,14 @@
         [Fact]
         public void ShouldSetTemporaryErrorMillisecondsTo5Minutes()
         {
-            var forwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 300000, 0, false);
+            var forwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 300000, 0, false, this.Logger.Object);
             Assert.Equal(300000, forwardService.TemporaryErrorMilliseconds);
         }
 
         [Fact]
         public void ShouldSetSleepMillisecondsTo1Second()
         {
-            var forwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 300000, 1000, false);
+            var forwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 300000, 1000, false, this.Logger.Object);
             Assert.Equal(1000, forwardService.SleepMilliseconds);
         }
 
@@ -392,7 +395,7 @@
             var store = new Mock<IRepository>();
             store.Setup(s => s.Get()).Returns(this.CreateMessage());
 
-            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 0, false);
+            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 0, false, this.Logger.Object);
             this.PeriodicBackoutCheck.Setup(p => p.IsTimeElapsed("ForwardService", 1000))
                .Returns(true);
             forwardService.PeriodicBackoutCheck = this.PeriodicBackoutCheck.Object;
@@ -415,7 +418,7 @@
             var store = new Mock<IRepository>();
             store.Setup(s => s.Get()).Returns(this.CreateMessage());
 
-            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 0, false);
+            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 0, false, this.Logger.Object);
             this.PeriodicBackoutCheck.Setup(p => p.IsTimeElapsed("ForwardService", 1000))
                .Returns(true);
             forwardService.PeriodicBackoutCheck = this.PeriodicBackoutCheck.Object;
@@ -437,8 +440,8 @@
             var waitHandle = new AutoResetEventAdapter(false);
             var store = new Mock<IRepository>();
             store.Setup(s => s.Get()).Returns(this.CreateMessage());
-            
-            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 5 * 60 * 1000, 0, false);
+
+            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 5 * 60 * 1000, 0, false, this.Logger.Object);
             this.PeriodicBackoutCheck.Setup(p => p.IsTimeElapsed("ForwardService", 5 * 60 * 1000))
                 .Returns(true);
             forwardService.PeriodicBackoutCheck = this.PeriodicBackoutCheck.Object;
@@ -453,7 +456,7 @@
         [Fact]
         public void WhenCallingResumeShouldPostAllMessages()
         {
-            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, null, this.WaitHandle, 100, 0, false);
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, null, this.WaitHandle, 100, 0, false, this.Logger.Object);
             this.PeriodicBackoutCheck.Setup(p => p.IsTimeElapsed("ForwardService", 100))
               .Returns(true);
 
@@ -482,7 +485,7 @@
         [Fact]
         public void WhenCallingResumeAndServiceStopedShouldNotPostAllMessages()
         {
-            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, null, this.WaitHandle, 100, 0, false);
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, null, this.WaitHandle, 100, 0, false, this.Logger.Object);
             this.PeriodicBackoutCheck.Setup(p => p.IsTimeElapsed("ForwardService", 100))
              .Returns(true);
 
@@ -513,7 +516,7 @@
         [Fact]
         public void WhenConstructingWithBatchModeEnabledShouldUseBatchProvider()
         {
-            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 100, 0, true);
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 100, 0, true, this.Logger.Object);
             Assert.NotNull(this.ForwardService);
             Assert.NotNull(this.ForwardService.MessageProvider);
             Assert.Equal(typeof(BatchProvider), this.ForwardService.MessageProvider.GetType());
@@ -522,7 +525,7 @@
         [Fact]
         public void WhenConstructingWithBatchModeDisabledShouldUseMessageProvider()
         {
-            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 100, 0, false);
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 100, 0, false, this.Logger.Object);
             Assert.NotNull(this.ForwardService);
             Assert.NotNull(this.ForwardService.MessageProvider);
             Assert.Equal(typeof(MessageProvider), this.ForwardService.MessageProvider.GetType());
@@ -537,7 +540,7 @@
 
             var messageProvider = new Mock<IMessageProvider>();
             messageProvider.SetupGet(m => m.CanSend).Returns(false);
-            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 0, false);
+            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 0, false, this.Logger.Object);
             forwardService.MessageProvider = messageProvider.Object;
             forwardService.Start();
 
@@ -562,7 +565,7 @@
             var messageProvider = new Mock<IMessageProvider>();
             messageProvider.SetupGet(m => m.CanSend).Returns(true);
             messageProvider.Setup(s => s.GetNext()).Returns(this.CreateMessage());
-            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 0, false);
+            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 0, false, this.Logger.Object);
             forwardService.MessageProvider = messageProvider.Object;
             this.ForwardService.PeriodicBackoutCheck = this.PeriodicBackoutCheck.Object;
 
@@ -578,6 +581,47 @@
         }
 
         [Fact]
+        public void WhenThrowsWhileForwardingMessagesShouldNotStopThreadAndContinueSending()
+        {
+            this.HttpClient.Setup(c => c.Post(It.IsAny<IMessage>()))
+               .Returns(Result.Ok);
+
+            var store = new Mock<IRepository>();
+
+            var waitHandle = new AutoResetEventAdapter(false);
+            var messageProvider = new Mock<IMessageProvider>();
+            messageProvider.SetupGet(m => m.CanSend).Returns(true);
+            messageProvider.Setup(s => s.GetNext()).Returns(this.CreateMessage());
+
+            var exception = new InvalidOperationException("Error");
+            var callCount = 0;
+            messageProvider.Setup(s => s.Delete(It.IsAny<IMessage>()))
+                 .Callback(() => 
+                     {
+                         callCount++;
+                         if (callCount % 2 == 0)
+                         {
+                             throw exception;
+                         }
+                     });
+
+            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 0, false, this.Logger.Object);
+            forwardService.MessageProvider = messageProvider.Object;
+            this.ForwardService.PeriodicBackoutCheck = this.PeriodicBackoutCheck.Object;
+
+            forwardService.Start();
+
+            Thread.Sleep(3000);
+            forwardService.Stop();
+
+            messageProvider.Verify(m => m.CanSend, Times.AtLeast(1));
+            messageProvider.Verify(m => m.GetNext(), Times.AtLeast(1));
+            messageProvider.Verify(m => m.Delete(It.IsAny<IMessage>()), Times.AtLeast(1));
+            messageProvider.Verify(m => m.Close(), Times.AtLeast(1));
+            this.Logger.Verify(l => l.Err("ForwardService.ThreadStart. Error {0}", exception.ToString()), Times.AtLeast(1));
+        }
+
+        [Fact]
         public void WhenGettingTemporaryErrorShoudBackoutForFiveMinutes()
         {
             var waitHandle = new AutoResetEventAdapter(false);
@@ -587,7 +631,7 @@
             this.PeriodicBackoutCheck.Setup(p => p.IsTimeElapsed("ForwardService", 1000))
                 .Returns(false);
 
-            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 0, false);
+            var forwardService = new ForwardService(store.Object, this.HttpClient.Object, this.NetworkStateService.Object, waitHandle, 1000, 0, false, this.Logger.Object);
             forwardService.MessageProvider = messageProvider.Object;
             forwardService.PeriodicBackoutCheck = this.PeriodicBackoutCheck.Object;
             forwardService.Start();

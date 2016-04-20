@@ -8,8 +8,8 @@
     {
         private const string PeriodicBackoutCheckTAG = "ForwardService";
 
-        public ForwardService(IRepository sourceStore, IHttpClient httpClient, INetworkStateService networkStateService, IWaitHandle waitHandle, int temporaryErrorMilliseconds, int sleepMilliseconds, bool batchUpload)
-            : base(sourceStore, waitHandle, true)
+        public ForwardService(IRepository sourceStore, IHttpClient httpClient, INetworkStateService networkStateService, IWaitHandle waitHandle, int temporaryErrorMilliseconds, int sleepMilliseconds, bool batchUpload, ILogger logger)
+            : base(sourceStore, waitHandle, true, logger)
         {
             if (httpClient == null)
             {
@@ -67,29 +67,36 @@
             while (!this.Terminate)
             {
                 this.WaitHandle.WaitOne();
-                IMessage message = null;
-
-                if (this.CanSend)
+                try
                 {
-                    while (!this.Terminate && (message = this.MessageProvider.GetNext()) != null)
+                    IMessage message = null;
+
+                    if (this.CanSend)
                     {
-                        var result = this.HttpClient.Post(message);
-                        if (result == Result.TemporaryError)
+                        while (!this.Terminate && (message = this.MessageProvider.GetNext()) != null)
                         {
-                            this.PeriodicBackoutCheck.Record(ForwardService.PeriodicBackoutCheckTAG);
-                            break;
+                            var result = this.HttpClient.Post(message);
+                            if (result == Result.TemporaryError)
+                            {
+                                this.PeriodicBackoutCheck.Record(ForwardService.PeriodicBackoutCheckTAG);
+                                break;
+                            }
+
+                            if (result == Result.Blackout || result == Result.NotConnected)
+                            {
+                                break;
+                            }
+
+                            this.MessageProvider.Delete(message);
+                            this.Sleep(this.SleepMilliseconds);
                         }
 
-                        if (result == Result.Blackout || result == Result.NotConnected)
-                        {
-                            break;
-                        }
-
-                        this.MessageProvider.Delete(message);
-                        this.Sleep(this.SleepMilliseconds);
+                        this.MessageProvider.Close();
                     }
-
-                    this.MessageProvider.Close();
+                }
+                catch (Exception exception)
+                {
+                    this.Logger.Err("ForwardService.ThreadStart. Error {0}", exception.ToString());
                 }
 
                 this.WaitHandle.Reset();

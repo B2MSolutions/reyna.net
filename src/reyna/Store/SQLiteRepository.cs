@@ -121,40 +121,49 @@
 
         public IMessage Get()
         {
-            return this.GetFirstInQueue();
+            lock (Locker)
+            {
+                return this.GetFirstInQueue();
+            }
         }
 
         public IMessage Remove()
         {
-            return this.GetFirstInQueue((message, t) =>
+            lock (Locker)
             {
-                var sql = SQLiteRepository.DeleteMessageSql;
-                var messageId = this.CreateParameter("@messageId", message.Id);
-                this.ExecuteNonQuery(sql, t, messageId);
-            });
+                return this.GetFirstInQueue((message, t) =>
+                {
+                    var sql = SQLiteRepository.DeleteMessageSql;
+                    var messageId = this.CreateParameter("@messageId", message.Id);
+                    this.ExecuteNonQuery(sql, t, messageId);
+                });
+            }
         }
 
         public IMessage GetNextMessageAfter(long messageId)
         {
-            return this.ExecuteInTransaction((t) =>
+            lock (Locker)
             {
-                IMessage message = null;
-                var messageIdParameter = this.CreateParameter("@messageId", messageId);
-                using (var reader = this.ExecuteReader(SelectTop1MessageSqlFrom, t, messageIdParameter))
+                return this.ExecuteInTransaction((t) =>
                 {
-                    reader.Read();
-                    message = this.CreateFromDataReader(reader);
-                }
+                    IMessage message = null;
+                    var messageIdParameter = this.CreateParameter("@messageId", messageId);
+                    using (var reader = this.ExecuteReader(SelectTop1MessageSqlFrom, t, messageIdParameter))
+                    {
+                        reader.Read();
+                        message = this.CreateFromDataReader(reader);
+                    }
 
-                if (message == null)
-                {
-                    return null;
-                }
+                    if (message == null)
+                    {
+                        return null;
+                    }
 
-                this.FillHeaders(message, t);
+                    this.FillHeaders(message, t);
 
-                return message;
-            });
+                    return message;
+                });
+            }
         }
 
         public void DeleteMessagesFrom(IMessage message)
@@ -164,8 +173,11 @@
                 return;
             }
 
-            var messageId = this.CreateParameter("@messageId", message.Id);
-            this.ExecuteInTransaction((t) => this.ExecuteNonQuery(SQLiteRepository.DeleteMessagesFromSql, t, messageId));
+            lock (Locker)
+            {
+                var messageId = this.CreateParameter("@messageId", message.Id);
+                this.ExecuteInTransaction((t) => this.ExecuteNonQuery(SQLiteRepository.DeleteMessagesFromSql, t, messageId));
+            }
         }
 
         public void ShrinkDb(long limit)

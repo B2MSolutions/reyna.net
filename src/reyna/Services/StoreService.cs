@@ -5,7 +5,8 @@
 
     internal sealed class StoreService : ServiceBase
     {
-        public StoreService(IRepository sourceStore, IRepository targetStore, IWaitHandle waitHandle) : base(sourceStore, waitHandle, false)
+        public StoreService(IRepository sourceStore, IRepository targetStore, IWaitHandle waitHandle, ILogger logger)
+            : base(sourceStore, waitHandle, false, logger)
         {
             if (targetStore == null)
             {
@@ -23,21 +24,28 @@
             while (!this.Terminate)
             {
                 this.WaitHandle.WaitOne();
-                IMessage message = null;
-
-                while ((message = this.SourceStore.Get()) != null)
+                try
                 {
-                    long storageSizeLimit = new Preferences().StorageSizeLimit;
-                    if (storageSizeLimit == -1)
+                    IMessage message = null;
+
+                    while ((message = this.SourceStore.Get()) != null)
                     {
-                        this.TargetStore.Add(message);
+                        long storageSizeLimit = new Preferences().StorageSizeLimit;
+                        if (storageSizeLimit == -1)
+                        {
+                            this.TargetStore.Add(message);
+                        }
+                        else
+                        {
+                            this.TargetStore.Add(message, storageSizeLimit);
+                        }
+
+                        this.SourceStore.Remove();
                     }
-                    else
-                    {
-                        this.TargetStore.Add(message, storageSizeLimit);
-                    }
-                    
-                    this.SourceStore.Remove();
+                }
+                catch (Exception exception)
+                {
+                    this.Logger.Err("StoreService.ThreadStart. Error {0}", exception.ToString());
                 }
 
                 this.WaitHandle.Reset();

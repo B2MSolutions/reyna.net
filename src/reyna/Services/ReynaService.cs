@@ -9,19 +9,21 @@
     {
         private const long MinimumStorageLimit = 1867776; // 1Mb 800Kb
 
-        public ReynaService() : this(null, null)
+        public ReynaService(ILogger logger)
+            : this(null, null, logger)
         {
         }
 
-        public ReynaService(bool useNetworkState) : this(null, null, useNetworkState)
+        public ReynaService(bool useNetworkState, ILogger logger) : this(null, null, useNetworkState, logger)
         {
         }
 
-        public ReynaService(byte[] password, ICertificatePolicy certificatePolicy) : this(password, certificatePolicy, true)
+        public ReynaService(byte[] password, ICertificatePolicy certificatePolicy, ILogger logger)
+            : this(password, certificatePolicy, true, logger)
         {
         }
 
-        public ReynaService(byte[] password, ICertificatePolicy certificatePolicy, bool useNetworkState)
+        public ReynaService(byte[] password, ICertificatePolicy certificatePolicy, bool useNetworkState, ILogger logger)
         {
             this.Password = password;
             this.VolatileStore = new InMemoryQueue();
@@ -40,8 +42,8 @@
             }
 
             var preferences = new Preferences();
-            this.StoreService = new StoreService(this.VolatileStore, this.PersistentStore, this.StoreWaitHandle);
-            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient, this.NetworkStateService, this.ForwardWaitHandle, Preferences.ForwardServiceTemporaryErrorBackout, Preferences.ForwardServiceMessageBackout, preferences.BatchUpload);
+            this.StoreService = new StoreService(this.VolatileStore, this.PersistentStore, this.StoreWaitHandle, logger);
+            this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient, this.NetworkStateService, this.ForwardWaitHandle, Preferences.ForwardServiceTemporaryErrorBackout, Preferences.ForwardServiceMessageBackout, preferences.BatchUpload, logger);
         }
 
         public static long StorageSizeLimit
