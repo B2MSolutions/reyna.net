@@ -59,6 +59,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GivenANullLogger.cs" />
     <Compile Include="GivenARegistryPeriodicBackoutCheck.cs" />
     <Compile Include="GivenABatchProvider.cs" />
     <Compile Include="GivenABatch.cs" />
