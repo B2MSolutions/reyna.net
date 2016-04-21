@@ -121,11 +121,8 @@
 
         public IMessage Get()
         {
-            lock (Locker)
-            {
-                return this.GetFirstInQueue();
-            }
-        }
+             return this.GetFirstInQueue();
+         }
 
         public IMessage Remove()
         {
@@ -142,28 +139,25 @@
 
         public IMessage GetNextMessageAfter(long messageId)
         {
-            lock (Locker)
+            return this.ExecuteInTransaction((t) =>
             {
-                return this.ExecuteInTransaction((t) =>
+                IMessage message = null;
+                var messageIdParameter = this.CreateParameter("@messageId", messageId);
+                using (var reader = this.ExecuteReader(SelectTop1MessageSqlFrom, t, messageIdParameter))
                 {
-                    IMessage message = null;
-                    var messageIdParameter = this.CreateParameter("@messageId", messageId);
-                    using (var reader = this.ExecuteReader(SelectTop1MessageSqlFrom, t, messageIdParameter))
-                    {
-                        reader.Read();
-                        message = this.CreateFromDataReader(reader);
-                    }
+                    reader.Read();
+                    message = this.CreateFromDataReader(reader);
+                }
 
-                    if (message == null)
-                    {
-                        return null;
-                    }
+                if (message == null)
+                {
+                    return null;
+                }
 
-                    this.FillHeaders(message, t);
+                this.FillHeaders(message, t);
 
-                    return message;
-                });
-            }
+                return message;
+            });
         }
 
         public void DeleteMessagesFrom(IMessage message)
