@@ -60,24 +60,6 @@
         }
 
         [Fact]
-        public void WhenCallingPostWithVaidUrlAndNotConnectedShouldRetrunNotConnected()
-        {
-            var networkInterface = new NetworkInterface();
-            networkInterface.CurrentIpAddress = null;
-            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
-
-            var httpClient = new HttpClient(new AcceptAllCertificatePolicy());
-            var message = new Message(new Uri("https://httpbin.org/post"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
-            message.Headers.Add("content-type", "application/json");
-            message.Headers.Add("param1", "Value1");
-            message.Headers.Add("param2", "Value2");
-            message.Headers.Add("param3", "Value3");
-            var result = httpClient.Post(message);
-
-            Assert.Equal(Result.NotConnected, result);
-        }
-
-        [Fact]
         public void WhenCallingPostWithInvalidUrlShouldReturnPermanentError()
         {
             var networkInterface = new NetworkInterface();
@@ -93,20 +75,6 @@
             var result = httpClient.Post(message);
 
             Assert.Equal(Result.PermanentError, result);
-        }
-
-        [Fact]
-        public void WhenCallingPostWithInvalidUrlAndNoNetworkShouldReturnNotConnected()
-        {
-            var httpClient = new HttpClient(null);
-            var message = new Message(new Uri("http://httpbin.org/post2"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
-            message.Headers.Add("content-type", "application/json");
-            message.Headers.Add("param1", "Value1");
-            message.Headers.Add("param2", "Value2");
-            message.Headers.Add("param3", "Value3");
-            var result = httpClient.Post(message);
-
-            Assert.Equal(Result.NotConnected, result);
         }
 
         [Fact]
@@ -168,29 +136,6 @@
             var result = httpClient.Post(message);
 
             Assert.Equal(Result.Ok, result);
-        }
-
-        [Fact]
-        public void WhenCallingPostAndConnectionIsGPRSAndBlackoutShouldReturnBlackout()
-        {
-            var networkInterface = new NetworkInterface();
-            networkInterface.CurrentIpAddress = new IPAddress(42);
-            networkInterface.Name = "cellular line";
-            var from = new Time();
-            var to = new Time(from.MinuteOfDay + 1);
-            this.Preferences.SetCellularDataBlackout(new TimeRange(from, to));
-
-            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
-
-            var httpClient = new HttpClient(new AcceptAllCertificatePolicy());
-            var message = new Message(new Uri("https://httpbin.org/post"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
-            message.Headers.Add("content-type", "application/json");
-            message.Headers.Add("param1", "Value1");
-            message.Headers.Add("param2", "Value2");
-            message.Headers.Add("param3", "Value3");
-            var result = httpClient.Post(message);
-
-            Assert.Equal(Result.Blackout, result);
         }
 
         [Fact]

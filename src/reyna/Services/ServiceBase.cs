@@ -6,7 +6,7 @@
 
     internal abstract class ServiceBase : ThreadWorker
     {
-        public ServiceBase(IRepository sourceStore, IWaitHandle waitHandle, bool runOnStart, ILogger logger)
+        public ServiceBase(IRepository sourceStore, IWaitHandle waitHandle, bool runOnStart, IReynaLogger logger)
             : base(waitHandle, runOnStart)
         {
             if (sourceStore == null)
@@ -23,7 +23,7 @@
 
         protected IRepository SourceStore { get; set; }
 
-        protected ILogger Logger { get; set; }
+        protected IReynaLogger Logger { get; set; }
 
         public override void Dispose()
         {

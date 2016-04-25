@@ -19,7 +19,7 @@
             var sqliteRepository = new SQLiteRepository(new byte[] { 0x33, 0xFF, 0xAB });
             sqliteRepository.Create();
 
-            var reynaService = new ReynaService(new byte[] { 0x33, 0xFF, 0xAB }, null, new NullLogger());
+            var reynaService = new ReynaService(new byte[] { 0x33, 0xFF, 0xAB }, null, new ReynaNullLogger());
             reynaService.Start();
 
             var assemblyFile = new FileInfo(Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
@@ -49,7 +49,7 @@
             var sqliteRepository = new SQLiteRepository(password);
             sqliteRepository.Create();
 
-            var reynaService = new ReynaService(password, null, new NullLogger());
+            var reynaService = new ReynaService(password, null, new ReynaNullLogger());
             reynaService.Start();
 
             var assemblyFile = new FileInfo(Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
@@ -78,7 +78,7 @@
             var sqliteRepository = new SQLiteRepository(password);
             sqliteRepository.Create();
 
-            var reynaService = new ReynaService(password, null, new NullLogger());
+            var reynaService = new ReynaService(password, null, new ReynaNullLogger());
             reynaService.Start();
 
             var assemblyFile = new FileInfo(Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
