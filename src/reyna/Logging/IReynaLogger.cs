@@ -2,7 +2,7 @@
 {
     using System;
 
-    public interface ILogger : IDisposable
+    public interface IReynaLogger : IDisposable
     {
         void ToggleVerbose(bool enabled, string host);
 

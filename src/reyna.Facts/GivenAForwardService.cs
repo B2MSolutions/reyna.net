@@ -2,9 +2,11 @@
 {
     using System;
     using System.IO;
+    using System.Net;
     using System.Reflection;
     using System.Threading;
     using Moq;
+    using OpenNETCF.Net.NetworkInformation;
     using Reyna.Interfaces;
     using Xunit;
 
@@ -12,11 +14,26 @@
     {
         public GivenAForwardService()
         {
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[0];
+            this.Preferences = new Preferences();
+            this.Preferences.ResetCellularDataBlackout();
+            this.Preferences.ResetWlanBlackoutRange();
+            this.Preferences.ResetWwanBlackoutRange();
+            this.Preferences.ResetRoamingBlackout();
+            this.Preferences.ResetOnChargeBlackout();
+            this.Preferences.ResetOffChargeBlackout();
+
+            var networkInterface = new NetworkInterface();
+            networkInterface.CurrentIpAddress = new IPAddress(42);
+            networkInterface.Name = "wifi";
+
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
+
             this.PersistentStore = new SQLiteRepository();
             this.HttpClient = new Mock<IHttpClient>();
             this.NetworkStateService = new Mock<INetworkStateService>();
             this.PeriodicBackoutCheck = new Mock<IPeriodicBackoutCheck>();
-            this.Logger = new Mock<ILogger>();
+            this.Logger = new Mock<IReynaLogger>();
 
             this.WaitHandle = new AutoResetEventAdapter(false);
 
@@ -36,6 +53,8 @@
             Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
         }
 
+        public Preferences Preferences { get; set; }
+
         private IRepository PersistentStore { get; set; }
 
         private Mock<IHttpClient> HttpClient { get; set; }
@@ -44,7 +63,7 @@
 
         private Mock<INetworkStateService> NetworkStateService { get; set; }
 
-        private Mock<ILogger> Logger { get; set; }
+        private Mock<IReynaLogger> Logger { get; set; }
 
         private IWaitHandle WaitHandle { get; set; }
 
@@ -80,6 +99,44 @@
 
             Assert.Null(this.PersistentStore.Get());
             this.HttpClient.Verify(c => c.Post(It.IsAny<IMessage>()), Times.Once());
+        }
+
+        [Fact]
+        public void WhenCallingStartAndItIsBlackoutShouldNotCallPostOnHttpClientOrDeleteMessage()
+        {
+            var networkInterface = new NetworkInterface();
+            networkInterface.CurrentIpAddress = new IPAddress(42);
+            networkInterface.Name = "cellular line";
+            var from = new Time();
+            var to = new Time(from.MinuteOfDay + 1);
+            this.Preferences.SetCellularDataBlackout(new TimeRange(from, to));
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
+
+            var message = this.CreateMessage();
+            this.ForwardService.Start();
+
+            this.PersistentStore.Add(message);
+            Thread.Sleep(200);
+
+            Assert.NotNull(this.PersistentStore.Get());
+            this.HttpClient.Verify(c => c.Post(It.IsAny<IMessage>()), Times.Never());
+        }
+
+        [Fact]
+        public void WhenCallingStartAndNotConnectedShouldNotCallPostOnHttpClientOrDeleteMessage()
+        {
+            var networkInterface = new NetworkInterface();
+            networkInterface.CurrentIpAddress = null;
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
+
+            var message = this.CreateMessage();
+            this.ForwardService.Start();
+
+            this.PersistentStore.Add(message);
+            Thread.Sleep(200);
+
+            Assert.NotNull(this.PersistentStore.Get());
+            this.HttpClient.Verify(c => c.Post(It.IsAny<IMessage>()), Times.Never());
         }
 
         [Fact]

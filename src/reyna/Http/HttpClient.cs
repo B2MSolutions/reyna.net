@@ -29,12 +29,6 @@
         {
             try
             {
-                Result result = CanSend();
-                if (result != Result.Ok)
-                {
-                    return result;
-                }
-
                 var request = WebRequest.Create(message.Url) as HttpWebRequest;
                 request.Method = "POST";
 

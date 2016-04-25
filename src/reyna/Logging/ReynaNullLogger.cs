@@ -1,6 +1,6 @@
 ﻿namespace Reyna
 {
-    public class NullLogger : ILogger
+    public class ReynaNullLogger : IReynaLogger
     {
         public void Err(string format, params object[] args)
         {

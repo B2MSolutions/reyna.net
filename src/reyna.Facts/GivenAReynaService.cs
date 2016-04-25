@@ -16,7 +16,7 @@
             this.StoreService = new Mock<IService>();
             this.ForwardService = new Mock<IForward>();
             this.NetworkStateService = new Mock<INetworkStateService>();
-            this.Logger = new Mock<ILogger>();
+            this.Logger = new Mock<IReynaLogger>();
 
             this.ReynaService = new ReynaService(this.Logger.Object);
             this.ReynaService.VolatileStore = this.VolatileStore.Object;
@@ -35,8 +35,8 @@
         private Mock<IForward> ForwardService { get; set; }
         
         private Mock<INetworkStateService> NetworkStateService { get; set; }
-        
-        private Mock<ILogger> Logger { get; set; }
+
+        private Mock<IReynaLogger> Logger { get; set; }
 
         private ReynaService ReynaService { get; set; }
 

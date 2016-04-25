@@ -6,10 +6,10 @@
     {
         public GivenANullLogger()
         {
-            this.Logger = new NullLogger();
+            this.Logger = new ReynaNullLogger();
         }
 
-        private NullLogger Logger { get; set; }
+        private ReynaNullLogger Logger { get; set; }
 
         [Fact]
         public void WhenConstructingShouldNotThrow()

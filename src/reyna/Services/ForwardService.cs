@@ -8,7 +8,7 @@
     {
         private const string PeriodicBackoutCheckTAG = "ForwardService";
 
-        public ForwardService(IRepository sourceStore, IHttpClient httpClient, INetworkStateService networkStateService, IWaitHandle waitHandle, int temporaryErrorMilliseconds, int sleepMilliseconds, bool batchUpload, ILogger logger)
+        public ForwardService(IRepository sourceStore, IHttpClient httpClient, INetworkStateService networkStateService, IWaitHandle waitHandle, int temporaryErrorMilliseconds, int sleepMilliseconds, bool batchUpload, IReynaLogger logger)
             : base(sourceStore, waitHandle, true, logger)
         {
             if (httpClient == null)
@@ -53,7 +53,10 @@
         {
             get
             {
-                return this.MessageProvider.CanSend && this.PeriodicBackoutCheck.IsTimeElapsed(PeriodicBackoutCheckTAG, this.TemporaryErrorMilliseconds);
+                return
+                    Reyna.HttpClient.CanSend() == Result.Ok
+                    && this.MessageProvider.CanSend 
+                    && this.PeriodicBackoutCheck.IsTimeElapsed(PeriodicBackoutCheckTAG, this.TemporaryErrorMilliseconds);
             }
         }
 

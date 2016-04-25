@@ -2,30 +2,32 @@
 {
     using System;
     using System.Net;
-    using Microsoft.Win32;
+    using System.Threading;
     using Reyna.Interfaces;
 
     public sealed class ReynaService : IReyna
     {
         private const long MinimumStorageLimit = 1867776; // 1Mb 800Kb
 
-        public ReynaService(ILogger logger)
+        public ReynaService(IReynaLogger logger)
             : this(null, null, logger)
         {
         }
 
-        public ReynaService(bool useNetworkState, ILogger logger) : this(null, null, useNetworkState, logger)
+        public ReynaService(bool useNetworkState, IReynaLogger logger)
+            : this(null, null, useNetworkState, logger)
         {
         }
 
-        public ReynaService(byte[] password, ICertificatePolicy certificatePolicy, ILogger logger)
+        public ReynaService(byte[] password, ICertificatePolicy certificatePolicy, IReynaLogger logger)
             : this(password, certificatePolicy, true, logger)
         {
         }
 
-        public ReynaService(byte[] password, ICertificatePolicy certificatePolicy, bool useNetworkState, ILogger logger)
+        public ReynaService(byte[] password, ICertificatePolicy certificatePolicy, bool useNetworkState, IReynaLogger logger)
         {
             this.Password = password;
+            this.Logger = logger;
             this.VolatileStore = new InMemoryQueue();
             this.PersistentStore = new SQLiteRepository(password);
             this.HttpClient = new HttpClient(certificatePolicy);
@@ -75,6 +77,8 @@
         internal IWaitHandle NetworkWaitHandle { get; set; }
 
         internal ISystemNotifier SystemNotifier { get; set; }
+
+        internal IReynaLogger Logger { get; set; }
 
         private byte[] Password { get; set; }
 
@@ -138,19 +142,12 @@
 
         public void Start()
         {
-            if (this.Password != null && this.Password.Length > 0)
-            {
-                if (!this.EncryptionChecker.DbEncrypted())
-                {
-                    this.EncryptionChecker.EncryptDb(this.Password);
-                }
-            }
-
+            this.EncryptDatabase();
             this.StoreWaitHandle.Reset();
             this.ForwardWaitHandle.Reset();
 
             this.StoreService.Start();
-            
+
             this.ForwardService.Start();
 
             if (this.NetworkStateService != null)
@@ -174,7 +171,7 @@
         {
             this.VolatileStore.Add(message);
         }
-       
+
         public void ResumeForwardService()
         {
             if (this.ForwardService != null)
@@ -207,6 +204,34 @@
                 {
                     this.StoreService.Dispose();
                 }
+            }
+        }
+
+        private void EncryptDatabase()
+        {
+            if (this.Password == null || this.Password.Length == 0)
+            {
+                return;
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                try
+                {
+                    if (this.EncryptionChecker.DbEncrypted())
+                    {
+                        return;
+                    }
+                    
+                    this.EncryptionChecker.EncryptDb(this.Password);
+                    return;
+                }
+                catch (Exception exception)
+                {
+                    this.Logger.Err("ReynaService.EncryptDatabase. Error {0}", exception.StackTrace);
+                }
+
+                Reyna.Sleep.Wait(2);
             }
         }
     }

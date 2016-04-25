@@ -14,7 +14,7 @@
             this.VolatileStore = new InMemoryQueue();
             this.PersistentStore = new Mock<IRepository>();
             this.WaitHandle = new AutoResetEventAdapter(false);
-            this.Logger = new Mock<ILogger>();
+            this.Logger = new Mock<IReynaLogger>();
 
             this.PersistentStore.Setup(r => r.Add(It.IsAny<IMessage>()));
 
@@ -27,7 +27,7 @@
 
         private Mock<IRepository> PersistentStore { get; set; }
 
-        private Mock<ILogger> Logger { get; set; }
+        private Mock<IReynaLogger> Logger { get; set; }
 
         private IWaitHandle WaitHandle { get; set; }
 
