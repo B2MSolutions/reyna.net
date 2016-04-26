@@ -28,12 +28,10 @@
         {
             this.Password = password;
             this.Logger = logger;
-            this.VolatileStore = new InMemoryQueue();
             this.PersistentStore = new SQLiteRepository(password);
             this.HttpClient = new HttpClient(certificatePolicy);
             this.EncryptionChecker = new EncryptionChecker();
 
-            this.StoreWaitHandle = new AutoResetEventAdapter(false);
             this.ForwardWaitHandle = new AutoResetEventAdapter(false);
 
             if (useNetworkState)
@@ -44,7 +42,7 @@
             }
 
             var preferences = new Preferences();
-            this.StoreService = new StoreService(this.VolatileStore, this.PersistentStore, this.StoreWaitHandle, logger);
+            this.StoreService = new StoreService(this.PersistentStore, logger);
             this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient, this.NetworkStateService, this.ForwardWaitHandle, Preferences.ForwardServiceTemporaryErrorBackout, Preferences.ForwardServiceMessageBackout, preferences.BatchUpload, logger);
         }
 
@@ -58,19 +56,15 @@
 
         internal IEncryptionChecker EncryptionChecker { get; set; }
 
-        internal IRepository VolatileStore { get; set; }
-
         internal IRepository PersistentStore { get; set; }
 
         internal IHttpClient HttpClient { get; set; }
 
-        internal IService StoreService { get; set; }
+        internal IStoreService StoreService { get; set; }
 
         internal IForward ForwardService { get; set; }
 
         internal INetworkStateService NetworkStateService { get; set; }
-
-        internal IWaitHandle StoreWaitHandle { get; set; }
 
         internal IWaitHandle ForwardWaitHandle { get; set; }
 
@@ -143,10 +137,7 @@
         public void Start()
         {
             this.EncryptDatabase();
-            this.StoreWaitHandle.Reset();
             this.ForwardWaitHandle.Reset();
-
-            this.StoreService.Start();
 
             this.ForwardService.Start();
 
@@ -164,12 +155,11 @@
             }
 
             this.ForwardService.Stop();
-            this.StoreService.Stop();
         }
 
         public void Put(IMessage message)
         {
-            this.VolatileStore.Add(message);
+            this.StoreService.Put(message);
         }
 
         public void ResumeForwardService()
@@ -198,11 +188,6 @@
                 if (this.ForwardService != null)
                 {
                     this.ForwardService.Dispose();
-                }
-
-                if (this.StoreService != null)
-                {
-                    this.StoreService.Dispose();
                 }
             }
         }

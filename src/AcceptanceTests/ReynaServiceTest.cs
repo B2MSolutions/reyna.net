@@ -38,7 +38,7 @@
             File.Delete(path);
         }
 
-        [TestMethod]
+        [TestMethod(), Timeout(60 * 1000)]
         [DeploymentItem("test.xml")]
         public void ShouldKeepSizeTheSame()
         {
@@ -96,7 +96,6 @@
         [TestMethod]
         public void WhenAddingAndRemovingFromDifferentThreadShouldNotThrow()
         {
-            long size = 2 * 1024 * 1024; // 2 mega
             var password = new byte[] { 0x33, 0xFF, 0xAB };
 
             ReynaService.ResetStorageSizeLimit();
@@ -176,11 +175,6 @@
             {
                 var message = new Message(new Uri("https://elemez.com"), body);
                 reynaStore.Put(message);
-            }
-
-            while (((ReynaService)reynaStore).VolatileStore.Get() != null)
-            {
-                System.Threading.Thread.Sleep(3 * 1000);
             }
         }
 

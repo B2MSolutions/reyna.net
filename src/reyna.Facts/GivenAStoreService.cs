@@ -11,14 +11,13 @@
     {
         public GivenAStoreService()
         {
-            this.VolatileStore = new InMemoryQueue();
             this.PersistentStore = new Mock<IRepository>();
             this.WaitHandle = new AutoResetEventAdapter(false);
             this.Logger = new Mock<IReynaLogger>();
 
             this.PersistentStore.Setup(r => r.Add(It.IsAny<IMessage>()));
 
-            this.StoreService = new StoreService(this.VolatileStore, this.PersistentStore.Object, this.WaitHandle, this.Logger.Object);
+            this.StoreService = new StoreService(this.PersistentStore.Object, this.Logger.Object);
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
         }
@@ -36,14 +35,11 @@
         [Fact]
         public void WhenCallingStartAndMessageAddedShouldCallPutOnRepository()
         {
-            this.StoreService.Start();
+            var message = new Message(new Uri("http://www.google.com"), string.Empty);
+            
+            this.StoreService.Put(message);
 
-            this.VolatileStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
-            Thread.Sleep(500);
-            this.StoreService.Stop();
-
-            Assert.Null(this.VolatileStore.Get());
-            this.PersistentStore.Verify(r => r.Add(It.IsAny<IMessage>()), Times.Once());
+            this.PersistentStore.Verify(r => r.Add(message), Times.Once());
         }
 
         [Fact]
@@ -51,14 +47,12 @@
         {
             using (var key = Registry.LocalMachine.CreateSubKey(@"Software\Reyna"))
             {
+                var message = new Message(new Uri("http://www.google.com"), string.Empty);
+
                 ReynaService.SetStorageSizeLimit(null, 2000000);
-                this.StoreService.Start();
+                this.StoreService.Put(message);
 
-                this.VolatileStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
-                Thread.Sleep(200);
-
-                Assert.Null(this.VolatileStore.Get());
-                this.PersistentStore.Verify(r => r.Add(It.IsAny<IMessage>(), 2000000), Times.Once());
+                this.PersistentStore.Verify(r => r.Add(message, 2000000), Times.Once());
             }
 
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
@@ -66,77 +60,44 @@
         }
 
         [Fact]
-        public void WhenCallingStopOnStoreThatHasntStartedShouldNotThrow()
-        {
-            this.StoreService.Stop();
-        }
-
-        [Fact]
-        public void WhenCallingDisposeShouldNotThrow()
-        {
-            this.StoreService.Dispose();
-        }
-
-        [Fact]
-        public void WhenCallingStartStopDisposeShouldNotThrow()
-        {
-            this.StoreService.Start();
-            Thread.Sleep(50);
-
-            this.StoreService.Stop();
-            Thread.Sleep(50);
-            
-            this.StoreService.Dispose();
-        }
-
-        [Fact]
-        public void WhenConstructingWithBothNullParametersShouldThrow()
-        {
-            var exception = Assert.Throws<ArgumentNullException>(() => new StoreService(null, null, this.WaitHandle, this.Logger.Object));
-            Assert.Equal("sourceStore", exception.ParamName);
-        }
-
-        [Fact]
-        public void WhenConstructingWithNullMessageStoreParameterShouldThrow()
-        {
-            var exception = Assert.Throws<ArgumentNullException>(() => new StoreService(null, new Mock<IRepository>().Object, this.WaitHandle, this.Logger.Object));
-            Assert.Equal("sourceStore", exception.ParamName);
-        }
-
-        [Fact]
         public void WhenConstructingWithNullRepositoryParameterShouldThrow()
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => new StoreService(new InMemoryQueue(), null, this.WaitHandle, this.Logger.Object));
+            var exception = Assert.Throws<ArgumentNullException>(() => new StoreService(null, this.Logger.Object));
             Assert.Equal("targetStore", exception.ParamName);
         }
 
         [Fact]
-        public void WhenConstructingWithNullWaitHandleStateParameterShouldThrow()
+        public void WhenAddingMessageAndThrowsShouldLogError()
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => new StoreService(new Mock<IRepository>().Object, new Mock<IRepository>().Object, null, this.Logger.Object));
-            Assert.Equal("waitHandle", exception.ParamName);
+            var message = new Message(new Uri("http://www.google.com"), string.Empty);
+            var exception = new InvalidOperationException("Error");
+
+            this.PersistentStore.Setup(s => s.Add(message)).Throws(exception);
+            this.StoreService.Put(message);
+            this.PersistentStore.Verify(r => r.Add(message), Times.AtLeast(1));
+            this.Logger.Verify(l => l.Err("StoreService.ThreadStart. Error {0}", exception.ToString()), Times.AtLeast(1));
         }
 
         [Fact]
-        public void WhenAddingMessageAndThrowsShouldSucceedNextTime()
+        public void WhenAddingMessageFailShouldRetry()
         {
-            this.StoreService.Start();
-
+            var message = new Message(new Uri("http://www.google.com"), string.Empty);
             var exception = new InvalidOperationException("Error");
-            
-            this.PersistentStore.Setup(s => s.Add(It.IsAny<IMessage>())).Throws(exception);
-            this.VolatileStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
-            
-            Thread.Sleep(500);
-            this.PersistentStore.Setup(s => s.Add(It.IsAny<IMessage>()));
-            this.VolatileStore.Add(new Message(new Uri("http://www.google.com"), string.Empty));
-            
-            Thread.Sleep(500);
-            this.StoreService.Stop();
 
-            Assert.Null(this.VolatileStore.Get());
-            this.PersistentStore.Verify(r => r.Add(It.IsAny<IMessage>()), Times.AtLeast(2));
-            this.Logger.Verify(l => l.Err("StoreService.ThreadStart. Error {0}", exception.ToString()), Times.AtLeast(1));
+            var count = 0;
+            this.PersistentStore.Setup(s => s.Add(message))
+                .Callback(() =>
+                {
+                    count++;
+                    if (count % 10 != 0)
+                    {
+                        throw exception;
+                    }
+                });
+            
+            this.StoreService.Put(message);
+            this.PersistentStore.Verify(r => r.Add(message), Times.Exactly(10));
+            this.Logger.Verify(l => l.Err("StoreService.ThreadStart. Error {0}", exception.ToString()), Times.Exactly(9));
         }
     }
 }

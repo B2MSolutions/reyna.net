@@ -145,6 +145,9 @@
     <Compile Include="..\reyna\Services\IService.cs">
       <Link>Services\IService.cs</Link>
     </Compile>
+    <Compile Include="..\reyna\Services\IStoreService.cs">
+      <Link>Store\IStoreService.cs</Link>
+    </Compile>
     <Compile Include="..\reyna\Services\NetworkStateService.cs">
       <Link>Services\NetworkStateService.cs</Link>
     </Compile>
@@ -165,9 +168,6 @@
     </Compile>
     <Compile Include="..\reyna\Store\IMessage.cs">
       <Link>Store\IMessage.cs</Link>
-    </Compile>
-    <Compile Include="..\reyna\Store\InMemoryQueue.cs">
-      <Link>Store\InMemoryQueue.cs</Link>
     </Compile>
     <Compile Include="..\reyna\Store\IRepository.cs">
       <Link>Store\IRepository.cs</Link>

@@ -77,7 +77,6 @@
     <Compile Include="GivenANamedWaitHandle.cs" />
     <Compile Include="GivenANetworkStateService.cs" />
     <Compile Include="GivenAnHttpStatusCode.cs" />
-    <Compile Include="GivenAnInMemoryQueue.cs" />
     <Compile Include="GivenAReynaService.cs" />
     <Compile Include="GivenAStoreService.cs" />
     <Compile Include="GivenASystemNotifier.cs" />
