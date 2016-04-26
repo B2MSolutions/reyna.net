@@ -13,13 +13,12 @@
         public GivenAReynaService()
         {
             this.VolatileStore = new Mock<IRepository>();
-            this.StoreService = new Mock<IService>();
+            this.StoreService = new Mock<IStoreService>();
             this.ForwardService = new Mock<IForward>();
             this.NetworkStateService = new Mock<INetworkStateService>();
             this.Logger = new Mock<IReynaLogger>();
 
             this.ReynaService = new ReynaService(this.Logger.Object);
-            this.ReynaService.VolatileStore = this.VolatileStore.Object;
             this.ReynaService.StoreService = this.StoreService.Object;
             this.ReynaService.ForwardService = this.ForwardService.Object;
             this.ReynaService.NetworkStateService = this.NetworkStateService.Object;
@@ -30,7 +29,7 @@
 
         private Mock<IRepository> VolatileStore { get; set; }
 
-        private Mock<IService> StoreService { get; set; }
+        private Mock<IStoreService> StoreService { get; set; }
 
         private Mock<IForward> ForwardService { get; set; }
         
@@ -112,19 +111,17 @@
             var message = new Message(null, null);
             this.ReynaService.Put(message);
 
-            this.VolatileStore.Verify(r => r.Add(message), Times.Once());
+            this.StoreService.Verify(r => r.Put(message), Times.Once());
         }
 
         [Fact]
         public void WhenCallingStartShouldStartStoreService()
         {
-            this.StoreService.Setup(s => s.Start());
             this.ForwardService.Setup(f => f.Start());
             this.NetworkStateService.Setup(f => f.Start());
 
             this.ReynaService.Start();
 
-            this.StoreService.Verify(s => s.Start(), Times.Once());
             this.ForwardService.Verify(f => f.Start(), Times.Once());
             this.NetworkStateService.Verify(f => f.Start(), Times.Once());
         }
@@ -132,13 +129,11 @@
         [Fact]
         public void WhenCallingStopShouldStopStoreService()
         {
-            this.StoreService.Setup(s => s.Stop());
             this.ForwardService.Setup(f => f.Stop());
             this.NetworkStateService.Setup(f => f.Stop());
 
             this.ReynaService.Stop();
 
-            this.StoreService.Verify(s => s.Stop(), Times.Once());
             this.ForwardService.Verify(f => f.Stop(), Times.Once());
             this.NetworkStateService.Verify(f => f.Stop(), Times.Once());
         }
@@ -146,13 +141,11 @@
         [Fact]
         public void WhenCallingDisposeShouldCallDisposeOnStoreService()
         {
-            this.StoreService.Setup(s => s.Dispose());
             this.ForwardService.Setup(s => s.Dispose());
             this.NetworkStateService.Setup(s => s.Dispose());
 
             this.ReynaService.Dispose();
 
-            this.StoreService.Verify(s => s.Dispose(), Times.Once());
             this.ForwardService.Verify(f => f.Dispose(), Times.Once());
             this.NetworkStateService.Verify(f => f.Dispose(), Times.Once());
         }

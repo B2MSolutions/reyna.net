@@ -32,8 +32,8 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.14.0.53")]
-[assembly: AssemblyFileVersion("2.14.0.53")]
+[assembly: AssemblyVersion("2.15.0.54")]
+[assembly: AssemblyFileVersion("2.15.0.54")]
 [assembly: InternalsVisibleTo("reyna.Facts")]
 [assembly: InternalsVisibleTo("reyna.Integration.Facts")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

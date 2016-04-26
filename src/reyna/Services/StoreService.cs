@@ -3,10 +3,9 @@
     using System;
     using Reyna.Interfaces;
 
-    internal sealed class StoreService : ServiceBase
+    internal sealed class StoreService : IStoreService
     {
-        public StoreService(IRepository sourceStore, IRepository targetStore, IWaitHandle waitHandle, IReynaLogger logger)
-            : base(sourceStore, waitHandle, false, logger)
+        public StoreService(IRepository targetStore, IReynaLogger logger)
         {
             if (targetStore == null)
             {
@@ -14,41 +13,39 @@
             }
 
             this.TargetStore = targetStore;
+            this.Logger = logger;
+            
             this.TargetStore.Initialise();
         }
 
         private IRepository TargetStore { get; set; }
 
-        protected override void ThreadStart()
+        private IReynaLogger Logger { get; set; }
+
+        public void Put(IMessage message)
         {
-            while (!this.Terminate)
+            for (int i = 0; i < 10; i++)
             {
-                this.WaitHandle.WaitOne();
                 try
                 {
-                    IMessage message = null;
-
-                    while ((message = this.SourceStore.Get()) != null)
+                    long storageSizeLimit = new Preferences().StorageSizeLimit;
+                    if (storageSizeLimit == -1)
                     {
-                        long storageSizeLimit = new Preferences().StorageSizeLimit;
-                        if (storageSizeLimit == -1)
-                        {
-                            this.TargetStore.Add(message);
-                        }
-                        else
-                        {
-                            this.TargetStore.Add(message, storageSizeLimit);
-                        }
-
-                        this.SourceStore.Remove();
+                        this.TargetStore.Add(message);
                     }
+                    else
+                    {
+                        this.TargetStore.Add(message, storageSizeLimit);
+                    }
+
+                    return;
                 }
                 catch (Exception exception)
                 {
                     this.Logger.Err("StoreService.ThreadStart. Error {0}", exception.ToString());
                 }
 
-                this.WaitHandle.Reset();
+                Reyna.Sleep.Wait(1);
             }
         }
     }
