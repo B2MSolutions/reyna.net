@@ -53,10 +53,9 @@
         {
             get
             {
-                return
-                    Reyna.HttpClient.CanSend() == Result.Ok
-                    && this.MessageProvider.CanSend 
-                    && this.PeriodicBackoutCheck.IsTimeElapsed(PeriodicBackoutCheckTAG, this.TemporaryErrorMilliseconds);
+                return this.MessageProvider.CanSend
+                    && this.PeriodicBackoutCheck.IsTimeElapsed(PeriodicBackoutCheckTAG, this.TemporaryErrorMilliseconds)
+                    && Reyna.HttpClient.CanSend() == Result.Ok;
             }
         }
 
