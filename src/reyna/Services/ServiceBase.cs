@@ -41,9 +41,7 @@
             this.SignalWorkToDo();
         }
 
-        protected virtual void OnDispose()
-        {
-        }
+        protected abstract void OnDispose();
 
         private void Dispose(bool disposing)
         {
