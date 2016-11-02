@@ -184,8 +184,14 @@
     <Compile Include="..\reyna\System\ISystemNotifier.cs">
       <Link>System\ISystemNotifier.cs</Link>
     </Compile>
+    <Compile Include="..\reyna\System\ITimeProvider.cs">
+      <Link>System\ITimeProvider.cs</Link>
+    </Compile>
     <Compile Include="..\reyna\System\RegistryPeriodicBackoutCheck.cs">
       <Link>System\RegistryPeriodicBackoutCheck.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\System\TimeProvider.cs">
+      <Link>System\TimeProvider.cs</Link>
     </Compile>
     <Compile Include="..\reyna\Threading\AutoResetEventAdapter.cs">
       <Link>Threading\AutoResetEventAdapter.cs</Link>
