@@ -1,7 +1,9 @@
 ﻿namespace Reyna
 {
+    using System;
+
     public interface ITimeProvider
     {
-        long GetEpochInMilliSeconds();
+        long GetEpochInMilliSeconds(DateTimeKind dateTimeKind);
     }
 }

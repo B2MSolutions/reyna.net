@@ -48,7 +48,7 @@
                     request.Headers.Add(key, value);
                 }
 
-                request.Headers.Add("submitted", this.TimeProvider.GetEpochInMilliSeconds().ToString(CultureInfo.InvariantCulture));
+                request.Headers.Add("submitted", this.TimeProvider.GetEpochInMilliSeconds(DateTimeKind.Utc).ToString(CultureInfo.InvariantCulture));
 
                 return this.RequestAndRespond(request, message.Body);
             }

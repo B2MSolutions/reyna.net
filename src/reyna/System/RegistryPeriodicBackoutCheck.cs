@@ -19,14 +19,14 @@
 
         public void Record(string task)
         {
-            long epocInMilliseconds = this.timeProvider.GetEpochInMilliSeconds();
+            long epocInMilliseconds = this.timeProvider.GetEpochInMilliSeconds(DateTimeKind.Local);
             this.Registry.SetQWord(Microsoft.Win32.Registry.LocalMachine, this.PeriodicalTasksKeyName, task, epocInMilliseconds);
         }
 
         public bool IsTimeElapsed(string task, long periodInMilliseconds)
         {
             long lastCheckedTime = this.Registry.GetQWord(Microsoft.Win32.Registry.LocalMachine, this.PeriodicalTasksKeyName, task, 0);
-            long epocInMilliseconds = this.timeProvider.GetEpochInMilliSeconds();
+            long epocInMilliseconds = this.timeProvider.GetEpochInMilliSeconds(DateTimeKind.Local);
 
             long elapsedPeriodInSeconds = epocInMilliseconds - lastCheckedTime;
 
