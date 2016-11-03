@@ -6,7 +6,7 @@
     {
         public long GetEpochInMilliSeconds(DateTimeKind dateTimeKind)
         {
-            TimeSpan span = DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0, 0, dateTimeKind);
+            TimeSpan span = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0, dateTimeKind);
             return (long)span.TotalMilliseconds;
         }
     }
