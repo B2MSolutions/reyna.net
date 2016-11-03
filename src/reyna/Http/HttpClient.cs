@@ -1,12 +1,11 @@
 ﻿namespace Reyna
 {
     using System;
+    using System.Globalization;
     using System.Net;
-    using System.Runtime.InteropServices;
-    using System.Text;    
+    using System.Text;
     using Extensions;
     using Reyna.Interfaces;
-    using Reyna.Power;
 
     public sealed class HttpClient : IHttpClient
     {
@@ -18,7 +17,11 @@
                 ServicePointManager.CertificatePolicy = certificatePolicy;
 #pragma warning restore 0618
             }
+
+            this.TimeProvider = new TimeProvider();
         }
+
+        public ITimeProvider TimeProvider { get; set; }
 
         public static Result CanSend()
         {
@@ -44,6 +47,8 @@
 
                     request.Headers.Add(key, value);
                 }
+
+                request.Headers.Add("submitted", this.TimeProvider.GetEpochInMilliSeconds(DateTimeKind.Utc).ToString(CultureInfo.InvariantCulture));
 
                 return this.RequestAndRespond(request, message.Body);
             }

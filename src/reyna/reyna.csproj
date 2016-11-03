@@ -90,7 +90,9 @@
     <Compile Include="Services\IStoreService.cs" />
     <Compile Include="Services\IForward.cs" />
     <Compile Include="System\IPeriodicBackoutCheck.cs" />
+    <Compile Include="System\ITimeProvider.cs" />
     <Compile Include="System\RegistryPeriodicBackoutCheck.cs" />
+    <Compile Include="System\TimeProvider.cs" />
     <Compile Include="Threading\AutoResetEventAdapter.cs" />
     <Compile Include="Blackout\BlackoutTime.cs" />
     <Compile Include="Blackout\Time.cs" />

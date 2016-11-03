@@ -4,10 +4,13 @@
 
     internal class RegistryPeriodicBackoutCheck : IPeriodicBackoutCheck
     {
+        private readonly ITimeProvider timeProvider;
+
         public RegistryPeriodicBackoutCheck(IRegistry registry, string key)
         {
             this.Registry = registry;
             this.PeriodicalTasksKeyName = key;
+            this.timeProvider = new TimeProvider();
         }
 
         private IRegistry Registry { get; set; }
@@ -16,14 +19,14 @@
 
         public void Record(string task)
         {
-            long epocInMilliseconds = this.GetEpocInMilliSeconds();
+            long epocInMilliseconds = this.timeProvider.GetEpochInMilliSeconds(DateTimeKind.Local);
             this.Registry.SetQWord(Microsoft.Win32.Registry.LocalMachine, this.PeriodicalTasksKeyName, task, epocInMilliseconds);
         }
 
         public bool IsTimeElapsed(string task, long periodInMilliseconds)
         {
             long lastCheckedTime = this.Registry.GetQWord(Microsoft.Win32.Registry.LocalMachine, this.PeriodicalTasksKeyName, task, 0);
-            long epocInMilliseconds = this.GetEpocInMilliSeconds();
+            long epocInMilliseconds = this.timeProvider.GetEpochInMilliSeconds(DateTimeKind.Local);
 
             long elapsedPeriodInSeconds = epocInMilliseconds - lastCheckedTime;
 
@@ -34,12 +37,6 @@
             }
 
             return elapsedPeriodInSeconds >= periodInMilliseconds;
-        }
-
-        private long GetEpocInMilliSeconds()
-        {
-            TimeSpan span = DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Local);
-            return (long)span.TotalMilliseconds;
         }
     }
 }
