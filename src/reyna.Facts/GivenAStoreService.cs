@@ -49,8 +49,8 @@
             {
                 var message = new Message(new Uri("http://www.google.com"), string.Empty);
 
-                ReynaService.SetStorageSizeLimit(null, 2000000);
-                this.StoreService.Put(message);
+                new ReynaService(new ReynaNullLogger()).SetStorageSizeLimit(null, 2000000);
+                 this.StoreService.Put(message);
 
                 this.PersistentStore.Verify(r => r.Add(message, 2000000), Times.Once());
             }

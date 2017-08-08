@@ -19,7 +19,7 @@
         [ExpectedException(typeof(SQLiteException))]
         public void IfDatabaseIsEncryptedButConnectionMissingPasswordShouldThrowException()
         {
-            var sqliteRepository = new SQLiteRepository(new byte[] { 0xFF, 0xEE, 0xDD, 0x10, 0x20, 0x30 });
+            var sqliteRepository = new SQLiteRepository(new ReynaNullLogger(), new byte[] { 0xFF, 0xEE, 0xDD, 0x10, 0x20, 0x30 });
             sqliteRepository.Create();
 
             var assemblyFile = new FileInfo(Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);

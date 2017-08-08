@@ -53,9 +53,13 @@
         {
             get
             {
-                return this.MessageProvider.CanSend
+                var canSend = this.MessageProvider.CanSend
                     && this.PeriodicBackoutCheck.IsTimeElapsed(PeriodicBackoutCheckTAG, this.TemporaryErrorMilliseconds)
                     && Reyna.HttpClient.CanSend() == Result.Ok;
+
+                this.Logger.Debug("ForwardService.CanSend {0}", canSend);
+
+                return canSend;
             }
         }
 
@@ -77,18 +81,23 @@
                     {
                         while (!this.Terminate && (message = this.MessageProvider.GetNext()) != null)
                         {
+                            this.Logger.Debug("ForwardService.ThreadStart message {0}", message.Id);
+
                             var result = this.HttpClient.Post(message);
                             if (result == Result.TemporaryError)
                             {
+                                this.Logger.Debug("ForwardService.ThreadStart temporary error");
                                 this.PeriodicBackoutCheck.Record(ForwardService.PeriodicBackoutCheckTAG);
                                 break;
                             }
 
                             if (result == Result.Blackout || result == Result.NotConnected)
                             {
+                                this.Logger.Debug("ForwardService.ThreadStart blacked out/not connected");
                                 break;
                             }
 
+                            this.Logger.Debug("ForwardService.ThreadStart delete and sleep");
                             this.MessageProvider.Delete(message);
                             this.Sleep(this.SleepMilliseconds);
                         }

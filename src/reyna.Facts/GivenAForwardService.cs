@@ -29,7 +29,7 @@
 
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
 
-            this.PersistentStore = new SQLiteRepository();
+            this.PersistentStore = new SQLiteRepository(new ReynaNullLogger());
             this.HttpClient = new Mock<IHttpClient>();
             this.NetworkStateService = new Mock<INetworkStateService>();
             this.PeriodicBackoutCheck = new Mock<IPeriodicBackoutCheck>();
