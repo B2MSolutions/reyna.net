@@ -16,7 +16,7 @@
         [TestMethod]
         public void ShouldEncryptDbIfPasswordIsPassedAndDbIsNotEncrypted()
         {
-            var sqliteRepository = new SQLiteRepository(new byte[] { 0x33, 0xFF, 0xAB });
+            var sqliteRepository = new SQLiteRepository(new ReynaNullLogger(), new byte[] { 0x33, 0xFF, 0xAB });
             sqliteRepository.Create();
 
             var reynaService = new ReynaService(new byte[] { 0x33, 0xFF, 0xAB }, null, new ReynaNullLogger());
@@ -46,7 +46,7 @@
             var password = new byte[] { 0x33, 0xFF, 0xAB };
 
             ReynaService.ResetStorageSizeLimit();
-            var sqliteRepository = new SQLiteRepository(password);
+            var sqliteRepository = new SQLiteRepository(new ReynaNullLogger(), password);
             sqliteRepository.Create();
 
             var reynaService = new ReynaService(password, null, new ReynaNullLogger());
@@ -60,7 +60,7 @@
             FileInfo fileInfo = new FileInfo(path);
             Assert.AreEqual(5649408, fileInfo.Length);
 
-            ReynaService.SetStorageSizeLimit(password, size);
+            reynaService.SetStorageSizeLimit(password, size);
             reynaService.Stop();
             fileInfo = new FileInfo(path);
             Assert.AreEqual(1754112, fileInfo.Length);
@@ -75,7 +75,7 @@
             var password = new byte[] { 0x33, 0xFF, 0xAB };
 
             ReynaService.ResetStorageSizeLimit();
-            var sqliteRepository = new SQLiteRepository(password);
+            var sqliteRepository = new SQLiteRepository(new ReynaNullLogger(), password);
             sqliteRepository.Create();
 
             var reynaService = new ReynaService(password, null, new ReynaNullLogger());
@@ -84,7 +84,7 @@
             var assemblyFile = new FileInfo(Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
             var path = Path.Combine(assemblyFile.DirectoryName, "reyna.db");
 
-            ReynaService.SetStorageSizeLimit(password, size);
+            reynaService.SetStorageSizeLimit(password, size);
             
             putMessageFromFile(reynaService, assemblyFile.DirectoryName, 100);
             reynaService.Stop();
@@ -99,7 +99,7 @@
             var password = new byte[] { 0x33, 0xFF, 0xAB };
 
             ReynaService.ResetStorageSizeLimit();
-            this.Repository = new SQLiteRepository(password);
+            this.Repository = new SQLiteRepository(new ReynaNullLogger(), password);
             this.Repository.Create();
 
             Thread injectingThread = new Thread(this.AddMessage);

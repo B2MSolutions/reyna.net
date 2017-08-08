@@ -24,11 +24,13 @@
 
         public void Put(IMessage message)
         {
+            long storageSizeLimit = new Preferences().StorageSizeLimit;
+            this.Logger.Debug("Reyna.StoreService.Put {0} -> {1} ({3})", message.Id, message.Url.AbsolutePath, storageSizeLimit);
+
             for (int i = 0; i < 10; i++)
             {
                 try
                 {
-                    long storageSizeLimit = new Preferences().StorageSizeLimit;
                     if (storageSizeLimit == -1)
                     {
                         this.TargetStore.Add(message);

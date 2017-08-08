@@ -28,7 +28,7 @@
         {
             this.Password = password;
             this.Logger = logger;
-            this.PersistentStore = new SQLiteRepository(password);
+            this.PersistentStore = new SQLiteRepository(logger, password);
             this.HttpClient = new HttpClient(certificatePolicy);
             this.EncryptionChecker = new EncryptionChecker();
 
@@ -76,16 +76,6 @@
 
         private byte[] Password { get; set; }
 
-        public static void SetStorageSizeLimit(byte[] password, long limit)
-        {
-            limit = limit < MinimumStorageLimit ? MinimumStorageLimit : limit;
-            new Preferences().SetStorageSizeLimit(limit);
-
-            var repository = new SQLiteRepository(password);
-            repository.Initialise();
-            repository.ShrinkDb(limit);
-        }
-
         public static void ResetStorageSizeLimit()
         {
             new Preferences().ResetStorageSizeLimit();
@@ -132,6 +122,16 @@
             preferences.SaveBatchUpload(value);
             preferences.SaveBatchUploadUrl(url);
             preferences.SaveBatchUploadCheckInterval(checkInterval);
+        }
+
+        public void SetStorageSizeLimit(byte[] password, long limit)
+        {
+            limit = limit < MinimumStorageLimit ? MinimumStorageLimit : limit;
+            new Preferences().SetStorageSizeLimit(limit);
+
+            var repository = new SQLiteRepository(this.Logger, password);
+            repository.Initialise();
+            repository.ShrinkDb(limit);
         }
 
         public void Start()

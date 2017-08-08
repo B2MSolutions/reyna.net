@@ -11,6 +11,7 @@
 
     internal sealed class SQLiteRepository : IRepository
     {
+        private readonly IReynaLogger Logger;
         private const string CreateTableSql = "CREATE TABLE Message (id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT, body TEXT);CREATE TABLE Header (id INTEGER PRIMARY KEY AUTOINCREMENT, messageid INTEGER, key TEXT, value TEXT, FOREIGN KEY(messageid) REFERENCES message(id));";
         private const string InsertMessageSql = "INSERT INTO Message(url, body) VALUES(@url, @body); SELECT last_insert_rowid();";
         private const string InsertHeaderSql = "INSERT INTO Header(messageid, key, value) VALUES(@messageId, @key, @value);";
@@ -27,12 +28,13 @@
 
         private static readonly object Locker = new object();
 
-        public SQLiteRepository()
+        public SQLiteRepository(IReynaLogger logger)
         {
+            this.Logger = logger;
             this.SizeDifferenceToStartCleaning = 307200; ////300Kb in bytes
         }
 
-        public SQLiteRepository(byte[] password)
+        public SQLiteRepository(IReynaLogger logger, byte[] password)
         {
             this.Password = password;
             this.SizeDifferenceToStartCleaning = 307200; ////300Kb in bytes
@@ -109,11 +111,14 @@
                 {
                     long dbSize = this.GetDbSize(t);
 
+                    this.Logger.Debug("SQLiteSuppository.Add size is {0}", dbSize);
+
                     if (this.DbSizeApproachesLimit(dbSize, storageSizeLimit))
                     {
                         this.ClearOldRecords(t, message);
                     }
 
+                    this.Logger.Debug("SQLiteSuppository.Add inserting message {0}", message.Id);
                     this.InsertMessage(t, message);
                 });
             }
@@ -254,6 +259,7 @@
 
             if (oldestMessageId.HasValue)
             {
+                this.Logger.Debug("SQLiteSuppository.ClearOldRecords RemoveExistingMessage {0} {1}", oldestMessageId.Value, message.Url);
                 this.RemoveExistingMessage(transaction, oldestMessageId.Value);
             }
         }
@@ -279,6 +285,8 @@
 
         private void Shrink(DbConnection connection, long sizeLimit, long size)
         {
+            this.Logger.Debug("SQLiteSuppository.Shrink {0} -> {1}", size, sizeLimit);
+
             double limitPercentage = 1 - ((double)sizeLimit / size);
             long numberOfMessages = this.GetNumberOfMessages(connection);
             long numberOfMessagesToRemove = (long)Math.Round(numberOfMessages * limitPercentage);
