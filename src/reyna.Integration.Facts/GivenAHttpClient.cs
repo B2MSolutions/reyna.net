@@ -173,9 +173,7 @@ namespace Reyna.Integration.Facts
         //    var from = new Time();
         //    var to = new Time(from.MinuteOfDay + 1);
         //    this.Preferences.SetCellularDataBlackout(new TimeRange(from, to));
-
         //    NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
-
         //    var httpClient = new HttpClient(new AcceptAllCertificatePolicy());
         //    var message = new Message(new Uri("https://httpbin.org/post"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
         //    message.Headers.Add("content-type", "application/json");
@@ -183,7 +181,6 @@ namespace Reyna.Integration.Facts
         //    message.Headers.Add("param2", "Value2");
         //    message.Headers.Add("param3", "Value3");
         //    var result = httpClient.Post(message);
-
         //    Assert.Equal(Result.Ok, result);
         //}
 
