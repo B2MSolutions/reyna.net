@@ -1,6 +1,4 @@
-﻿using Xunit.Sdk;
-
-namespace Reyna.Integration.Facts
+﻿namespace Reyna.Integration.Facts
 {
     using System;
     using System.Net;
@@ -8,6 +6,7 @@ namespace Reyna.Integration.Facts
     using Reyna.Interfaces;
     using Reyna.Power;
     using Xunit;
+    using Xunit.Sdk;
 
     public class GivenAHttpClient
     {
@@ -163,26 +162,6 @@ namespace Reyna.Integration.Facts
 
             Assert.Equal(Result.Ok, result);
         }
-
-        //[Fact]
-        //public void WhenCallingPostAndConnectionIsNotGPRSAndBlackoutShouldReturnBlackout()
-        //{
-        //    var networkInterface = new NetworkInterface();
-        //    networkInterface.CurrentIpAddress = new IPAddress(42);
-        //    networkInterface.Name = "wifi";
-        //    var from = new Time();
-        //    var to = new Time(from.MinuteOfDay + 1);
-        //    this.Preferences.SetCellularDataBlackout(new TimeRange(from, to));
-        //    NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
-        //    var httpClient = new HttpClient(new AcceptAllCertificatePolicy());
-        //    var message = new Message(new Uri("https://httpbin.org/post"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
-        //    message.Headers.Add("content-type", "application/json");
-        //    message.Headers.Add("param1", "Value1");
-        //    message.Headers.Add("param2", "Value2");
-        //    message.Headers.Add("param3", "Value3");
-        //    var result = httpClient.Post(message);
-        //    Assert.Equal(Result.Ok, result);
-        //}
 
         [Fact]
         public void WhenCallingPostAndConnectionNotMobile()
