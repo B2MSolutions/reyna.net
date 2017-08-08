@@ -33,14 +33,14 @@
             this.PeriodicBackoutCheck.Record("task");
 
             this.Registry.Verify(r => r.SetQWord(Microsoft.Win32.Registry.LocalMachine, "KEY", "task", interval));
-            Assert.True(interval > GetEpocInMilliSeconds(DateTime.Now.AddSeconds(-2)) && interval <= GetEpocInMilliSeconds(DateTime.Now));
+            Assert.True(interval > GetEpocInMilliSeconds(DateTime.UtcNow.AddSeconds(-2)) && interval <= GetEpocInMilliSeconds(DateTime.Now));
         }
 
         [Fact]
         public void TimeElapsedForTaskLastRunBeforeIntervalShouldReturnFalse()
         {
             this.Registry.Setup(r => r.GetQWord(It.IsAny<Microsoft.Win32.RegistryKey>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<long>()))
-                .Returns(GetEpocInMilliSeconds(DateTime.Now.AddMinutes(-16)));
+                .Returns(GetEpocInMilliSeconds(DateTime.UtcNow.AddMinutes(-16)));
 
             var actual = this.PeriodicBackoutCheck.IsTimeElapsed("task", 60 * 60 * 1000);
 
@@ -51,7 +51,7 @@
         public void TimeElapsedForTaskLastRunAfterIntervalShouldReturnTrue()
         {
             this.Registry.Setup(r => r.GetQWord(It.IsAny<Microsoft.Win32.RegistryKey>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<long>()))
-                .Returns(GetEpocInMilliSeconds(DateTime.Now.AddHours(-1).AddMinutes(-16)));
+                .Returns(GetEpocInMilliSeconds(DateTime.UtcNow.AddHours(-1).AddMinutes(-16)));
 
             var actual = this.PeriodicBackoutCheck.IsTimeElapsed("task", 60 * 60);
 
@@ -62,7 +62,7 @@
         public void TimeElapsedForLastRunInFutureShouldReturnTrue()
         {
             this.Registry.Setup(r => r.GetQWord(It.IsAny<Microsoft.Win32.RegistryKey>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<long>()))
-            .Returns(GetEpocInMilliSeconds(DateTime.Now.AddHours(1)));
+            .Returns(GetEpocInMilliSeconds(DateTime.UtcNow.AddHours(1)));
 
             long interval = 0;
             this.Registry.Setup(r => r.SetQWord(It.IsAny<Microsoft.Win32.RegistryKey>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<long>()))
@@ -72,7 +72,7 @@
 
             Assert.True(actual);
             this.Registry.Verify(r => r.SetQWord(Microsoft.Win32.Registry.LocalMachine, "KEY", "task", interval));
-            Assert.True(interval > GetEpocInMilliSeconds(DateTime.Now.AddSeconds(-2)) && interval <= GetEpocInMilliSeconds(DateTime.Now));
+            Assert.True(interval > GetEpocInMilliSeconds(DateTime.UtcNow.AddSeconds(-2)) && interval <= GetEpocInMilliSeconds(DateTime.Now));
         }
 
         [Fact]
