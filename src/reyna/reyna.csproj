@@ -89,8 +89,10 @@
     <Compile Include="Preferences\Registry.cs" />
     <Compile Include="Services\IStoreService.cs" />
     <Compile Include="Services\IForward.cs" />
+    <Compile Include="System\IContactInformation.cs" />
     <Compile Include="System\IPeriodicBackoutCheck.cs" />
     <Compile Include="System\ITimeProvider.cs" />
+    <Compile Include="System\RegistryContactInformation.cs" />
     <Compile Include="System\RegistryPeriodicBackoutCheck.cs" />
     <Compile Include="System\TimeProvider.cs" />
     <Compile Include="Threading\AutoResetEventAdapter.cs" />

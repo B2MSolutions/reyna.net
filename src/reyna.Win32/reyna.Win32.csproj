@@ -178,6 +178,9 @@
     <Compile Include="..\reyna\Store\SQLiteRepository.cs">
       <Link>Store\SQLiteRepository.cs</Link>
     </Compile>
+    <Compile Include="..\reyna\System\IContactInformation.cs">
+      <Link>System\IContactInformation.cs</Link>
+    </Compile>
     <Compile Include="..\reyna\System\IPeriodicBackoutCheck.cs">
       <Link>System\IPeriodicBackoutCheck.cs</Link>
     </Compile>
@@ -186,6 +189,9 @@
     </Compile>
     <Compile Include="..\reyna\System\ITimeProvider.cs">
       <Link>System\ITimeProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\System\RegistryContactInformation.cs">
+      <Link>System\RegistryContactInformation.cs</Link>
     </Compile>
     <Compile Include="..\reyna\System\RegistryPeriodicBackoutCheck.cs">
       <Link>System\RegistryPeriodicBackoutCheck.cs</Link>
