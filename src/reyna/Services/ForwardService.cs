@@ -8,7 +8,7 @@
     {
         private const string PeriodicBackoutCheckTAG = "ForwardService";
 
-        public ForwardService(IRepository sourceStore, IHttpClient httpClient, INetworkStateService networkStateService, IWaitHandle waitHandle, int temporaryErrorMilliseconds, int sleepMilliseconds, bool batchUpload, IReynaLogger logger)
+        public ForwardService(IRepository sourceStore, IHttpClient httpClient, INetworkStateService networkStateService, IWaitHandle waitHandle, int temporaryErrorMilliseconds, int sleepMilliseconds, bool batchUpload, IReynaLogger logger, IContactInformation contactInformation)
             : base(sourceStore, waitHandle, true, logger)
         {
             if (httpClient == null)
@@ -25,6 +25,7 @@
             this.HttpClient = httpClient;            
             this.TemporaryErrorMilliseconds = temporaryErrorMilliseconds;
             this.SleepMilliseconds = sleepMilliseconds;
+            this.ContactInformation = contactInformation;
             this.PeriodicBackoutCheck = new RegistryPeriodicBackoutCheck(new Registry(), @"Software\Reyna\PeriodicBackoutCheck");
 
             if (batchUpload)
@@ -40,6 +41,8 @@
         internal IMessageProvider MessageProvider { get; set; }
 
         internal IPeriodicBackoutCheck PeriodicBackoutCheck { get; set; }
+
+        internal IContactInformation ContactInformation { get; set; }
 
         internal int TemporaryErrorMilliseconds { get; set; }
 
@@ -84,6 +87,9 @@
                             this.Logger.Debug("ForwardService.ThreadStart message {0}", message.Id);
 
                             var result = this.HttpClient.Post(message);
+
+                            this.RecordContactInformation(result);
+
                             if (result == Result.TemporaryError)
                             {
                                 this.Logger.Debug("ForwardService.ThreadStart temporary error");
@@ -112,6 +118,17 @@
 
                 this.WaitHandle.Reset();
             }
+        }
+
+        private void RecordContactInformation(Result result)
+        {
+            var contactTime = DateTime.UtcNow
+            this.ContactInformation.LastContactAttempt = contactTime;
+            this.ContactInformation.LastContactResult = result;
+            if (result == Result.Ok)
+            {
+                this.ContactInformation.LastSuccessfulContact = contactTime;
+            } 
         }
 
         protected override void OnDispose()
