@@ -8,7 +8,7 @@
     {
         private const string PeriodicBackoutCheckTAG = "ForwardService";
 
-        public ForwardService(IRepository sourceStore, IHttpClient httpClient, INetworkStateService networkStateService, IWaitHandle waitHandle, int temporaryErrorMilliseconds, int sleepMilliseconds, bool batchUpload, IReynaLogger logger, IContactInformation contactInformation)
+        public ForwardService(IRepository sourceStore, IHttpClient httpClient, INetworkStateService networkStateService, IWaitHandle waitHandle, int temporaryErrorMilliseconds, int sleepMilliseconds, bool batchUpload, IReynaLogger logger)
             : base(sourceStore, waitHandle, true, logger)
         {
             if (httpClient == null)
@@ -25,7 +25,7 @@
             this.HttpClient = httpClient;            
             this.TemporaryErrorMilliseconds = temporaryErrorMilliseconds;
             this.SleepMilliseconds = sleepMilliseconds;
-            this.ContactInformation = contactInformation;
+            this.ContactInformation = new RegistryContactInformation(new Registry(), @"Software\Reyna\ContactInformation");
             this.PeriodicBackoutCheck = new RegistryPeriodicBackoutCheck(new Registry(), @"Software\Reyna\PeriodicBackoutCheck");
 
             if (batchUpload)
@@ -38,12 +38,12 @@
             }
         }
 
+        internal IContactInformation ContactInformation { get; set; }
+        
         internal IMessageProvider MessageProvider { get; set; }
 
         internal IPeriodicBackoutCheck PeriodicBackoutCheck { get; set; }
-
-        internal IContactInformation ContactInformation { get; set; }
-
+        
         internal int TemporaryErrorMilliseconds { get; set; }
 
         internal int SleepMilliseconds { get; set; }
@@ -120,17 +120,6 @@
             }
         }
 
-        private void RecordContactInformation(Result result)
-        {
-            var contactTime = DateTime.UtcNow
-            this.ContactInformation.LastContactAttempt = contactTime;
-            this.ContactInformation.LastContactResult = result;
-            if (result == Result.Ok)
-            {
-                this.ContactInformation.LastSuccessfulContact = contactTime;
-            } 
-        }
-
         protected override void OnDispose()
         {
             if (this.NetworkStateService != null)
@@ -152,6 +141,17 @@
         private void Sleep(int millisecondsTimeout)
         {
             Reyna.Sleep.Wait(millisecondsTimeout / 1000);
+        }
+
+        private void RecordContactInformation(Result result)
+        {
+            var contactTime = DateTime.UtcNow;
+            this.ContactInformation.LastContactAttempt = contactTime;
+            this.ContactInformation.LastContactResult = result;
+            if (result == Result.Ok)
+            {
+                this.ContactInformation.LastSuccessfulContact = contactTime;
+            }
         }
     }
 }
