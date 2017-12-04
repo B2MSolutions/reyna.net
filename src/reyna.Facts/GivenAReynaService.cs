@@ -193,7 +193,7 @@
         [Fact]
         public void WhenSettingStorageLimitShouldSaveStorageLimit()
         {
-            ReynaService.SetStorageSizeLimit(null, 3145728);
+            ReynaService.SetStorageSizeLimit(this.Logger.Object, null, 3145728);
             Assert.Equal(3145728, ReynaService.StorageSizeLimit);
 
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
@@ -203,7 +203,7 @@
         [Fact]
         public void WhenGettingStorageLimitShouldSaveStorageLimit()
         {
-            ReynaService.SetStorageSizeLimit(null, 3145728);
+            ReynaService.SetStorageSizeLimit(this.Logger.Object, null, 3145728);
             Assert.Equal(3145728, ReynaService.StorageSizeLimit);
 
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
@@ -214,7 +214,7 @@
         public void WhenSettingStorageLimitShouldInitializeReyna()
         {
             File.Delete("reyna.db");
-            ReynaService.SetStorageSizeLimit(null, 3145728);
+            ReynaService.SetStorageSizeLimit(this.Logger.Object, null, 3145728);
             Assert.True(File.Exists("reyna.db"));
         }
         
@@ -224,7 +224,7 @@
         [InlineData(42)]
         public void WhenSettingStorageLimitShouldSetToMinimumValue(long value) 
         {
-            ReynaService.SetStorageSizeLimit(null, value);
+            ReynaService.SetStorageSizeLimit(this.Logger.Object, null, value);
             Assert.Equal(1867776, ReynaService.StorageSizeLimit); // 1867776 - min value, 1.8 Mb
 
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
@@ -234,7 +234,7 @@
         [Fact]
         public void WhenResettingsStorageLimitShouldDeleteIt()
         {
-            ReynaService.SetStorageSizeLimit(null, 100);
+            ReynaService.SetStorageSizeLimit(this.Logger.Object, null, 100);
             ReynaService.ResetStorageSizeLimit();
             Assert.Equal(-1, ReynaService.StorageSizeLimit);
         }

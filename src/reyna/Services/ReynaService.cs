@@ -124,12 +124,12 @@
             preferences.SaveBatchUploadCheckInterval(checkInterval);
         }
 
-        public void SetStorageSizeLimit(byte[] password, long limit)
+        public static void SetStorageSizeLimit(IReynaLogger logger, byte[] password, long limit)
         {
             limit = limit < MinimumStorageLimit ? MinimumStorageLimit : limit;
             new Preferences().SetStorageSizeLimit(limit);
 
-            var repository = new SQLiteRepository(this.Logger, password);
+            var repository = new SQLiteRepository(logger, password);
             repository.Initialise();
             repository.ShrinkDb(limit);
         }

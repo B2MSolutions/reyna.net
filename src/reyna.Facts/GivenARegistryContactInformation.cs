@@ -40,6 +40,26 @@
         }
 
         [Fact]
+        public void SetLastContactAttemptWithNullShouldDeleteTheValue()
+        {
+            this.Registry.Setup(r => r.DeleteValue(It.IsAny<Microsoft.Win32.RegistryKey>(), It.IsAny<string>(), It.IsAny<string>()));
+
+            this.ContactInformation.LastContactAttempt = null;
+
+            this.Registry.Verify(r => r.DeleteValue(Microsoft.Win32.Registry.LocalMachine, "KEY", "LastContactAttempt"));
+        }
+
+        [Fact]
+        public void GetLastContactAttemptAndValueIsNotPresentShouldReturnNull()
+        {
+            this.Registry.Setup(r => r.GetQWord(It.IsAny<Microsoft.Win32.RegistryKey>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<long>()))
+                .Returns(0);
+            DateTime? lastContactAttempt = this.ContactInformation.LastContactAttempt;
+
+            Assert.Null(lastContactAttempt);
+        }
+
+        [Fact]
         public void GetLastContactAttemptShouldReturnValueFromRegistry()
         {
             var testTime = new DateTime(2017, 12, 1).ToUniversalTime();
@@ -47,9 +67,9 @@
 
             this.Registry.Setup(r => r.GetQWord(It.IsAny<Microsoft.Win32.RegistryKey>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<long>()))
                 .Returns(interval);
-            DateTime lastContactAttempt = this.ContactInformation.LastContactAttempt;
+            DateTime? lastContactAttempt = this.ContactInformation.LastContactAttempt;
 
-            Assert.Equal(interval, GetEpocInMilliSeconds(lastContactAttempt));
+            Assert.Equal(interval, GetEpocInMilliSeconds((DateTime)lastContactAttempt));
         }
 
         [Fact]
@@ -70,6 +90,16 @@
         }
 
         [Fact]
+        public void SetLastSuccessfulContactToNullShouldDeleteTheValue()
+        {
+            this.Registry.Setup(r => r.DeleteValue(It.IsAny<Microsoft.Win32.RegistryKey>(), It.IsAny<string>(), It.IsAny<string>()));
+
+            this.ContactInformation.LastSuccessfulContact = null;
+
+            this.Registry.Verify(r => r.DeleteValue(Microsoft.Win32.Registry.LocalMachine, "KEY", "LastSuccessfulContact"));
+        }
+
+        [Fact]
         public void GetLastSuccessfulContactShouldReturnValueFromRegistry()
         {
             var testTime = new DateTime(2017, 12, 1).ToUniversalTime();
@@ -77,9 +107,19 @@
 
             this.Registry.Setup(r => r.GetQWord(It.IsAny<Microsoft.Win32.RegistryKey>(), It.IsAny<string>(), "LastSuccessfulContact", It.IsAny<long>()))
                 .Returns(interval);
-            DateTime lastContactAttempt = this.ContactInformation.LastSuccessfulContact;
+            DateTime lastContactAttempt = (DateTime)this.ContactInformation.LastSuccessfulContact;
 
             Assert.Equal(interval, GetEpocInMilliSeconds(lastContactAttempt));
+        }
+
+        [Fact]
+        public void GetLastSuccessfulContactAndValueIsNotPresentShouldReturnNull()
+        {
+            this.Registry.Setup(r => r.GetQWord(It.IsAny<Microsoft.Win32.RegistryKey>(), It.IsAny<string>(), "LastSuccessfulContact", It.IsAny<long>()))
+                .Returns(0);
+            DateTime? lastContactAttempt = this.ContactInformation.LastSuccessfulContact;
+
+            Assert.Null(lastContactAttempt);
         }
         
         [Fact]
@@ -107,12 +147,12 @@
         }
 
         [Fact]
-        public void GetLastContactResultAndRegistryIsEmptyShouldReturnNotConnected()
+        public void GetLastContactResultAndRegistryIsEmptyShouldReturnNull()
         {
             this.Registry.Setup(r => r.GetString(It.IsAny<Microsoft.Win32.RegistryKey>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns((string)null);
 
-            Assert.Equal(Reyna.Interfaces.Result.NotConnected, this.ContactInformation.LastContactResult);
+            Assert.Equal(null, this.ContactInformation.LastContactResult);
         }
         
         private static long GetEpocInMilliSeconds(DateTime time)

@@ -14,39 +14,62 @@
             this.timeProvider = new TimeProvider();
         }
 
-        public System.DateTime LastContactAttempt
+        public System.DateTime? LastContactAttempt
         {
             get
             {
                 long lastContactAttemptEpoc = this.Registry.GetQWord(Microsoft.Win32.Registry.LocalMachine, this.ContactInformationKeyName, "LastContactAttempt", 0);
+                if (lastContactAttemptEpoc == 0)
+                {
+                    return null;
+                }
+
                 return this.timeProvider.GetDateTimeFromEpoc(lastContactAttemptEpoc, DateTimeKind.Utc);
             }
 
             set
             {
-                long epocInMilliseconds = this.timeProvider.GetEpochInMilliSeconds(value, DateTimeKind.Local);
+                if (value == null)
+                {
+                    this.Registry.DeleteValue(Microsoft.Win32.Registry.LocalMachine, this.ContactInformationKeyName, "LastContactAttempt");
+                    return;
+                }
+
+                long epocInMilliseconds = this.timeProvider.GetEpochInMilliSeconds((DateTime)value, DateTimeKind.Local);
                 
                 this.Registry.SetQWord(Microsoft.Win32.Registry.LocalMachine, this.ContactInformationKeyName, "LastContactAttempt", epocInMilliseconds);
             }
         }
 
-        public System.DateTime LastSuccessfulContact
+        public System.DateTime? LastSuccessfulContact
         {
             get
             {
-                long lastastSuccessfulContactEpoc = this.Registry.GetQWord(Microsoft.Win32.Registry.LocalMachine, this.ContactInformationKeyName, "LastSuccessfulContact", 0);
-                return this.timeProvider.GetDateTimeFromEpoc(lastastSuccessfulContactEpoc, DateTimeKind.Utc);
+                long lastSuccessfulContactEpoc = this.Registry.GetQWord(Microsoft.Win32.Registry.LocalMachine, this.ContactInformationKeyName, "LastSuccessfulContact", 0);
+
+                if (lastSuccessfulContactEpoc == 0)
+                {
+                    return null;
+                }
+
+                return this.timeProvider.GetDateTimeFromEpoc(lastSuccessfulContactEpoc, DateTimeKind.Utc);
             }
             
             set
             {
-                long epocInMilliseconds = this.timeProvider.GetEpochInMilliSeconds(value, DateTimeKind.Local);
+                if (value == null)
+                {
+                    this.Registry.DeleteValue(Microsoft.Win32.Registry.LocalMachine, this.ContactInformationKeyName, "LastSuccessfulContact");
+                    return;
+                }
+
+                long epocInMilliseconds = this.timeProvider.GetEpochInMilliSeconds((DateTime)value, DateTimeKind.Local);
 
                 this.Registry.SetQWord(Microsoft.Win32.Registry.LocalMachine, this.ContactInformationKeyName, "LastSuccessfulContact", epocInMilliseconds);
             }
         }
 
-        public Reyna.Interfaces.Result LastContactResult
+        public Reyna.Interfaces.Result? LastContactResult
         {
             get
             {
@@ -57,7 +80,7 @@
                 }
                 catch (Exception)
                 {
-                    return Reyna.Interfaces.Result.NotConnected;
+                    return null;
                 }
             }
             

@@ -60,7 +60,7 @@
             FileInfo fileInfo = new FileInfo(path);
             Assert.AreEqual(5649408, fileInfo.Length);
 
-            reynaService.SetStorageSizeLimit(password, size);
+            ReynaService.SetStorageSizeLimit(new ReynaNullLogger(), password, size);
             reynaService.Stop();
             fileInfo = new FileInfo(path);
             Assert.AreEqual(1754112, fileInfo.Length);
@@ -84,7 +84,7 @@
             var assemblyFile = new FileInfo(Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
             var path = Path.Combine(assemblyFile.DirectoryName, "reyna.db");
 
-            reynaService.SetStorageSizeLimit(password, size);
+            ReynaService.SetStorageSizeLimit(new ReynaNullLogger(), password, size);
             
             putMessageFromFile(reynaService, assemblyFile.DirectoryName, 100);
             reynaService.Stop();

@@ -5,10 +5,10 @@
 
     public interface IContactInformation
     {
-        DateTime LastContactAttempt { get; set; }
+        DateTime? LastContactAttempt { get; set; }
 
-        DateTime LastSuccessfulContact { get; set; }
+        DateTime? LastSuccessfulContact { get; set; }
         
-        Result LastContactResult { get; set; }
+        Result? LastContactResult { get; set; }
     }
 }
