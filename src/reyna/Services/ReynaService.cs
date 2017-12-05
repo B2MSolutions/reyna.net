@@ -14,7 +14,7 @@
             this.Password = password;
             this.Logger = logger;
             this.PersistentStore = new SQLiteRepository(logger, password);
-            this.HttpClient = new HttpClient(certificatePolicy);
+            this.HttpClient = new HttpClient(certificatePolicy, logger);
             this.EncryptionChecker = new EncryptionChecker();
 
             this.ForwardWaitHandle = new AutoResetEventAdapter(false);

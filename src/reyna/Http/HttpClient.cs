@@ -9,7 +9,7 @@
 
     public sealed class HttpClient : IHttpClient
     {
-        public HttpClient(ICertificatePolicy certificatePolicy)
+        public HttpClient(ICertificatePolicy certificatePolicy, IReynaLogger logger)
         {
             if (certificatePolicy != null)
             {
@@ -19,9 +19,12 @@
             }
 
             this.TimeProvider = new TimeProvider();
+            this.Logger = logger;
         }
 
         public ITimeProvider TimeProvider { get; set; }
+
+        private IReynaLogger Logger { get; set; }
 
         public static Result CanSend()
         {
@@ -90,6 +93,7 @@
             {
                 var response = webException.Response as HttpWebResponse;
                 statusCode = HttpClient.GetStatusCode(response);
+                this.Logger.Debug("HttpClient.RequestAndRespond exception {0} status code {1}", webException.ToString(), statusCode);
             }
 
             return HttpStatusCodeExtensions.ToResult(statusCode);
