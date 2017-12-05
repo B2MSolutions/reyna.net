@@ -29,7 +29,7 @@
 
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
 
-            this.PersistentStore = new SQLiteRepository(new ReynaNullLogger());
+            this.PersistentStore = new SQLiteRepository(new ReynaNullLogger(), null);
             this.HttpClient = new Mock<IHttpClient>();
             this.NetworkStateService = new Mock<INetworkStateService>();
             this.PeriodicBackoutCheck = new Mock<IPeriodicBackoutCheck>();
@@ -53,7 +53,6 @@
             this.ForwardService.ContactInformation = this.ContactInformation.Object;
 
             Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
-            Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\ContactInformation", false);
             Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
         }
 

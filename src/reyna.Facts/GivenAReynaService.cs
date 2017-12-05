@@ -18,7 +18,7 @@
             this.NetworkStateService = new Mock<INetworkStateService>();
             this.Logger = new Mock<IReynaLogger>();
 
-            this.ReynaService = new ReynaService(this.Logger.Object);
+            this.ReynaService = new ReynaService(null, null, false, this.Logger.Object);
             this.ReynaService.StoreService = this.StoreService.Object;
             this.ReynaService.ForwardService = this.ForwardService.Object;
             this.ReynaService.NetworkStateService = this.NetworkStateService.Object;
@@ -49,7 +49,7 @@
         public void WhenConstructingAndReceivedPasswordShouldPassPasswordToSQLiteRepository()
         {
             var password = new byte[] { 0xFF, 0xAA, 0xCC, 0xCC };
-            var reynaService = new ReynaService(password, null, this.Logger.Object);
+            var reynaService = new ReynaService(password, null, false, this.Logger.Object);
 
             Assert.Equal(password, ((SQLiteRepository)reynaService.PersistentStore).Password); 
         }
@@ -57,7 +57,7 @@
         [Fact]
         public void WhenConstructingWithoutPasswordShouldNotPassAnyPasswordToSQLiteRepository()
         {
-            var reynaService = new ReynaService(this.Logger.Object);
+            var reynaService = new ReynaService(null, null, false, this.Logger.Object);
 
             Assert.Null(((SQLiteRepository)reynaService.PersistentStore).Password);
         }
@@ -65,7 +65,7 @@
         [Fact]
         public void WhenConstructingWithUseNetworkStateIsFalseShouldNotUseNetworkStateService()
         {
-            var reynaService = new ReynaService(false, this.Logger.Object);
+            var reynaService = new ReynaService(null, null, false, this.Logger.Object);
             Assert.Null(reynaService.NetworkStateService);
             reynaService.Dispose();
         }
@@ -73,7 +73,7 @@
         [Fact]
         public void StartStopDisposeShouldWork()
         {
-            var reynaService = new ReynaService(false, this.Logger.Object);
+            var reynaService = new ReynaService(null, null, false, this.Logger.Object);
             Assert.Null(reynaService.NetworkStateService);
             reynaService.Start();
             System.Threading.Thread.Sleep(1000);

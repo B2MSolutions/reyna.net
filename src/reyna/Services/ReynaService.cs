@@ -9,21 +9,6 @@
     {
         private const long MinimumStorageLimit = 1867776; // 1Mb 800Kb
 
-        public ReynaService(IReynaLogger logger)
-            : this(null, null, logger)
-        {
-        }
-
-        public ReynaService(bool useNetworkState, IReynaLogger logger)
-            : this(null, null, useNetworkState, logger)
-        {
-        }
-
-        public ReynaService(byte[] password, ICertificatePolicy certificatePolicy, IReynaLogger logger)
-            : this(password, certificatePolicy, true, logger)
-        {
-        }
-
         public ReynaService(byte[] password, ICertificatePolicy certificatePolicy, bool useNetworkState, IReynaLogger logger)
         {
             this.Password = password;

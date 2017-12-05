@@ -25,7 +25,7 @@
         public void Put(IMessage message)
         {
             long storageSizeLimit = new Preferences().StorageSizeLimit;
-            this.Logger.Debug("Reyna.StoreService.Put {0} -> {1} ({3})", message.Id, message.Url.AbsolutePath, storageSizeLimit);
+            this.Logger.Debug("Reyna.StoreService.Put {0} -> {1} ({2})", message.Id, message.Url.AbsolutePath, storageSizeLimit);
 
             for (int i = 0; i < 10; i++)
             {

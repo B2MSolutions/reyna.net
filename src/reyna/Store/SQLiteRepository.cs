@@ -28,16 +28,11 @@
 
         private static readonly object Locker = new object();
 
-        public SQLiteRepository(IReynaLogger logger)
-        {
-            this.Logger = logger;
-            this.SizeDifferenceToStartCleaning = 307200; ////300Kb in bytes
-        }
-
         public SQLiteRepository(IReynaLogger logger, byte[] password)
         {
             this.Password = password;
             this.SizeDifferenceToStartCleaning = 307200; ////300Kb in bytes
+            this.Logger = logger;
         }
 
         private delegate IMessage ExecuteFunctionInTransaction(DbTransaction transaction);

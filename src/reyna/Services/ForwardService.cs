@@ -25,7 +25,7 @@
             this.HttpClient = httpClient;            
             this.TemporaryErrorMilliseconds = temporaryErrorMilliseconds;
             this.SleepMilliseconds = sleepMilliseconds;
-            this.ContactInformation = new RegistryContactInformation(new Registry(), @"Software\Reyna\ContactInformation");
+            this.ContactInformation = new RegistryContactInformation(new Registry(), @"Software\Reyna");
             this.PeriodicBackoutCheck = new RegistryPeriodicBackoutCheck(new Registry(), @"Software\Reyna\PeriodicBackoutCheck");
 
             if (batchUpload)
