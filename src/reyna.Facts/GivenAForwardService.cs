@@ -29,10 +29,12 @@
 
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
 
-            this.PersistentStore = new SQLiteRepository(new ReynaNullLogger());
+            this.PersistentStore = new SQLiteRepository(new ReynaNullLogger(), null);
             this.HttpClient = new Mock<IHttpClient>();
             this.NetworkStateService = new Mock<INetworkStateService>();
             this.PeriodicBackoutCheck = new Mock<IPeriodicBackoutCheck>();
+            this.ContactInformation = new Mock<IContactInformation>();
+
             this.Logger = new Mock<IReynaLogger>();
 
             this.WaitHandle = new AutoResetEventAdapter(false);
@@ -48,6 +50,7 @@
 
             this.ForwardService = new ForwardService(this.PersistentStore, this.HttpClient.Object, this.NetworkStateService.Object, this.WaitHandle, 100, 0, false, this.Logger.Object);
             this.ForwardService.PeriodicBackoutCheck = this.PeriodicBackoutCheck.Object;
+            this.ForwardService.ContactInformation = this.ContactInformation.Object;
 
             Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
             Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
@@ -56,6 +59,8 @@
         public Preferences Preferences { get; set; }
 
         private IRepository PersistentStore { get; set; }
+
+        private Mock<IContactInformation> ContactInformation { get; set; }
 
         private Mock<IHttpClient> HttpClient { get; set; }
 
@@ -704,6 +709,38 @@
             this.PeriodicBackoutCheck.Verify(p => p.IsTimeElapsed("ForwardService", 1000), Times.AtLeast(1));
         }
 
+        [Fact]
+        public void WhenPostingMessagesAndTemporaryErrorShouldRecordLastAttemptedContactAndStatus()
+        {
+            this.HttpClient.Setup(hc => hc.Post(It.IsAny<IMessage>())).Returns(Result.TemporaryError);
+
+            var message = this.CreateMessage();
+            this.ForwardService.Start();
+
+            this.PersistentStore.Add(message);
+            Thread.Sleep(200);
+
+            this.ContactInformation.VerifySet(c => c.LastContactAttempt = It.IsAny<DateTime>(), Times.Once());
+            this.ContactInformation.VerifySet(c => c.LastContactResult = Result.TemporaryError, Times.Once());
+            this.ContactInformation.VerifySet(c => c.LastSuccessfulContact = It.IsAny<DateTime>(), Times.Never());
+        }
+
+        [Fact]
+        public void WhenPostingMessagesAndResultIsOkShouldRecordLastAttemptedContactAndStatusAndLastSuccessfuleConnection()
+        {
+            this.HttpClient.Setup(hc => hc.Post(It.IsAny<IMessage>())).Returns(Result.Ok);
+
+            var message = this.CreateMessage();
+            this.ForwardService.Start();
+
+            this.PersistentStore.Add(message);
+            Thread.Sleep(200);
+
+            this.ContactInformation.VerifySet(c => c.LastContactAttempt = It.IsAny<DateTime>(), Times.Once());
+            this.ContactInformation.VerifySet(c => c.LastContactResult = Result.Ok, Times.Once());
+            this.ContactInformation.VerifySet(c => c.LastSuccessfulContact = It.IsAny<DateTime>(), Times.Once());
+        }
+        
         private void StopForwardService(object forwardService)
         {
             Thread.Sleep(100);

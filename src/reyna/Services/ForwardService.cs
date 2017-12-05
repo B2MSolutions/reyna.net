@@ -25,6 +25,7 @@
             this.HttpClient = httpClient;            
             this.TemporaryErrorMilliseconds = temporaryErrorMilliseconds;
             this.SleepMilliseconds = sleepMilliseconds;
+            this.ContactInformation = new RegistryContactInformation(new Registry(), @"Software\Reyna");
             this.PeriodicBackoutCheck = new RegistryPeriodicBackoutCheck(new Registry(), @"Software\Reyna\PeriodicBackoutCheck");
 
             if (batchUpload)
@@ -37,10 +38,12 @@
             }
         }
 
+        internal IContactInformation ContactInformation { get; set; }
+        
         internal IMessageProvider MessageProvider { get; set; }
 
         internal IPeriodicBackoutCheck PeriodicBackoutCheck { get; set; }
-
+        
         internal int TemporaryErrorMilliseconds { get; set; }
 
         internal int SleepMilliseconds { get; set; }
@@ -84,6 +87,9 @@
                             this.Logger.Debug("ForwardService.ThreadStart message {0}", message.Id);
 
                             var result = this.HttpClient.Post(message);
+
+                            this.RecordContactInformation(result);
+
                             if (result == Result.TemporaryError)
                             {
                                 this.Logger.Debug("ForwardService.ThreadStart temporary error");
@@ -135,6 +141,17 @@
         private void Sleep(int millisecondsTimeout)
         {
             Reyna.Sleep.Wait(millisecondsTimeout / 1000);
+        }
+
+        private void RecordContactInformation(Result result)
+        {
+            var contactTime = DateTime.UtcNow;
+            this.ContactInformation.LastContactAttempt = contactTime;
+            this.ContactInformation.LastContactResult = result;
+            if (result == Result.Ok)
+            {
+                this.ContactInformation.LastSuccessfulContact = contactTime;
+            }
         }
     }
 }

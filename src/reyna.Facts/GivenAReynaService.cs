@@ -18,7 +18,7 @@
             this.NetworkStateService = new Mock<INetworkStateService>();
             this.Logger = new Mock<IReynaLogger>();
 
-            this.ReynaService = new ReynaService(this.Logger.Object);
+            this.ReynaService = new ReynaService(null, null, false, this.Logger.Object);
             this.ReynaService.StoreService = this.StoreService.Object;
             this.ReynaService.ForwardService = this.ForwardService.Object;
             this.ReynaService.NetworkStateService = this.NetworkStateService.Object;
@@ -49,7 +49,7 @@
         public void WhenConstructingAndReceivedPasswordShouldPassPasswordToSQLiteRepository()
         {
             var password = new byte[] { 0xFF, 0xAA, 0xCC, 0xCC };
-            var reynaService = new ReynaService(password, null, this.Logger.Object);
+            var reynaService = new ReynaService(password, null, false, this.Logger.Object);
 
             Assert.Equal(password, ((SQLiteRepository)reynaService.PersistentStore).Password); 
         }
@@ -57,7 +57,7 @@
         [Fact]
         public void WhenConstructingWithoutPasswordShouldNotPassAnyPasswordToSQLiteRepository()
         {
-            var reynaService = new ReynaService(this.Logger.Object);
+            var reynaService = new ReynaService(null, null, false, this.Logger.Object);
 
             Assert.Null(((SQLiteRepository)reynaService.PersistentStore).Password);
         }
@@ -65,7 +65,7 @@
         [Fact]
         public void WhenConstructingWithUseNetworkStateIsFalseShouldNotUseNetworkStateService()
         {
-            var reynaService = new ReynaService(false, this.Logger.Object);
+            var reynaService = new ReynaService(null, null, false, this.Logger.Object);
             Assert.Null(reynaService.NetworkStateService);
             reynaService.Dispose();
         }
@@ -73,7 +73,7 @@
         [Fact]
         public void StartStopDisposeShouldWork()
         {
-            var reynaService = new ReynaService(false, this.Logger.Object);
+            var reynaService = new ReynaService(null, null, false, this.Logger.Object);
             Assert.Null(reynaService.NetworkStateService);
             reynaService.Start();
             System.Threading.Thread.Sleep(1000);
@@ -193,7 +193,7 @@
         [Fact]
         public void WhenSettingStorageLimitShouldSaveStorageLimit()
         {
-            ReynaService.SetStorageSizeLimit(null, 3145728);
+            ReynaService.SetStorageSizeLimit(this.Logger.Object, null, 3145728);
             Assert.Equal(3145728, ReynaService.StorageSizeLimit);
 
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
@@ -203,7 +203,7 @@
         [Fact]
         public void WhenGettingStorageLimitShouldSaveStorageLimit()
         {
-            ReynaService.SetStorageSizeLimit(null, 3145728);
+            ReynaService.SetStorageSizeLimit(this.Logger.Object, null, 3145728);
             Assert.Equal(3145728, ReynaService.StorageSizeLimit);
 
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
@@ -214,7 +214,7 @@
         public void WhenSettingStorageLimitShouldInitializeReyna()
         {
             File.Delete("reyna.db");
-            ReynaService.SetStorageSizeLimit(null, 3145728);
+            ReynaService.SetStorageSizeLimit(this.Logger.Object, null, 3145728);
             Assert.True(File.Exists("reyna.db"));
         }
         
@@ -224,7 +224,7 @@
         [InlineData(42)]
         public void WhenSettingStorageLimitShouldSetToMinimumValue(long value) 
         {
-            ReynaService.SetStorageSizeLimit(null, value);
+            ReynaService.SetStorageSizeLimit(this.Logger.Object, null, value);
             Assert.Equal(1867776, ReynaService.StorageSizeLimit); // 1867776 - min value, 1.8 Mb
 
             Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
@@ -234,7 +234,7 @@
         [Fact]
         public void WhenResettingsStorageLimitShouldDeleteIt()
         {
-            ReynaService.SetStorageSizeLimit(null, 100);
+            ReynaService.SetStorageSizeLimit(this.Logger.Object, null, 100);
             ReynaService.ResetStorageSizeLimit();
             Assert.Equal(-1, ReynaService.StorageSizeLimit);
         }

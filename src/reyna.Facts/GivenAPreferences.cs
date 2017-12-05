@@ -121,6 +121,7 @@
         public void WhenNoWlanBlackoutRangeThenGetWlanBlackoutRangeShouldReturnNull()
         {
             Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
+            Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\ContactInformation", false);
             Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
 
             var range = this.Preferences.WlanBlackoutRange;
@@ -132,6 +133,7 @@
         public void WhenNoWwanBlackoutRangeThenGetWlanBlackoutRangeShouldReturnNull()
         {
             Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
+            Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\ContactInformation", false);
             Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
 
             var range = this.Preferences.WwanBlackoutRange;
@@ -221,6 +223,7 @@
         public void WhenGetRoamingBlackoutAndNeverSetRoamingBeforeShouldReturnFalse()
         {
             Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
+            Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\ContactInformation", false);
             Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
 
             var actual = this.Preferences.RoamingBlackout;
@@ -232,6 +235,8 @@
         public void WhenGetOnChargeBlackoutAndNeverSetRoamingBeforeShouldReturnFalse()
         {
             Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
+            Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\ContactInformation", false);
+
             Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
 
             var actual = this.Preferences.OnChargeBlackout;
@@ -243,6 +248,7 @@
         public void WhenGetOffChargeBlackoutAndNeverSetRoamingBeforeShouldReturnFalse()
         {
             Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\PeriodicBackoutCheck", false);
+            Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna\ContactInformation", false);
             Microsoft.Win32.Registry.LocalMachine.DeleteSubKey(@"Software\Reyna", false);
 
             var actual = this.Preferences.OffChargeBlackout;

@@ -14,7 +14,7 @@
         public GivenASQLiteRepository()
         {
             File.Delete(this.DatabasePath);
-            this.Repository = new SQLiteRepository(new ReynaNullLogger());
+            this.Repository = new SQLiteRepository(new ReynaNullLogger(), null);
             this.Repository.Initialise();
         }
 
