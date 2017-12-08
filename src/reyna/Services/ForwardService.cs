@@ -78,37 +78,13 @@
                 this.WaitHandle.WaitOne();
                 try
                 {
-                    IMessage message = null;
-
                     if (this.CanSend)
                     {
-                        while (!this.Terminate && (message = this.MessageProvider.GetNext()) != null)
-                        {
-                            this.Logger.Debug("ForwardService.ThreadStart message {0}", message.Id);
-
-                            var result = this.HttpClient.Post(message);
-
-                            this.RecordContactInformation(result);
-
-                            if (result == Result.TemporaryError)
-                            {
-                                this.Logger.Debug("ForwardService.ThreadStart temporary error");
-                                this.PeriodicBackoutCheck.Record(ForwardService.PeriodicBackoutCheckTAG);
-                                break;
-                            }
-
-                            if (result == Result.Blackout || result == Result.NotConnected)
-                            {
-                                this.Logger.Debug("ForwardService.ThreadStart blacked out/not connected");
-                                break;
-                            }
-
-                            this.Logger.Debug("ForwardService.ThreadStart delete and sleep");
-                            this.MessageProvider.Delete(message);
-                            this.Sleep(this.SleepMilliseconds);
-                        }
-
-                        this.MessageProvider.Close();
+                        this.SendAllMessages();
+                    }
+                    else
+                    {
+                        this.RecordContactInformation(Reyna.HttpClient.CanSend());
                     }
                 }
                 catch (Exception exception)
@@ -126,6 +102,39 @@
             {
                 this.NetworkStateService.NetworkConnected -= this.OnNetworkConnected;
             }
+        }
+
+        private void SendAllMessages()
+        {
+            IMessage message = null;
+
+            while (!this.Terminate && (message = this.MessageProvider.GetNext()) != null)
+            {
+                this.Logger.Debug("ForwardService.SendAllMessages message {0}", message.Id);
+
+                var result = this.HttpClient.Post(message);
+
+                this.RecordContactInformation(result);
+
+                if (result == Result.TemporaryError)
+                {
+                    this.Logger.Debug("ForwardService.SendAllMessages temporary error");
+                    this.PeriodicBackoutCheck.Record(ForwardService.PeriodicBackoutCheckTAG);
+                    break;
+                }
+
+                if (result == Result.Blackout || result == Result.NotConnected)
+                {
+                    this.Logger.Debug("ForwardService.SendAllMessages blacked out/not connected");
+                    break;
+                }
+
+                this.Logger.Debug("ForwardService.SendAllMessages delete and sleep");
+                this.MessageProvider.Delete(message);
+                this.Sleep(this.SleepMilliseconds);
+            }
+
+            this.MessageProvider.Close();
         }
 
         private void OnNetworkConnected(object sender, EventArgs e)

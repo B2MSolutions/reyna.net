@@ -31,7 +31,7 @@
             networkInterface.CurrentIpAddress = new IPAddress(42);
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
 
-            var httpClient = new HttpClient(null);
+            var httpClient = new HttpClient(null, new ReynaNullLogger());
             var message = new Message(new Uri("http://httpbin.org/post"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
             message.Headers.Add("content-type", "application/json");
             message.Headers.Add("param1", "Value1");
@@ -49,7 +49,7 @@
             networkInterface.CurrentIpAddress = new IPAddress(42);
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
 
-            var httpClient = new HttpClient(new AcceptAllCertificatePolicy());
+            var httpClient = new HttpClient(new AcceptAllCertificatePolicy(), new ReynaNullLogger());
             var message = new Message(new Uri("https://httpbin.org/post"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
             message.Headers.Add("content-type", "application/json");
             message.Headers.Add("param1", "Value1");
@@ -67,7 +67,7 @@
             networkInterface.CurrentIpAddress = new IPAddress(42);
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
 
-            var httpClient = new HttpClient(null);
+            var httpClient = new HttpClient(null, new ReynaNullLogger());
             var message = new Message(new Uri("http://httpbin.org/post2"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
             message.Headers.Add("content-type", "application/json");
             message.Headers.Add("param1", "Value1");
@@ -85,7 +85,7 @@
             networkInterface.CurrentIpAddress = new IPAddress(42);
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
 
-            var httpClient = new HttpClient(null);
+            var httpClient = new HttpClient(null, new ReynaNullLogger());
             var message = new Message(new Uri("test://httpbin.org/post"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
             message.Headers.Add("content-type", "application/json");
             message.Headers.Add("param1", "Value1");
@@ -128,7 +128,7 @@
 
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
 
-            var httpClient = new HttpClient(new AcceptAllCertificatePolicy());
+            var httpClient = new HttpClient(new AcceptAllCertificatePolicy(), new ReynaNullLogger());
             var message = new Message(new Uri("https://httpbin.org/post"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
             message.Headers.Add("content-type", "application/json");
             message.Headers.Add("param1", "Value1");
@@ -152,7 +152,7 @@
 
             NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
 
-            var httpClient = new HttpClient(new AcceptAllCertificatePolicy());
+            var httpClient = new HttpClient(new AcceptAllCertificatePolicy(), new ReynaNullLogger());
             var message = new Message(new Uri("https://httpbin.org/post"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
             message.Headers.Add("content-type", "application/json");
             message.Headers.Add("param1", "Value1");
