@@ -93,6 +93,10 @@
             {
                 var response = webException.Response as HttpWebResponse;
                 statusCode = HttpClient.GetStatusCode(response);
+                if (statusCode >= HttpStatusCode.InternalServerError)
+                {
+                    this.Logger.Err("HttpClient.RequestAndRespond exception {0} status code {1}", webException.ToString(), statusCode);
+                }
                 this.Logger.Debug("HttpClient.RequestAndRespond exception {0} status code {1}", webException.ToString(), statusCode);
             }
 
