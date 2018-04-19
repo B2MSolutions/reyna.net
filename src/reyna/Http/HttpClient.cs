@@ -95,7 +95,7 @@
                 statusCode = HttpClient.GetStatusCode(response);
                 if (statusCode >= HttpStatusCode.InternalServerError)
                 {
-                    this.Logger.Err("HttpClient.RequestAndRespond exception {0} status code {1}", webException.ToString(), statusCode);
+                    this.Logger.Err("HttpClient.RequestAndRespond exception {0} status code {1} request {2}", webException.ToString(), statusCode, request.RequestUri.ToString());
                 }
                 this.Logger.Debug("HttpClient.RequestAndRespond exception {0} status code {1}", webException.ToString(), statusCode);
             }
