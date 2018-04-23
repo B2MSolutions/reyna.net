@@ -20,7 +20,10 @@
 
             this.TimeProvider = new TimeProvider();
             this.Logger = logger;
+            this.StatusGetter = new HttpStatusGetter();
         }
+
+        public IHttpStatusGetter StatusGetter { get; set; }
 
         public ITimeProvider TimeProvider { get; set; }
 
@@ -61,16 +64,6 @@
             }
         }
 
-        internal static HttpStatusCode GetStatusCode(HttpWebResponse response)
-        {
-            if (response == null)
-            {
-                return HttpStatusCode.ServiceUnavailable;
-            }
-
-            return response.StatusCode;
-        }
-
         private Result RequestAndRespond(HttpWebRequest request, string content)
         {
             HttpStatusCode statusCode = HttpStatusCode.NotFound;
@@ -86,13 +79,13 @@
 
                 using (var response = request.GetResponse() as HttpWebResponse)
                 {
-                    statusCode = HttpClient.GetStatusCode(response);
+                    statusCode = this.StatusGetter.GetStatusCode(response);
                 }
             }
             catch (WebException webException)
             {
                 var response = webException.Response as HttpWebResponse;
-                statusCode = HttpClient.GetStatusCode(response);
+                statusCode = this.StatusGetter.GetStatusCode(response);
                 if (statusCode >= HttpStatusCode.InternalServerError)
                 {
                     this.Logger.Err("HttpClient.RequestAndRespond exception {0} status code {1} request {2}", webException.ToString(), statusCode, request.RequestUri.ToString());

@@ -76,6 +76,8 @@
   <ItemGroup>
     <Compile Include="Connection\IConnectionManager.cs" />
     <Compile Include="Http\AcceptAllCertificatePolicy.cs" />
+    <Compile Include="Http\HttpStatusGetter.cs" />
+    <Compile Include="Http\IHttpStatusGetter.cs" />
     <Compile Include="Logging\IReynaLogger.cs" />
     <Compile Include="Logging\ReynaNullLogger.cs" />
     <Compile Include="MessageProvider\Batch.cs" />

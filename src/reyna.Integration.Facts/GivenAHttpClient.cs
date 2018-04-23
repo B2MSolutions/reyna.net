@@ -99,7 +99,8 @@
         [Fact]
         public void WhenCallingGetStatusCodeWithNullResponseShouldReturnServiceUnavailable()
         {
-            var actual = HttpClient.GetStatusCode(null);
+            var httpClient = new HttpClient(null, new ReynaNullLogger());
+            var actual = httpClient.StatusGetter.GetStatusCode(null);
             Assert.Equal(HttpStatusCode.ServiceUnavailable, actual);
         }
 
@@ -316,6 +317,33 @@
             this.Preferences.SetOffChargeBlackout(true);
 
             Assert.True(HttpClient.CanSend() == Result.Ok);
+        }
+
+        [Fact]
+        public void TestLoggingOfErrorWhenRequired()
+        {
+            var networkInterface = new NetworkInterface();
+            networkInterface.CurrentIpAddress = new IPAddress(42);
+            NetworkInterface.NetworkInterfaces = new INetworkInterface[] { networkInterface };
+
+            var httpClient = new HttpClient(null, new ReynaNullLogger());
+            httpClient.StatusGetter = new MockStatusGetter();
+            var message = new Message(new Uri("http://httpbin.org/post"), "{ \"lat\":51.527516, \"lng\":-0.715806, \"utc\":1362065860 }");
+            message.Headers.Add("content-type", "application/json");
+            message.Headers.Add("param1", "Value1");
+            message.Headers.Add("param2", "Value2");
+            message.Headers.Add("param3", "Value3");
+            var result = httpClient.Post(message);
+
+            Assert.Equal(Result.TemporaryError, result);
+        }
+
+        private class MockStatusGetter : IHttpStatusGetter
+        {
+            public HttpStatusCode GetStatusCode(HttpWebResponse response)
+            {
+                return HttpStatusCode.InternalServerError;
+            }
         }
     }
 }

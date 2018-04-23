@@ -82,8 +82,14 @@
     <Compile Include="..\reyna\Http\HttpClient.cs">
       <Link>Http\HttpClient.cs</Link>
     </Compile>
+    <Compile Include="..\reyna\Http\HttpStatusGetter.cs">
+      <Link>Http\HttpStatusGetter.cs</Link>
+    </Compile>
     <Compile Include="..\reyna\Http\IHttpClient.cs">
       <Link>Http\IHttpClient.cs</Link>
+    </Compile>
+    <Compile Include="..\reyna\Http\IHttpStatusGetter.cs">
+      <Link>Http\IHttpStatusGetter.cs</Link>
     </Compile>
     <Compile Include="..\reyna\Http\Result.cs">
       <Link>Http\Result.cs</Link>
